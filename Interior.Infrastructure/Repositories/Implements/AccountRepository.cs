@@ -24,7 +24,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region Conditional Get
-        public async Task<List<Account>> GetAccountListAsync(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        public async Task<List<Account>> GetAccountListByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
         {
             var filterBuilder = Builders<Account>.Filter;
             var filter = filterBuilder.Empty;
@@ -36,7 +36,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _accounts.Find(filter).ToListAsync();
         }
 
-        public async Task<Account> GetAccountAsync(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        public async Task<Account> GetAccountByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
         {
             var filterBuilder = Builders<Account>.Filter;
             var filter = filterBuilder.Empty;

@@ -34,7 +34,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO)
         {
-            Account account = await _accountRepository.GetAccountAsync(
+            Account account = await _accountRepository.GetAccountByCondition(
                 predicate: a => a.Email.Equals(loginDTO.Email) && a.Password.Equals(loginDTO.Password));
             if (account == null) throw new UnauthorizedAccessException("Incorrect email or password");
                 
@@ -48,11 +48,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO)
         {
-            Account account = await _accountRepository.GetAccountAsync(
+            Account account = await _accountRepository.GetAccountByCondition(
                 predicate: a => a.Email.Equals(registeredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRoleByName(AccountRoleEnum.CUSTOMER.ToString());
+            Role customerRole = await _roleRepository.GetRoleByCondition(
+                predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
 
             //Setup new account information
             Account newAccount = _mapper.Map<Account>(registeredDTO);
@@ -69,14 +70,15 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AuthenticationResponseDTO> MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO)
         {
-            Merchant merchant = await _merchantRepository.GetMerchantByCode(merchantRegisteredDTO.MerchantCode);
+            Merchant merchant = await _merchantRepository.GetMerchantByCondition(m => m.MerchantCode.Equals(merchantRegisteredDTO.MerchantCode));
             if (merchant == null) throw new NotFoundException("Merchant is not found");
 
-            Account account = await _accountRepository.GetAccountAsync(
+            Account account = await _accountRepository.GetAccountByCondition(
                 predicate: a => a.Email.Equals(merchantRegisteredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRoleByName(AccountRoleEnum.CUSTOMER.ToString());
+            Role customerRole = await _roleRepository.GetRoleByCondition(
+                predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
 
             //Setup new account information
             Account newAccount = _mapper.Map<Account>(merchantRegisteredDTO);

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using InteriorCoffee.Application.DTOs;
+using InteriorCoffee.Domain.ErrorModel;
 
 namespace InteriorCoffeeAPIs.Middlewares
 {
@@ -38,6 +39,16 @@ namespace InteriorCoffeeAPIs.Middlewares
                 case BadHttpRequestException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     errorResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                    _logger.LogInformation(exception.Message);
+                    break;
+                case UnauthorizedAccessException:
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    errorResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    _logger.LogInformation(exception.Message);
+                    break;
+                case ConflictException:
+                    response.StatusCode= (int)HttpStatusCode.Conflict;
+                    errorResponse.StatusCode= (int)HttpStatusCode.Conflict;
                     _logger.LogInformation(exception.Message);
                     break;
                 default:

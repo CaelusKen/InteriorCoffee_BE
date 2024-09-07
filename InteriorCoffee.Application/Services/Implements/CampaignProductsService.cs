@@ -9,5 +9,6 @@ namespace InteriorCoffee.Application.Services.Implements
 {
     public class CampaignProductsService : ICampaignProductsService
     {
+
     }
 }

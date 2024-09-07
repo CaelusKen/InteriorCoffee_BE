@@ -8,6 +8,7 @@ using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace InteriorCoffee.Infrastructure.Repositories.Implements
 {
@@ -21,6 +22,32 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _accounts = _database.GetCollection<Account>("Account");
             _logger = logger;
         }
+
+        #region Conditional Get
+        public async Task<List<Account>> GetAccountListAsync(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _accounts.Find(filter).ToListAsync();
+        }
+
+        public async Task<Account> GetAccountAsync(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _accounts.Find(filter).FirstOrDefaultAsync();
+        }
+        #endregion
 
         public async Task<List<Account>> GetAccountList()
         {

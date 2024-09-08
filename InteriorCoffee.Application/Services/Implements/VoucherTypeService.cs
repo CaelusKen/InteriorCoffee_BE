@@ -27,24 +27,24 @@ namespace InteriorCoffee.Application.Services.Implements
             _voucherTypeRepository = voucherTypeRepository;
         }
 
-        public async Task<List<VoucherType>> GetAllVouchers()
+        public async Task<List<VoucherType>> GetAllVoucherTypes()
         {
             return await _voucherTypeRepository.GetVoucherTypeListByCondition();
         }
 
-        public async Task<VoucherType> GetVoucherById(string id)
+        public async Task<VoucherType> GetVoucherTypeById(string id)
         {
             return await _voucherTypeRepository.GetVoucherTypeByCondition(
                 predicate: t => t._id.Equals(id));
         }
 
-        public async Task CreateVoucher(VoucherTypeDTO voucherTypeDTO)
+        public async Task CreateVoucherType(VoucherTypeDTO voucherTypeDTO)
         {
             VoucherType newType = _mapper.Map<VoucherType>(voucherTypeDTO);
             await _voucherTypeRepository.CreateVoucherType(newType);
         }
 
-        public async Task UpdateVoucher(string id, VoucherTypeDTO voucherTypeDTO)
+        public async Task UpdateVoucherType(string id, VoucherTypeDTO voucherTypeDTO)
         {
             VoucherType type = await _voucherTypeRepository.GetVoucherTypeByCondition(
                 predicate: t => t._id.Equals(id));
@@ -58,7 +58,7 @@ namespace InteriorCoffee.Application.Services.Implements
             await _voucherTypeRepository.UpdateVoucherType(type);
         }
 
-        public async Task DeleteVoucher(string id)
+        public async Task DeleteVoucherType(string id)
         {
             VoucherType type = await _voucherTypeRepository.GetVoucherTypeByCondition(
                 predicate: t => t._id.Equals(id));

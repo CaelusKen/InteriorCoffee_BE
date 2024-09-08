@@ -10,10 +10,10 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IVoucherTypeService
     {
-        public Task<List<VoucherType>> GetAllVouchers();
-        public Task<VoucherType> GetVoucherById(string id);
-        public Task CreateVoucher(VoucherTypeDTO voucherTypeDTO);
-        public Task UpdateVoucher(string id, VoucherTypeDTO voucherTypeDTO);
-        public Task DeleteVoucher(string id);
+        public Task<List<VoucherType>> GetAllVoucherTypes();
+        public Task<VoucherType> GetVoucherTypeById(string id);
+        public Task CreateVoucherType(VoucherTypeDTO voucherTypeDTO);
+        public Task UpdateVoucherType(string id, VoucherTypeDTO voucherTypeDTO);
+        public Task DeleteVoucherType(string id);
     }
 }

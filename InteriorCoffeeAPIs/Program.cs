@@ -19,6 +19,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.Configure<MongoDBContext>(builder.Configuration.GetSection("MongoDbSection"));
+
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddJwtValidation(builder.Configuration);

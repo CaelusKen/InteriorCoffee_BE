@@ -16,4 +16,10 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\Voucher\" />
+    <Folder Include="DTOs\Transaction\" />
+    <Folder Include="DTOs\Template\" />
+  </ItemGroup>
+
 </Project>

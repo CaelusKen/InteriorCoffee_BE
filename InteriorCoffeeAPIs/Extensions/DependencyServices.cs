@@ -15,24 +15,6 @@ namespace InteriorCoffeeAPIs.Extensions
 {
     public static class DependencyServices
     {
-        /*        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration config)
-                {
-                    services.Configure<MongoDBContext>(config.GetSection("MongoDbSection"));
-                    return services;
-                }
-
-                public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
-                {
-                    #region Other
-                    services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-                    services.AddScoped<IMongoClient>(sp =>
-                    {
-                        var getContext = sp.GetRequiredService<IOptions<MongoDBContext>>();
-                        IMongoClient client = new MongoClient(getContext.Value.ConnectionURI);
-                        return client;
-                    });
-                    #endregion*/
-
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration config)
         {
             services.AddSingleton<IMongoClient, MongoClient>(sp =>

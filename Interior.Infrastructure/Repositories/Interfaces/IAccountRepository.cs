@@ -15,7 +15,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task CreateAccount(Account account);
         Task UpdateAccount(Account account);
         Task DeleteAccount(string id);
-        public Task<List<Account>> GetAccountListAsync(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null);
-        public Task<Account> GetAccountAsync(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null);
+        Task<List<Account>> GetAccountListByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null);
+        Task<Account> GetAccountByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null);
     }
 }

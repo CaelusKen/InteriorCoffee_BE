@@ -32,8 +32,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<Review> GetReviewById(string id)
         {
-            return await _reviewRepository.GetReview(
+            var result = await _reviewRepository.GetReview(
                 predicate: rev => rev._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Review id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateReview(CreateReviewDTO createReviewDTO)

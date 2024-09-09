@@ -31,8 +31,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<Template> GetTemplateById(string id)
         {
-            return await _templateRepository.GetTemplate(
+            var result = await _templateRepository.GetTemplate(
                 predicate: t => t._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Template id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateTemplate(CreateTemplateDTO template)

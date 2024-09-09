@@ -31,8 +31,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<Transaction> GetTransactionById(string id)
         {
-            return await _transactionRepository.GetTransaction(
+            var result =  await _transactionRepository.GetTransaction(
                 predicate: tr => tr._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Transaction id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateTransaction(CreateTransactionDTO createTransaction)

@@ -51,6 +51,11 @@ namespace InteriorCoffeeAPIs.Middlewares
                     errorResponse.StatusCode= (int)HttpStatusCode.Conflict;
                     _logger.LogInformation(exception.Message);
                     break;
+                case NotFoundException:
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    errorResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    _logger.LogInformation(exception.Message);
+                    break;
                 default:
                     //unhandled error
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;

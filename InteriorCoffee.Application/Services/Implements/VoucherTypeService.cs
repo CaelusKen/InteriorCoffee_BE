@@ -34,8 +34,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<VoucherType> GetVoucherTypeById(string id)
         {
-            return await _voucherTypeRepository.GetVoucherType(
+            var result = await _voucherTypeRepository.GetVoucherType(
                 predicate: t => t._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Voucher type id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateVoucherType(VoucherTypeDTO voucherTypeDTO)

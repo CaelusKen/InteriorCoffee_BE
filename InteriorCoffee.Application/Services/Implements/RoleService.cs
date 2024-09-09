@@ -32,8 +32,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<Role> GetRoleById(string id)
         {
-            return await _roleRepository.GetRole(
+            var result = await _roleRepository.GetRole(
                 predicate: ro => ro._id.Equals(id));
+
+            if (result == null) throw new NotFoundException($"Role id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateRole(RoleDTO roleDTO)

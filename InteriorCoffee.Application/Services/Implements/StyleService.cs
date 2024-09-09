@@ -31,8 +31,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<Style> GetStyleById(string id)
         {
-            return await _styleRepository.GetStyle(
+            var result = await _styleRepository.GetStyle(
                 predicate: s => s._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Style id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateStyle(StyleDTO styleDTO)

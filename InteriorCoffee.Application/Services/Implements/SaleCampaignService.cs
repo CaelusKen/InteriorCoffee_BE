@@ -33,8 +33,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<SaleCampaign> GetCampaignById(string id)
         {
-            return await _saleCampaignRepository.GetSaleCampaign(
+            var result = await _saleCampaignRepository.GetSaleCampaign(
                 predicate: sc => sc._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Sale campaign id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateCampaign(CreateSaleCampaignDTO createdSaleCampaign)

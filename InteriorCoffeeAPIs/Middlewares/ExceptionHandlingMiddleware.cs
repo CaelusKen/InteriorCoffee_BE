@@ -36,7 +36,7 @@ namespace InteriorCoffeeAPIs.Middlewares
             {
                 //add more custom exception
                 //For example case AppException: do something
-                case BadHttpRequestException:
+                case BadHttpRequestException: case ArgumentException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     errorResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                     _logger.LogInformation(exception.Message);

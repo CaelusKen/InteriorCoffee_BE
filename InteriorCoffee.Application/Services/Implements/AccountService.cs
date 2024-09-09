@@ -20,91 +20,34 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<IEnumerable<Account>> GetAllAccountsAsync()
         {
-            try
-            {
-                return await _accountRepository.GetAccountList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all accounts.");
-                throw;
-            }
+            return await _accountRepository.GetAccountList();
         }
 
         public async Task<Account> GetAccountByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid account ID.");
-                throw new ArgumentException("Account ID cannot be null or empty.");
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Account ID cannot be null or empty.");
 
-            try
-            {
-                return await _accountRepository.GetAccountById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting account with id {id}.");
-                throw;
-            }
+            return await _accountRepository.GetAccountById(id);
         }
 
         public async Task CreateAccountAsync(Account account)
         {
-            if (account == null)
-            {
-                _logger.LogWarning("Invalid account data.");
-                throw new ArgumentException("Account cannot be null.");
-            }
+            if (account == null) throw new ArgumentException("Account cannot be null.");
 
-            try
-            {
-                await _accountRepository.CreateAccount(account);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an account.");
-                throw;
-            }
+            await _accountRepository.CreateAccount(account);
         }
 
         public async Task UpdateAccountAsync(string id, Account account)
         {
-            if (string.IsNullOrEmpty(id) || account == null)
-            {
-                _logger.LogWarning("Invalid account ID or data.");
-                throw new ArgumentException("Account ID and data cannot be null or empty.");
-            }
+            if (string.IsNullOrEmpty(id) || account == null) throw new ArgumentException("Account ID and data cannot be null or empty.");
 
-            try
-            {
-                await _accountRepository.UpdateAccount(account);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating account with id {id}.");
-                throw;
-            }
+            await _accountRepository.UpdateAccount(account);
         }
 
         public async Task DeleteAccountAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid account ID.");
-                throw new ArgumentException("Account ID cannot be null or empty.");
-            }
-
-            try
-            {
-                await _accountRepository.DeleteAccount(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting account with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Account ID cannot be null or empty.");
+            await _accountRepository.DeleteAccount(id);
         }
     }
 }

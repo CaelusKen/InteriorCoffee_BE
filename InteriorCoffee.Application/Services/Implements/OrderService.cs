@@ -20,91 +20,31 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
         {
-            try
-            {
-                return await _orderRepository.GetOrderList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all orders.");
-                throw;
-            }
+            return await _orderRepository.GetOrderList();
         }
 
         public async Task<Order> GetOrderByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid order ID.");
-                throw new ArgumentException("Order ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _orderRepository.GetOrderById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting order with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Order ID cannot be null or empty.");
+            return await _orderRepository.GetOrderById(id);
         }
 
         public async Task CreateOrderAsync(Order order)
         {
-            if (order == null)
-            {
-                _logger.LogWarning("Invalid order data.");
-                throw new ArgumentException("Order cannot be null.");
-            }
-
-            try
-            {
-                await _orderRepository.CreateOrder(order);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an order.");
-                throw;
-            }
+            if (order == null) throw new ArgumentException("Order cannot be null.");
+            await _orderRepository.CreateOrder(order);
         }
 
         public async Task UpdateOrderAsync(string id, Order order)
         {
-            if (string.IsNullOrEmpty(id) || order == null)
-            {
-                _logger.LogWarning("Invalid order ID or data.");
-                throw new ArgumentException("Order ID and data cannot be null or empty.");
-            }
-
-            try
-            {
-                await _orderRepository.UpdateOrder(order);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating order with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id) || order == null) throw new ArgumentException("Order ID and data cannot be null or empty.");
+            await _orderRepository.UpdateOrder(order);
         }
 
         public async Task DeleteOrderAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid order ID.");
-                throw new ArgumentException("Order ID cannot be null or empty.");
-            }
-
-            try
-            {
-                await _orderRepository.DeleteOrder(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting order with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Order ID cannot be null or empty.");
+            await _orderRepository.DeleteOrder(id);
         }
     }
 }

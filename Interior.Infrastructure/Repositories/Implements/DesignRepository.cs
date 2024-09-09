@@ -53,68 +53,28 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task<List<Design>> GetDesignList()
         {
-            try
-            {
-                return await _designs.Find(new BsonDocument()).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting design list.");
-                throw;
-            }
+            return await _designs.Find(new BsonDocument()).ToListAsync();
         }
 
         public async Task<Design> GetDesignById(string id)
         {
-            try
-            {
-                return await _designs.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting design with id {id}.");
-                throw;
-            }
+            return await _designs.Find(c => c._id == id).FirstOrDefaultAsync();
         }
 
         public async Task UpdateDesign(Design design)
         {
-            try
-            {
-                await _designs.ReplaceOneAsync(a => a._id == design._id, design);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating design with id {design._id}.");
-                throw;
-            }
+            await _designs.ReplaceOneAsync(a => a._id == design._id, design);
         }
 
         public async Task CreateDesign(Design design)
         {
-            try
-            {
-                await _designs.InsertOneAsync(design);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an design.");
-                throw;
-            }
+            await _designs.InsertOneAsync(design);
         }
 
         public async Task DeleteDesign(string id)
         {
-            try
-            {
-                FilterDefinition<Design> filterDefinition = Builders<Design>.Filter.Eq("_id", id);
-                await _designs.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting design with id {id}.");
-                throw;
-            }
+            FilterDefinition<Design> filterDefinition = Builders<Design>.Filter.Eq("_id", id);
+            await _designs.DeleteOneAsync(filterDefinition);
         }
     }
 }

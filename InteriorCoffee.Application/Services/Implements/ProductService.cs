@@ -20,91 +20,32 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            try
-            {
-                return await _productRepository.GetAllProductsAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all products.");
-                throw;
-            }
+            return await _productRepository.GetAllProductsAsync();
         }
 
         public async Task<Product> GetProductByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid product ID.");
-                throw new ArgumentException("Product ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _productRepository.GetProductByIdAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting product with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Product ID cannot be null or empty.");
+            return await _productRepository.GetProductByIdAsync(id);
         }
 
         public async Task CreateProductAsync(Product product)
         {
-            if (product == null)
-            {
-                _logger.LogWarning("Invalid product data.");
-                throw new ArgumentException("Product cannot be null.");
-            }
-
-            try
-            {
-                await _productRepository.CreateProductAsync(product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a product.");
-                throw;
-            }
+            if (product == null) throw new ArgumentException("Product cannot be null.");
+            await _productRepository.CreateProductAsync(product);
         }
 
         public async Task UpdateProductAsync(string id, Product product)
         {
-            if (string.IsNullOrEmpty(id) || product == null)
-            {
-                _logger.LogWarning("Invalid product ID or data.");
-                throw new ArgumentException("Product ID and data cannot be null or empty.");
-            }
-
-            try
-            {
-                await _productRepository.UpdateProductAsync(id, product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating product with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id) || product == null) throw new ArgumentException("Product ID and data cannot be null or empty.");
+            await _productRepository.UpdateProductAsync(id, product);
         }
 
         public async Task DeleteProductAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid product ID.");
                 throw new ArgumentException("Product ID cannot be null or empty.");
-            }
-
-            try
-            {
-                await _productRepository.DeleteProductAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting product with id {id}.");
-                throw;
-            }
+            await _productRepository.DeleteProductAsync(id);
         }
     }
 }

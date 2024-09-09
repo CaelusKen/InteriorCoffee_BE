@@ -20,91 +20,32 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync()
         {
-            try
-            {
-                return await _productCategoryRepository.GetProductCategoryList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all product categories.");
-                throw;
-            }
+            return await _productCategoryRepository.GetProductCategoryList();
         }
 
         public async Task<ProductCategory> GetProductCategoryByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid product category ID.");
-                throw new ArgumentException("Product category ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _productCategoryRepository.GetProductCategoryById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting product category with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Product category ID cannot be null or empty.");
+            return await _productCategoryRepository.GetProductCategoryById(id);
         }
 
         public async Task CreateProductCategoryAsync(ProductCategory productCategory)
         {
-            if (productCategory == null)
-            {
-                _logger.LogWarning("Invalid product category data.");
-                throw new ArgumentException("Product category cannot be null.");
-            }
-
-            try
-            {
-                await _productCategoryRepository.CreateProductCategory(productCategory);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a product category.");
-                throw;
-            }
+            if (productCategory == null) throw new ArgumentException("Product category cannot be null.");
+            await _productCategoryRepository.CreateProductCategory(productCategory);
         }
 
         public async Task UpdateProductCategoryAsync(string id, ProductCategory productCategory)
         {
             if (string.IsNullOrEmpty(id) || productCategory == null)
-            {
-                _logger.LogWarning("Invalid product category ID or data.");
                 throw new ArgumentException("Product category ID and data cannot be null or empty.");
-            }
-
-            try
-            {
-                await _productCategoryRepository.UpdateProductCategory(productCategory);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating product category with id {id}.");
-                throw;
-            }
+            await _productCategoryRepository.UpdateProductCategory(productCategory);
         }
 
         public async Task DeleteProductCategoryAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid product category ID.");
-                throw new ArgumentException("Product category ID cannot be null or empty.");
-            }
-
-            try
-            {
-                await _productCategoryRepository.DeleteProductCategory(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting product category with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Product category ID cannot be null or empty.");
+            await _productCategoryRepository.DeleteProductCategory(id);
         }
     }
 }

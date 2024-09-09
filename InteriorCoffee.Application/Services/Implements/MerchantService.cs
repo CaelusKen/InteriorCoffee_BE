@@ -20,91 +20,31 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<IEnumerable<Merchant>> GetAllMerchantsAsync()
         {
-            try
-            {
-                return await _merchantRepository.GetMerchantList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all merchants.");
-                throw;
-            }
+            return await _merchantRepository.GetMerchantList();
         }
 
         public async Task<Merchant> GetMerchantByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid merchant ID.");
-                throw new ArgumentException("Merchant ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _merchantRepository.GetMerchantById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting merchant with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Merchant ID cannot be null or empty.");
+            return await _merchantRepository.GetMerchantById(id);
         }
 
         public async Task CreateMerchantAsync(Merchant merchant)
         {
-            if (merchant == null)
-            {
-                _logger.LogWarning("Invalid merchant data.");
-                throw new ArgumentException("Merchant cannot be null.");
-            }
-
-            try
-            {
-                await _merchantRepository.CreateMerchant(merchant);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a merchant.");
-                throw;
-            }
+            if (merchant == null) throw new ArgumentException("Merchant cannot be null.");
+            await _merchantRepository.CreateMerchant(merchant);
         }
 
         public async Task UpdateMerchantAsync(string id, Merchant merchant)
         {
-            if (string.IsNullOrEmpty(id) || merchant == null)
-            {
-                _logger.LogWarning("Invalid merchant ID or data.");
-                throw new ArgumentException("Merchant ID and data cannot be null or empty.");
-            }
-
-            try
-            {
-                await _merchantRepository.UpdateMerchant(merchant);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating merchant with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id) || merchant == null) throw new ArgumentException("Merchant ID and data cannot be null or empty.");
+            await _merchantRepository.UpdateMerchant(merchant);
         }
 
         public async Task DeleteMerchantAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid merchant ID.");
-                throw new ArgumentException("Merchant ID cannot be null or empty.");
-            }
-
-            try
-            {
-                await _merchantRepository.DeleteMerchant(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting merchant with id {id}.");
-                throw;
-            }
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Merchant ID cannot be null or empty.");
+            await _merchantRepository.DeleteMerchant(id);
         }
     }
 }

@@ -1,77 +1,74 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.Design;
+using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")]
-    public class DesignController : ControllerBase
+    public class DesignController : BaseController<DesignController>
     {
         private readonly IDesignService _designService;
 
-        public DesignController(IDesignService designService)
+        public DesignController(ILogger<DesignController> logger, IDesignService designService) : base(logger)
         {
             _designService = designService;
         }
 
-        // GET: api/Design
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Design>>> GetDesigns()
+        [HttpGet(ApiEndPointConstant.Design.DesignsEndpoint)]
+        [ProducesResponseType(typeof(List<Design>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all designs")]
+        public async Task<IActionResult> GetAllDesigns()
         {
-            var designs = await _designService.GetAllDesignsAsync();
-            return Ok(designs);
+            var result = await _designService.GetDesignListAsync();
+            return Ok(result);
         }
 
-        // GET: api/Design/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Design>> GetDesign(string id)
+        [HttpGet(ApiEndPointConstant.Design.DesignEndpoint)]
+        [ProducesResponseType(typeof(Design), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a design by id")]
+        public async Task<IActionResult> GetDesignById(string id)
         {
-            var design = await _designService.GetDesignByIdAsync(id);
-            if (design == null)
+            var result = await _designService.GetDesignByIdAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return Ok(design);
+            return Ok(result);
         }
 
-        // POST: api/Design
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<ActionResult<Design>> CreateDesign([FromBody] Design design)
+        [HttpPost(ApiEndPointConstant.Design.DesignsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create design")]
+        public async Task<IActionResult> CreateDesign(CreateDesignDTO design)
         {
-            // Ensure the _id is not set
-            design._id = null;
-
             await _designService.CreateDesignAsync(design);
-            return CreatedAtAction(nameof(GetDesign), new { id = design._id }, design);
+            return Ok("Action success");
         }
 
-        // PUT: api/Design/{id}
-        [HttpPut("{id}")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> UpdateDesign(string id, [FromBody] Design design)
+        [HttpPatch(ApiEndPointConstant.Design.DesignEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update a design's data")]
+        public async Task<IActionResult> UpdateDesign(string id, [FromBody] UpdateDesignDTO updateDesign)
         {
-            if (id != design._id)
-            {
-                return BadRequest();
-            }
-
             var existingDesign = await _designService.GetDesignByIdAsync(id);
             if (existingDesign == null)
             {
                 return NotFound();
             }
 
-            await _designService.UpdateDesignAsync(id, design);
-            return NoContent();
+            await _designService.UpdateDesignAsync(id, updateDesign);
+            return Ok("Action success");
         }
 
-        // DELETE: api/Design/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiEndPointConstant.Design.DesignEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete a design")]
         public async Task<IActionResult> DeleteDesign(string id)
         {
             var design = await _designService.GetDesignByIdAsync(id);
@@ -81,7 +78,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _designService.DeleteDesignAsync(id);
-            return NoContent();
+            return Ok("Action success");
         }
     }
 }

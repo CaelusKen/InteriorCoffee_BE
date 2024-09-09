@@ -1,110 +1,69 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.Product;
+using InteriorCoffee.Application.Services.Base;
+using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
-    public class ProductService : IProductService
+    public class ProductService : BaseService<ProductService>, IProductService
     {
         private readonly IProductRepository _productRepository;
-        private readonly ILogger<ProductService> _logger;
 
-        public ProductService(IProductRepository productRepository, ILogger<ProductService> logger)
+        public ProductService(ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IProductRepository productRepository)
+            : base(logger, mapper, httpContextAccessor)
         {
             _productRepository = productRepository;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<List<Product>> GetProductListAsync()
         {
-            try
-            {
-                return await _productRepository.GetAllProductsAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all products.");
-                throw;
-            }
+            var products = await _productRepository.GetAllProductsAsync();
+            return products.ToList();
         }
 
         public async Task<Product> GetProductByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid product ID.");
-                throw new ArgumentException("Product ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _productRepository.GetProductByIdAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting product with id {id}.");
-                throw;
-            }
-        }
-
-        public async Task CreateProductAsync(Product product)
-        {
+            var product = await _productRepository.GetProductByIdAsync(id);
             if (product == null)
             {
-                _logger.LogWarning("Invalid product data.");
-                throw new ArgumentException("Product cannot be null.");
+                throw new NotFoundException($"Product with id {id} not found.");
             }
-
-            try
-            {
-                await _productRepository.CreateProductAsync(product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a product.");
-                throw;
-            }
+            return product;
         }
 
-        public async Task UpdateProductAsync(string id, Product product)
+        public async Task CreateProductAsync(CreateProductDTO createProductDTO)
         {
-            if (string.IsNullOrEmpty(id) || product == null)
-            {
-                _logger.LogWarning("Invalid product ID or data.");
-                throw new ArgumentException("Product ID and data cannot be null or empty.");
-            }
+            var product = _mapper.Map<Product>(createProductDTO);
+            await _productRepository.CreateProductAsync(product);
+        }
 
-            try
+        public async Task UpdateProductAsync(string id, UpdateProductDTO updateProductDTO)
+        {
+            var existingProduct = await _productRepository.GetProductByIdAsync(id);
+            if (existingProduct == null)
             {
-                await _productRepository.UpdateProductAsync(id, product);
+                throw new NotFoundException($"Product with id {id} not found.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating product with id {id}.");
-                throw;
-            }
+            _mapper.Map(updateProductDTO, existingProduct);
+            await _productRepository.UpdateProductAsync(id, existingProduct);
         }
 
         public async Task DeleteProductAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            var product = await _productRepository.GetProductByIdAsync(id);
+            if (product == null)
             {
-                _logger.LogWarning("Invalid product ID.");
-                throw new ArgumentException("Product ID cannot be null or empty.");
+                throw new NotFoundException($"Product with id {id} not found.");
             }
-
-            try
-            {
-                await _productRepository.DeleteProductAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting product with id {id}.");
-                throw;
-            }
+            await _productRepository.DeleteProductAsync(id);
         }
     }
 }

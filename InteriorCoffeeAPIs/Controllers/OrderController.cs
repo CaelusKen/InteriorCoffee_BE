@@ -1,77 +1,74 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.Order;
+using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")]
-    public class OrderController : ControllerBase
+    public class OrderController : BaseController<OrderController>
     {
         private readonly IOrderService _orderService;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(ILogger<OrderController> logger, IOrderService orderService) : base(logger)
         {
             _orderService = orderService;
         }
 
-        // GET: api/Order
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        [HttpGet(ApiEndPointConstant.Order.OrdersEndpoint)]
+        [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all orders")]
+        public async Task<IActionResult> GetAllOrders()
         {
-            var orders = await _orderService.GetAllOrdersAsync();
-            return Ok(orders);
+            var result = await _orderService.GetOrderListAsync();
+            return Ok(result);
         }
 
-        // GET: api/Order/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(string id)
+        [HttpGet(ApiEndPointConstant.Order.OrderEndpoint)]
+        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get an order by id")]
+        public async Task<IActionResult> GetOrderById(string id)
         {
-            var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null)
+            var result = await _orderService.GetOrderByIdAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return Ok(order);
+            return Ok(result);
         }
 
-        // POST: api/Order
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<ActionResult<Order>> CreateOrder([FromBody] Order order)
+        [HttpPost(ApiEndPointConstant.Order.OrdersEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create order")]
+        public async Task<IActionResult> CreateOrder(CreateOrderDTO order)
         {
-            // Ensure the _id is not set
-            order._id = null;
-
             await _orderService.CreateOrderAsync(order);
-            return CreatedAtAction(nameof(GetOrder), new { id = order._id }, order);
+            return Ok("Action success");
         }
 
-        // PUT: api/Order/{id}
-        [HttpPut("{id}")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> UpdateOrder(string id, [FromBody] Order order)
+        [HttpPatch(ApiEndPointConstant.Order.OrderEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update an order's status")]
+        public async Task<IActionResult> UpdateOrderStatus(string id, [FromBody] UpdateOrderStatusDTO updateOrderStatus)
         {
-            if (id != order._id)
-            {
-                return BadRequest();
-            }
-
             var existingOrder = await _orderService.GetOrderByIdAsync(id);
             if (existingOrder == null)
             {
                 return NotFound();
             }
 
-            await _orderService.UpdateOrderAsync(id, order);
-            return NoContent();
+            await _orderService.UpdateOrderAsync(id, updateOrderStatus);
+            return Ok("Action success");
         }
 
-        // DELETE: api/Order/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiEndPointConstant.Order.OrderEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete an order")]
         public async Task<IActionResult> DeleteOrder(string id)
         {
             var order = await _orderService.GetOrderByIdAsync(id);
@@ -81,7 +78,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _orderService.DeleteOrderAsync(id);
-            return NoContent();
+            return Ok("Action success");
         }
     }
 }

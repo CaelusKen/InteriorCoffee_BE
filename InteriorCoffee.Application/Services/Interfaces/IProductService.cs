@@ -1,4 +1,5 @@
-﻿using InteriorCoffee.Domain.Models;
+﻿using InteriorCoffee.Application.DTOs.Product;
+using InteriorCoffee.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,10 +7,10 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IProductService
     {
-        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<List<Product>> GetProductListAsync();
         Task<Product> GetProductByIdAsync(string id);
-        Task CreateProductAsync(Product product);
-        Task UpdateProductAsync(string id, Product product);
+        Task CreateProductAsync(CreateProductDTO product);
+        Task UpdateProductAsync(string id, UpdateProductDTO product);
         Task DeleteProductAsync(string id);
     }
 }

@@ -1,110 +1,69 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.ChatSession;
+using InteriorCoffee.Application.Services.Base;
+using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
-    public class ChatSessionService : IChatSessionService
+    public class ChatSessionService : BaseService<ChatSessionService>, IChatSessionService
     {
         private readonly IChatSessionRepository _chatSessionRepository;
-        private readonly ILogger<ChatSessionService> _logger;
 
-        public ChatSessionService(IChatSessionRepository chatSessionRepository, ILogger<ChatSessionService> logger)
+        public ChatSessionService(ILogger<ChatSessionService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IChatSessionRepository chatSessionRepository)
+            : base(logger, mapper, httpContextAccessor)
         {
             _chatSessionRepository = chatSessionRepository;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<ChatSession>> GetAllChatSessionsAsync()
+        public async Task<List<ChatSession>> GetChatSessionListAsync()
         {
-            try
-            {
-                return await _chatSessionRepository.GetChatSessionList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all chat sessions.");
-                throw;
-            }
+            var chatSessions = await _chatSessionRepository.GetChatSessionList();
+            return _mapper.Map<List<ChatSession>>(chatSessions);
         }
 
         public async Task<ChatSession> GetChatSessionByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid chat session ID.");
-                throw new ArgumentException("Chat session ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _chatSessionRepository.GetChatSessionById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting chat session with id {id}.");
-                throw;
-            }
-        }
-
-        public async Task CreateChatSessionAsync(ChatSession chatSession)
-        {
+            var chatSession = await _chatSessionRepository.GetChatSessionById(id);
             if (chatSession == null)
             {
-                _logger.LogWarning("Invalid chat session data.");
-                throw new ArgumentException("Chat session cannot be null.");
+                throw new NotFoundException($"Chat session with id {id} not found.");
             }
-
-            try
-            {
-                await _chatSessionRepository.CreateChatSession(chatSession);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a chat session.");
-                throw;
-            }
+            return _mapper.Map<ChatSession>(chatSession);
         }
 
-        public async Task UpdateChatSessionAsync(string id, ChatSession chatSession)
+        public async Task CreateChatSessionAsync(CreateChatSessionDTO createChatSessionDTO)
         {
-            if (string.IsNullOrEmpty(id) || chatSession == null)
-            {
-                _logger.LogWarning("Invalid chat session ID or data.");
-                throw new ArgumentException("Chat session ID and data cannot be null or empty.");
-            }
+            var chatSession = _mapper.Map<ChatSession>(createChatSessionDTO);
+            await _chatSessionRepository.CreateChatSession(chatSession);
+        }
 
-            try
+        public async Task UpdateChatSessionAsync(string id, UpdateChatSessionDTO updateChatSessionDTO)
+        {
+            var chatSession = await _chatSessionRepository.GetChatSessionById(id);
+            if (chatSession == null)
             {
-                await _chatSessionRepository.UpdateChatSession(chatSession);
+                throw new NotFoundException($"Chat session with id {id} not found.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating chat session with id {id}.");
-                throw;
-            }
+            _mapper.Map(updateChatSessionDTO, chatSession);
+            await _chatSessionRepository.UpdateChatSession(chatSession);
         }
 
         public async Task DeleteChatSessionAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            var chatSession = await _chatSessionRepository.GetChatSessionById(id);
+            if (chatSession == null)
             {
-                _logger.LogWarning("Invalid chat session ID.");
-                throw new ArgumentException("Chat session ID cannot be null or empty.");
+                throw new NotFoundException($"Chat session with id {id} not found.");
             }
-
-            try
-            {
-                await _chatSessionRepository.DeleteChatSession(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting chat session with id {id}.");
-                throw;
-            }
+            await _chatSessionRepository.DeleteChatSession(id);
         }
     }
 }

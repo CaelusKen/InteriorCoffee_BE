@@ -1,110 +1,69 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.ProductCategory;
+using InteriorCoffee.Application.Services.Base;
+using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
-    public class ProductCategoryService : IProductCategoryService
+    public class ProductCategoryService : BaseService<ProductCategoryService>, IProductCategoryService
     {
         private readonly IProductCategoryRepository _productCategoryRepository;
-        private readonly ILogger<ProductCategoryService> _logger;
 
-        public ProductCategoryService(IProductCategoryRepository productCategoryRepository, ILogger<ProductCategoryService> logger)
+        public ProductCategoryService(ILogger<ProductCategoryService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IProductCategoryRepository productCategoryRepository)
+            : base(logger, mapper, httpContextAccessor)
         {
             _productCategoryRepository = productCategoryRepository;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync()
+        public async Task<List<ProductCategory>> GetProductCategoryListAsync()
         {
-            try
-            {
-                return await _productCategoryRepository.GetProductCategoryList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all product categories.");
-                throw;
-            }
+            var productCategories = await _productCategoryRepository.GetProductCategoryList();
+            return productCategories;
         }
 
         public async Task<ProductCategory> GetProductCategoryByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid product category ID.");
-                throw new ArgumentException("Product category ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _productCategoryRepository.GetProductCategoryById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting product category with id {id}.");
-                throw;
-            }
-        }
-
-        public async Task CreateProductCategoryAsync(ProductCategory productCategory)
-        {
+            var productCategory = await _productCategoryRepository.GetProductCategoryById(id);
             if (productCategory == null)
             {
-                _logger.LogWarning("Invalid product category data.");
-                throw new ArgumentException("Product category cannot be null.");
+                throw new NotFoundException($"Product category with id {id} not found.");
             }
-
-            try
-            {
-                await _productCategoryRepository.CreateProductCategory(productCategory);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a product category.");
-                throw;
-            }
+            return productCategory;
         }
 
-        public async Task UpdateProductCategoryAsync(string id, ProductCategory productCategory)
+        public async Task CreateProductCategoryAsync(CreateProductCategoryDTO createProductCategoryDTO)
         {
-            if (string.IsNullOrEmpty(id) || productCategory == null)
-            {
-                _logger.LogWarning("Invalid product category ID or data.");
-                throw new ArgumentException("Product category ID and data cannot be null or empty.");
-            }
+            var productCategory = _mapper.Map<ProductCategory>(createProductCategoryDTO);
+            await _productCategoryRepository.CreateProductCategory(productCategory);
+        }
 
-            try
+        public async Task UpdateProductCategoryAsync(string id, UpdateProductCategoryDTO updateProductCategoryDTO)
+        {
+            var existingProductCategory = await _productCategoryRepository.GetProductCategoryById(id);
+            if (existingProductCategory == null)
             {
-                await _productCategoryRepository.UpdateProductCategory(productCategory);
+                throw new NotFoundException($"Product category with id {id} not found.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating product category with id {id}.");
-                throw;
-            }
+            _mapper.Map(updateProductCategoryDTO, existingProductCategory);
+            await _productCategoryRepository.UpdateProductCategory(existingProductCategory);
         }
 
         public async Task DeleteProductCategoryAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            var productCategory = await _productCategoryRepository.GetProductCategoryById(id);
+            if (productCategory == null)
             {
-                _logger.LogWarning("Invalid product category ID.");
-                throw new ArgumentException("Product category ID cannot be null or empty.");
+                throw new NotFoundException($"Product category with id {id} not found.");
             }
-
-            try
-            {
-                await _productCategoryRepository.DeleteProductCategory(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting product category with id {id}.");
-                throw;
-            }
+            await _productCategoryRepository.DeleteProductCategory(id);
         }
     }
 }

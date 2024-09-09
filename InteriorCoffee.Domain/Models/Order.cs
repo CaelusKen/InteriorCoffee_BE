@@ -24,5 +24,7 @@ namespace InteriorCoffee.Domain.Models
 
         public string VoucherId { get; set; }
         public string AccountId { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
     }
 }

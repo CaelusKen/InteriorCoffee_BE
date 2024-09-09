@@ -1,18 +1,16 @@
-﻿using InteriorCoffee.Domain.Models;
-using System;
+﻿using InteriorCoffee.Application.DTOs.Order;
+using InteriorCoffee.Domain.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<IEnumerable<Order>> GetAllOrdersAsync();
+        Task<List<Order>> GetOrderListAsync();
         Task<Order> GetOrderByIdAsync(string id);
-        Task CreateOrderAsync(Order order);
-        Task UpdateOrderAsync(string id, Order order);
+        Task CreateOrderAsync(CreateOrderDTO order);
+        Task UpdateOrderAsync(string id, UpdateOrderStatusDTO order);
         Task DeleteOrderAsync(string id);
     }
 }

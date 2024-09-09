@@ -1,110 +1,69 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.Design;
+using InteriorCoffee.Application.Services.Base;
+using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
-    public class DesignService : IDesignService
+    public class DesignService : BaseService<DesignService>, IDesignService
     {
         private readonly IDesignRepository _designRepository;
-        private readonly ILogger<DesignService> _logger;
 
-        public DesignService(IDesignRepository designRepository, ILogger<DesignService> logger)
+        public DesignService(ILogger<DesignService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IDesignRepository designRepository)
+            : base(logger, mapper, httpContextAccessor)
         {
             _designRepository = designRepository;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<Design>> GetAllDesignsAsync()
+        public async Task<List<Design>> GetDesignListAsync()
         {
-            try
-            {
-                return await _designRepository.GetDesignList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all designs.");
-                throw;
-            }
+            var designs = await _designRepository.GetDesignList();
+            return designs;
         }
 
         public async Task<Design> GetDesignByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid design ID.");
-                throw new ArgumentException("Design ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _designRepository.GetDesignById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting design with id {id}.");
-                throw;
-            }
-        }
-
-        public async Task CreateDesignAsync(Design design)
-        {
+            var design = await _designRepository.GetDesignById(id);
             if (design == null)
             {
-                _logger.LogWarning("Invalid design data.");
-                throw new ArgumentException("Design cannot be null.");
+                throw new NotFoundException($"Design with id {id} not found.");
             }
-
-            try
-            {
-                await _designRepository.CreateDesign(design);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a design.");
-                throw;
-            }
+            return design;
         }
 
-        public async Task UpdateDesignAsync(string id, Design design)
+        public async Task CreateDesignAsync(CreateDesignDTO createDesignDTO)
         {
-            if (string.IsNullOrEmpty(id) || design == null)
-            {
-                _logger.LogWarning("Invalid design ID or data.");
-                throw new ArgumentException("Design ID and data cannot be null or empty.");
-            }
+            var design = _mapper.Map<Design>(createDesignDTO);
+            await _designRepository.CreateDesign(design);
+        }
 
-            try
+        public async Task UpdateDesignAsync(string id, UpdateDesignDTO updateDesignDTO)
+        {
+            var existingDesign = await _designRepository.GetDesignById(id);
+            if (existingDesign == null)
             {
-                await _designRepository.UpdateDesign(design);
+                throw new NotFoundException($"Design with id {id} not found.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating design with id {id}.");
-                throw;
-            }
+            _mapper.Map(updateDesignDTO, existingDesign);
+            await _designRepository.UpdateDesign(existingDesign);
         }
 
         public async Task DeleteDesignAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            var design = await _designRepository.GetDesignById(id);
+            if (design == null)
             {
-                _logger.LogWarning("Invalid design ID.");
-                throw new ArgumentException("Design ID cannot be null or empty.");
+                throw new NotFoundException($"Design with id {id} not found.");
             }
-
-            try
-            {
-                await _designRepository.DeleteDesign(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting design with id {id}.");
-                throw;
-            }
+            await _designRepository.DeleteDesign(id);
         }
     }
 }

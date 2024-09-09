@@ -1,110 +1,69 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.Merchant;
+using InteriorCoffee.Application.Services.Base;
+using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
-    public class MerchantService : IMerchantService
+    public class MerchantService : BaseService<MerchantService>, IMerchantService
     {
         private readonly IMerchantRepository _merchantRepository;
-        private readonly ILogger<MerchantService> _logger;
 
-        public MerchantService(IMerchantRepository merchantRepository, ILogger<MerchantService> logger)
+        public MerchantService(ILogger<MerchantService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IMerchantRepository merchantRepository)
+            : base(logger, mapper, httpContextAccessor)
         {
             _merchantRepository = merchantRepository;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<Merchant>> GetAllMerchantsAsync()
+        public async Task<List<Merchant>> GetMerchantListAsync()
         {
-            try
-            {
-                return await _merchantRepository.GetMerchantList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting all merchants.");
-                throw;
-            }
+            var merchants = await _merchantRepository.GetMerchantList();
+            return merchants;
         }
 
         public async Task<Merchant> GetMerchantByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Invalid merchant ID.");
-                throw new ArgumentException("Merchant ID cannot be null or empty.");
-            }
-
-            try
-            {
-                return await _merchantRepository.GetMerchantById(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting merchant with id {id}.");
-                throw;
-            }
-        }
-
-        public async Task CreateMerchantAsync(Merchant merchant)
-        {
+            var merchant = await _merchantRepository.GetMerchantById(id);
             if (merchant == null)
             {
-                _logger.LogWarning("Invalid merchant data.");
-                throw new ArgumentException("Merchant cannot be null.");
+                throw new NotFoundException($"Merchant with id {id} not found.");
             }
-
-            try
-            {
-                await _merchantRepository.CreateMerchant(merchant);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a merchant.");
-                throw;
-            }
+            return merchant;
         }
 
-        public async Task UpdateMerchantAsync(string id, Merchant merchant)
+        public async Task CreateMerchantAsync(CreateMerchantDTO createMerchantDTO)
         {
-            if (string.IsNullOrEmpty(id) || merchant == null)
-            {
-                _logger.LogWarning("Invalid merchant ID or data.");
-                throw new ArgumentException("Merchant ID and data cannot be null or empty.");
-            }
+            var merchant = _mapper.Map<Merchant>(createMerchantDTO);
+            await _merchantRepository.CreateMerchant(merchant);
+        }
 
-            try
+        public async Task UpdateMerchantAsync(string id, UpdateMerchantDTO updateMerchantDTO)
+        {
+            var existingMerchant = await _merchantRepository.GetMerchantById(id);
+            if (existingMerchant == null)
             {
-                await _merchantRepository.UpdateMerchant(merchant);
+                throw new NotFoundException($"Merchant with id {id} not found.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating merchant with id {id}.");
-                throw;
-            }
+            _mapper.Map(updateMerchantDTO, existingMerchant);
+            await _merchantRepository.UpdateMerchant(existingMerchant);
         }
 
         public async Task DeleteMerchantAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            var merchant = await _merchantRepository.GetMerchantById(id);
+            if (merchant == null)
             {
-                _logger.LogWarning("Invalid merchant ID.");
-                throw new ArgumentException("Merchant ID cannot be null or empty.");
+                throw new NotFoundException($"Merchant with id {id} not found.");
             }
-
-            try
-            {
-                await _merchantRepository.DeleteMerchant(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting merchant with id {id}.");
-                throw;
-            }
+            await _merchantRepository.DeleteMerchant(id);
         }
     }
 }

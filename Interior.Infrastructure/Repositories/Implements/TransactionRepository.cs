@@ -26,8 +26,8 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<Transaction>> GetTransactionListByCondition(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null)
+        #region CRUD Functions
+        public async Task<List<Transaction>> GetTransactionList(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null)
         {
             var filterBuilder = Builders<Transaction>.Filter;
             var filter = filterBuilder.Empty;
@@ -39,7 +39,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _transactions.Find(filter).ToListAsync();
         }
 
-        public async Task<Transaction> GetTransactionByCondition(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null)
+        public async Task<Transaction> GetTransaction(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null)
         {
             var filterBuilder = Builders<Transaction>.Filter;
             var filter = filterBuilder.Empty;
@@ -50,72 +50,22 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _transactions.Find(filter).FirstOrDefaultAsync();
         }
-        #endregion
-
-        public async Task<List<Transaction>> GetTransactionList()
-        {
-            try
-            {
-                return await _transactions.Find(new BsonDocument()).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting transaction list.");
-                throw;
-            }
-        }
-
-        public async Task<Transaction> GetTransactionById(string id)
-        {
-            try
-            {
-                return await _transactions.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting transaction with id {id}.");
-                throw;
-            }
-        }
 
         public async Task UpdateTransaction(Transaction Transaction)
         {
-            try
-            {
-                await _transactions.ReplaceOneAsync(a => a._id == Transaction._id, Transaction);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating transaction with id {Transaction._id}.");
-                throw;
-            }
+            await _transactions.ReplaceOneAsync(a => a._id == Transaction._id, Transaction);
         }
 
         public async Task CreateTransaction(Transaction Transaction)
         {
-            try
-            {
-                await _transactions.InsertOneAsync(Transaction);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an transaction.");
-                throw;
-            }
+            await _transactions.InsertOneAsync(Transaction);
         }
 
         public async Task DeleteTransaction(string id)
         {
-            try
-            {
-                FilterDefinition<Transaction> filterDefinition = Builders<Transaction>.Filter.Eq("_id", id);
-                await _transactions.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting transaction with id {id}.");
-                throw;
-            }
+            FilterDefinition<Transaction> filterDefinition = Builders<Transaction>.Filter.Eq("_id", id);
+            await _transactions.DeleteOneAsync(filterDefinition);
         }
+        #endregion
     }
 }

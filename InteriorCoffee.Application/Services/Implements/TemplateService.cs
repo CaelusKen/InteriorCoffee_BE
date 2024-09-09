@@ -26,13 +26,17 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<List<Template>> GetAllTemplates()
         {
-            return await _templateRepository.GetTemplateListByCondition();
+            return await _templateRepository.GetTemplateList();
         }
 
         public async Task<Template> GetTemplateById(string id)
         {
-            return await _templateRepository.GetTemplateByCondition(
+            var result = await _templateRepository.GetTemplate(
                 predicate: t => t._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Template id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateTemplate(CreateTemplateDTO template)
@@ -43,7 +47,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateTemplate(string id, UpdateTemplateDTO updateTemplate)
         {
-            Template template = await _templateRepository.GetTemplateByCondition(
+            Template template = await _templateRepository.GetTemplate(
                 predicate: t => t._id.Equals(id));
 
             if (template == null) throw new NotFoundException($"Template id {id} cannot be found");
@@ -60,7 +64,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteTemplate(string id)
         {
-            Template template = await _templateRepository.GetTemplateByCondition(
+            Template template = await _templateRepository.GetTemplate(
                 predicate: t => t._id.Equals(id));
 
             if (template == null) throw new NotFoundException($"Template id {id} cannot be found");

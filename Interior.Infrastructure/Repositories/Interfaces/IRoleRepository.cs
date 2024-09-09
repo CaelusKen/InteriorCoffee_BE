@@ -10,13 +10,10 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IRoleRepository
     {
-        Task<List<Role>> GetRoleList();
-        Task<Role> GetRoleById(string id);
+        public Task<List<Role>> GetRoleList(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null);
+        public Task<Role> GetRole(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null);
         Task CreateRole(Role role);
         Task UpdateRole(Role role);
         Task DeleteRole(string id);
-
-        public Task<List<Role>> GetRoleListByCondition(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null);
-        public Task<Role> GetRoleByCondition(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null);
     }
 }

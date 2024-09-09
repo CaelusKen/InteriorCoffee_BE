@@ -29,13 +29,17 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<List<VoucherType>> GetAllVoucherTypes()
         {
-            return await _voucherTypeRepository.GetVoucherTypeListByCondition();
+            return await _voucherTypeRepository.GetVoucherTypeList();
         }
 
         public async Task<VoucherType> GetVoucherTypeById(string id)
         {
-            return await _voucherTypeRepository.GetVoucherTypeByCondition(
+            var result = await _voucherTypeRepository.GetVoucherType(
                 predicate: t => t._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Voucher type id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateVoucherType(VoucherTypeDTO voucherTypeDTO)
@@ -46,7 +50,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateVoucherType(string id, VoucherTypeDTO voucherTypeDTO)
         {
-            VoucherType type = await _voucherTypeRepository.GetVoucherTypeByCondition(
+            VoucherType type = await _voucherTypeRepository.GetVoucherType(
                 predicate: t => t._id.Equals(id));
 
             if (type == null) throw new NotFoundException($"Voucher type id {id} cannot be found");
@@ -60,7 +64,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteVoucherType(string id)
         {
-            VoucherType type = await _voucherTypeRepository.GetVoucherTypeByCondition(
+            VoucherType type = await _voucherTypeRepository.GetVoucherType(
                 predicate: t => t._id.Equals(id));
 
             if (type == null) throw new NotFoundException($"Voucher type id {id} cannot be found");

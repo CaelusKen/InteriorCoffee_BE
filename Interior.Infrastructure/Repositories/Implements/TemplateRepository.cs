@@ -25,8 +25,8 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<Template>> GetTemplateListByCondition(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
+        #region CRUD Functions
+        public async Task<List<Template>> GetTemplateList(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
         {
             var filterBuilder = Builders<Template>.Filter;
             var filter = filterBuilder.Empty;
@@ -38,7 +38,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _templates.Find(filter).ToListAsync();
         }
 
-        public async Task<Template> GetTemplateByCondition(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
+        public async Task<Template> GetTemplate(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
         {
             var filterBuilder = Builders<Template>.Filter;
             var filter = filterBuilder.Empty;
@@ -49,72 +49,22 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _templates.Find(filter).FirstOrDefaultAsync();
         }
-        #endregion
-
-        public async Task<List<Template>> GetTemplateList()
-        {
-            try
-            {
-                return await _templates.Find(new BsonDocument()).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting template list.");
-                throw;
-            }
-        }
-
-        public async Task<Template> GetTemplateById(string id)
-        {
-            try
-            {
-                return await _templates.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting template with id {id}.");
-                throw;
-            }
-        }
 
         public async Task UpdateTemplate(Template template)
         {
-            try
-            {
-                await _templates.ReplaceOneAsync(a => a._id == template._id, template);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating template with id {template._id}.");
-                throw;
-            }
+            await _templates.ReplaceOneAsync(a => a._id == template._id, template);
         }
 
         public async Task CreateTemplate(Template template)
         {
-            try
-            {
-                await _templates.InsertOneAsync(template);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an template.");
-                throw;
-            }
+            await _templates.InsertOneAsync(template);
         }
 
         public async Task DeleteTemplate(string id)
         {
-            try
-            {
-                FilterDefinition<Template> filterDefinition = Builders<Template>.Filter.Eq("_id", id);
-                await _templates.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting template with id {id}.");
-                throw;
-            }
+            FilterDefinition<Template> filterDefinition = Builders<Template>.Filter.Eq("_id", id);
+            await _templates.DeleteOneAsync(filterDefinition);
         }
+        #endregion
     }
 }

@@ -53,68 +53,28 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task<List<Merchant>> GetMerchantList()
         {
-            try
-            {
-                return await _merchants.Find(new BsonDocument()).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting merchant list.");
-                throw;
-            }
+            return await _merchants.Find(new BsonDocument()).ToListAsync();
         }
 
         public async Task<Merchant> GetMerchantById(string id)
         {
-            try
-            {
-                return await _merchants.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting merchant with id {id}.");
-                throw;
-            }
+            return await _merchants.Find(c => c._id == id).FirstOrDefaultAsync();
         }
 
         public async Task UpdateMerchant(Merchant merchant)
         {
-            try
-            {
-                await _merchants.ReplaceOneAsync(a => a._id == merchant._id, merchant);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating merchant with id {merchant._id}.");
-                throw;
-            }
+            await _merchants.ReplaceOneAsync(a => a._id == merchant._id, merchant);
         }
 
         public async Task CreateMerchant(Merchant merchant)
         {
-            try
-            {
-                await _merchants.InsertOneAsync(merchant);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an merchant.");
-                throw;
-            }
+            await _merchants.InsertOneAsync(merchant);
         }
 
         public async Task DeleteMerchant(string id)
         {
-            try
-            {
-                FilterDefinition<Merchant> filterDefinition = Builders<Merchant>.Filter.Eq("_id", id);
-                await _merchants.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting merchant with id {id}.");
-                throw;
-            }
+            FilterDefinition<Merchant> filterDefinition = Builders<Merchant>.Filter.Eq("_id", id);
+            await _merchants.DeleteOneAsync(filterDefinition);
         }
     }
 }

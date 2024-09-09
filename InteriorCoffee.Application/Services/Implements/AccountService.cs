@@ -73,7 +73,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Account with id {id} not found.");
             }
             _mapper.Map(updateAccountDTO, account);
-            await _accountRepository.UpdateAccount(account);
+            await _accountRepository.CreateAccount(account);
         }
 
         public async Task DeleteAccountAsync(string id)

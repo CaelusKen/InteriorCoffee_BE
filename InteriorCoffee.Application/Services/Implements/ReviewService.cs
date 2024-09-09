@@ -27,13 +27,17 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<List<Review>> GetAllReviews()
         {
-            return await _reviewRepository.GetReviewListByCondition();
+            return await _reviewRepository.GetReviewList();
         }
 
         public async Task<Review> GetReviewById(string id)
         {
-            return await _reviewRepository.GetReviewByCondition(
+            var result = await _reviewRepository.GetReview(
                 predicate: rev => rev._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Review id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateReview(CreateReviewDTO createReviewDTO)
@@ -44,7 +48,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateReview(string id, UpdateReviewDTO updateReviewDTO)
         {
-            Review review = await _reviewRepository.GetReviewByCondition(
+            Review review = await _reviewRepository.GetReview(
                 predicate: rev => rev._id.Equals(id));
 
             if (review == null) throw new NotFoundException($"Review id {id} cannot be found");
@@ -58,7 +62,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteReview(string id)
         {
-            Review review = await _reviewRepository.GetReviewByCondition(
+            Review review = await _reviewRepository.GetReview(
                 predicate: rev => rev._id.Equals(id));
 
             if (review == null) throw new NotFoundException($"Review id {id} cannot be found");

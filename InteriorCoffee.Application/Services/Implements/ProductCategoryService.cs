@@ -1,50 +1,68 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.ProductCategory;
+using InteriorCoffee.Application.Services.Base;
+using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
-    public class ProductCategoryService : IProductCategoryService
+    public class ProductCategoryService : BaseService<ProductCategoryService>, IProductCategoryService
     {
         private readonly IProductCategoryRepository _productCategoryRepository;
-        private readonly ILogger<ProductCategoryService> _logger;
 
-        public ProductCategoryService(IProductCategoryRepository productCategoryRepository, ILogger<ProductCategoryService> logger)
+        public ProductCategoryService(ILogger<ProductCategoryService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IProductCategoryRepository productCategoryRepository)
+            : base(logger, mapper, httpContextAccessor)
         {
             _productCategoryRepository = productCategoryRepository;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync()
+        public async Task<List<ProductCategory>> GetProductCategoryListAsync()
         {
-            return await _productCategoryRepository.GetProductCategoryList();
+            var productCategories = await _productCategoryRepository.GetProductCategoryList();
+            return productCategories;
         }
 
         public async Task<ProductCategory> GetProductCategoryByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Product category ID cannot be null or empty.");
-            return await _productCategoryRepository.GetProductCategoryById(id);
+            var productCategory = await _productCategoryRepository.GetProductCategoryById(id);
+            if (productCategory == null)
+            {
+                throw new NotFoundException($"Product category with id {id} not found.");
+            }
+            return productCategory;
         }
 
-        public async Task CreateProductCategoryAsync(ProductCategory productCategory)
+        public async Task CreateProductCategoryAsync(CreateProductCategoryDTO createProductCategoryDTO)
         {
-            if (productCategory == null) throw new ArgumentException("Product category cannot be null.");
+            var productCategory = _mapper.Map<ProductCategory>(createProductCategoryDTO);
             await _productCategoryRepository.CreateProductCategory(productCategory);
         }
 
-        public async Task UpdateProductCategoryAsync(string id, ProductCategory productCategory)
+        public async Task UpdateProductCategoryAsync(string id, UpdateProductCategoryDTO updateProductCategoryDTO)
         {
-            if (string.IsNullOrEmpty(id) || productCategory == null)
-                throw new ArgumentException("Product category ID and data cannot be null or empty.");
-            await _productCategoryRepository.UpdateProductCategory(productCategory);
+            var existingProductCategory = await _productCategoryRepository.GetProductCategoryById(id);
+            if (existingProductCategory == null)
+            {
+                throw new NotFoundException($"Product category with id {id} not found.");
+            }
+            _mapper.Map(updateProductCategoryDTO, existingProductCategory);
+            await _productCategoryRepository.UpdateProductCategory(existingProductCategory);
         }
 
         public async Task DeleteProductCategoryAsync(string id)
         {
-            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Product category ID cannot be null or empty.");
+            var productCategory = await _productCategoryRepository.GetProductCategoryById(id);
+            if (productCategory == null)
+            {
+                throw new NotFoundException($"Product category with id {id} not found.");
+            }
             await _productCategoryRepository.DeleteProductCategory(id);
         }
     }

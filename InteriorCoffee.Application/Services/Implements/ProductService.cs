@@ -1,50 +1,68 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.Product;
+using InteriorCoffee.Application.Services.Base;
+using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
-    public class ProductService : IProductService
+    public class ProductService : BaseService<ProductService>, IProductService
     {
         private readonly IProductRepository _productRepository;
-        private readonly ILogger<ProductService> _logger;
 
-        public ProductService(IProductRepository productRepository, ILogger<ProductService> logger)
+        public ProductService(ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IProductRepository productRepository)
+            : base(logger, mapper, httpContextAccessor)
         {
             _productRepository = productRepository;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<List<Product>> GetProductListAsync()
         {
-            return await _productRepository.GetAllProductsAsync();
+            var products = await _productRepository.GetAllProductsAsync();
+            return products.ToList();
         }
 
         public async Task<Product> GetProductByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Product ID cannot be null or empty.");
-            return await _productRepository.GetProductByIdAsync(id);
+            var product = await _productRepository.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                throw new NotFoundException($"Product with id {id} not found.");
+            }
+            return product;
         }
 
-        public async Task CreateProductAsync(Product product)
+        public async Task CreateProductAsync(CreateProductDTO createProductDTO)
         {
-            if (product == null) throw new ArgumentException("Product cannot be null.");
+            var product = _mapper.Map<Product>(createProductDTO);
             await _productRepository.CreateProductAsync(product);
         }
 
-        public async Task UpdateProductAsync(string id, Product product)
+        public async Task UpdateProductAsync(string id, UpdateProductDTO updateProductDTO)
         {
-            if (string.IsNullOrEmpty(id) || product == null) throw new ArgumentException("Product ID and data cannot be null or empty.");
-            await _productRepository.UpdateProductAsync(id, product);
+            var existingProduct = await _productRepository.GetProductByIdAsync(id);
+            if (existingProduct == null)
+            {
+                throw new NotFoundException($"Product with id {id} not found.");
+            }
+            _mapper.Map(updateProductDTO, existingProduct);
+            await _productRepository.UpdateProductAsync(id, existingProduct);
         }
 
         public async Task DeleteProductAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException("Product ID cannot be null or empty.");
+            var product = await _productRepository.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                throw new NotFoundException($"Product with id {id} not found.");
+            }
             await _productRepository.DeleteProductAsync(id);
         }
     }

@@ -1,77 +1,74 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.Product;
+using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseController<ProductController>
     {
         private readonly IProductService _productService;
 
-        public ProductController(IProductService productService)
+        public ProductController(ILogger<ProductController> logger, IProductService productService) : base(logger)
         {
             _productService = productService;
         }
 
-        // GET: api/Product
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint)]
+        [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all products")]
+        public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _productService.GetAllProductsAsync();
-            return Ok(products);
+            var result = await _productService.GetProductListAsync();
+            return Ok(result);
         }
 
-        // GET: api/Product/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(string id)
+        [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a product by id")]
+        public async Task<IActionResult> GetProductById(string id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
+            var result = await _productService.GetProductByIdAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return Ok(product);
+            return Ok(result);
         }
 
-        // POST: api/Product
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product)
+        [HttpPost(ApiEndPointConstant.Product.ProductsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create product")]
+        public async Task<IActionResult> CreateProduct(CreateProductDTO product)
         {
-            // Ensure the _id is not set
-            product._id = null;
-
             await _productService.CreateProductAsync(product);
-            return CreatedAtAction(nameof(GetProduct), new { id = product._id }, product);
+            return Ok("Action success");
         }
 
-        // PUT: api/Product/{id}
-        [HttpPut("{id}")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> UpdateProduct(string id, [FromBody] Product product)
+        [HttpPatch(ApiEndPointConstant.Product.ProductEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update a product's data")]
+        public async Task<IActionResult> UpdateProduct(string id, [FromBody] UpdateProductDTO updateProduct)
         {
-            if (id != product._id)
-            {
-                return BadRequest();
-            }
-
             var existingProduct = await _productService.GetProductByIdAsync(id);
             if (existingProduct == null)
             {
                 return NotFound();
             }
 
-            await _productService.UpdateProductAsync(id, product);
-            return NoContent();
+            await _productService.UpdateProductAsync(id, updateProduct);
+            return Ok("Action success");
         }
 
-        // DELETE: api/Product/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiEndPointConstant.Product.ProductEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete a product")]
         public async Task<IActionResult> DeleteProduct(string id)
         {
             var product = await _productService.GetProductByIdAsync(id);
@@ -81,7 +78,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _productService.DeleteProductAsync(id);
-            return NoContent();
+            return Ok("Action success");
         }
     }
 }

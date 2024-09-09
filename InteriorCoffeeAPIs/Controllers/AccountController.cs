@@ -1,77 +1,74 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.Account;
+using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController<AccountController>
     {
         private readonly IAccountService _accountService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(ILogger<AccountController> logger, IAccountService accountService) : base(logger)
         {
             _accountService = accountService;
         }
 
-        // GET: api/Account
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+        [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
+        [ProducesResponseType(typeof(List<Account>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all accounts")]
+        public async Task<IActionResult> GetAllAccounts()
         {
-            var accounts = await _accountService.GetAllAccountsAsync();
-            return Ok(accounts);
+            var result = await _accountService.GetAccountListAsync();
+            return Ok(result);
         }
 
-        // GET: api/Account/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(string id)
+        [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
+        [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get an account by id")]
+        public async Task<IActionResult> GetAccountById(string id)
         {
-            var account = await _accountService.GetAccountByIdAsync(id);
-            if (account == null)
+            var result = await _accountService.GetAccountByIdAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return Ok(account);
+            return Ok(result);
         }
 
-        // POST: api/Account
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<ActionResult<Account>> CreateAccount([FromBody] Account account)
+        [HttpPost(ApiEndPointConstant.Account.AccountsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create account")]
+        public async Task<IActionResult> CreateAccount(CreateAccountDTO account)
         {
-            // Ensure the _id is not set
-            account._id = null;
-
             await _accountService.CreateAccountAsync(account);
-            return CreatedAtAction(nameof(GetAccount), new { id = account._id }, account);
+            return Ok("Action success");
         }
 
-        // PUT: api/Account/{id}
-        [HttpPut("{id}")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> UpdateAccount(string id, [FromBody] Account account)
+        [HttpPatch(ApiEndPointConstant.Account.AccountEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update an account's data")]
+        public async Task<IActionResult> UpdateAccount(string id, [FromBody] UpdateAccountDTO updateAccount)
         {
-            if (id != account._id)
-            {
-                return BadRequest();
-            }
-
             var existingAccount = await _accountService.GetAccountByIdAsync(id);
             if (existingAccount == null)
             {
                 return NotFound();
             }
 
-            await _accountService.UpdateAccountAsync(id, account);
-            return NoContent();
+            await _accountService.UpdateAccountAsync(id, updateAccount);
+            return Ok("Action success");
         }
 
-        // DELETE: api/Account/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiEndPointConstant.Account.AccountEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete an account")]
         public async Task<IActionResult> DeleteAccount(string id)
         {
             var account = await _accountService.GetAccountByIdAsync(id);
@@ -81,7 +78,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _accountService.DeleteAccountAsync(id);
-            return NoContent();
+            return Ok("Action success");
         }
     }
 }

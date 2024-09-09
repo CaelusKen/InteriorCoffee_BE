@@ -1,77 +1,74 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.ProductCategory;
+using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")]
-    public class ProductCategoryController : ControllerBase
+    public class ProductCategoryController : BaseController<ProductCategoryController>
     {
         private readonly IProductCategoryService _productCategoryService;
 
-        public ProductCategoryController(IProductCategoryService productCategoryService)
+        public ProductCategoryController(ILogger<ProductCategoryController> logger, IProductCategoryService productCategoryService) : base(logger)
         {
             _productCategoryService = productCategoryService;
         }
 
-        // GET: api/ProductCategory
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductCategory>>> GetProductCategories()
+        [HttpGet(ApiEndPointConstant.ProductCategory.ProductCategoriesEndpoint)]
+        [ProducesResponseType(typeof(List<ProductCategory>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all product categories")]
+        public async Task<IActionResult> GetAllProductCategories()
         {
-            var productCategories = await _productCategoryService.GetAllProductCategoriesAsync();
-            return Ok(productCategories);
+            var result = await _productCategoryService.GetProductCategoryListAsync();
+            return Ok(result);
         }
 
-        // GET: api/ProductCategory/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProductCategory>> GetProductCategory(string id)
+        [HttpGet(ApiEndPointConstant.ProductCategory.ProductCategoryEndpoint)]
+        [ProducesResponseType(typeof(ProductCategory), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a product category by id")]
+        public async Task<IActionResult> GetProductCategoryById(string id)
         {
-            var productCategory = await _productCategoryService.GetProductCategoryByIdAsync(id);
-            if (productCategory == null)
+            var result = await _productCategoryService.GetProductCategoryByIdAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return Ok(productCategory);
+            return Ok(result);
         }
 
-        // POST: api/ProductCategory
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<ActionResult<ProductCategory>> CreateProductCategory([FromBody] ProductCategory productCategory)
+        [HttpPost(ApiEndPointConstant.ProductCategory.ProductCategoriesEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create product category")]
+        public async Task<IActionResult> CreateProductCategory(CreateProductCategoryDTO productCategory)
         {
-            // Ensure the _id is not set
-            productCategory._id = null;
-
             await _productCategoryService.CreateProductCategoryAsync(productCategory);
-            return CreatedAtAction(nameof(GetProductCategory), new { id = productCategory._id }, productCategory);
+            return Ok("Action success");
         }
 
-        // PUT: api/ProductCategory/{id}
-        [HttpPut("{id}")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> UpdateProductCategory(string id, [FromBody] ProductCategory productCategory)
+        [HttpPatch(ApiEndPointConstant.ProductCategory.ProductCategoryEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update a product category's data")]
+        public async Task<IActionResult> UpdateProductCategory(string id, [FromBody] UpdateProductCategoryDTO updateProductCategory)
         {
-            if (id != productCategory._id)
-            {
-                return BadRequest();
-            }
-
             var existingProductCategory = await _productCategoryService.GetProductCategoryByIdAsync(id);
             if (existingProductCategory == null)
             {
                 return NotFound();
             }
 
-            await _productCategoryService.UpdateProductCategoryAsync(id, productCategory);
-            return NoContent();
+            await _productCategoryService.UpdateProductCategoryAsync(id, updateProductCategory);
+            return Ok("Action success");
         }
 
-        // DELETE: api/ProductCategory/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiEndPointConstant.ProductCategory.ProductCategoryEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete a product category")]
         public async Task<IActionResult> DeleteProductCategory(string id)
         {
             var productCategory = await _productCategoryService.GetProductCategoryByIdAsync(id);
@@ -81,7 +78,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _productCategoryService.DeleteProductCategoryAsync(id);
-            return NoContent();
+            return Ok("Action success");
         }
     }
 }

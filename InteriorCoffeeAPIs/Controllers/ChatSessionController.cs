@@ -1,77 +1,74 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.ChatSession;
+using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")]
-    public class ChatSessionController : ControllerBase
+    public class ChatSessionController : BaseController<ChatSessionController>
     {
         private readonly IChatSessionService _chatSessionService;
 
-        public ChatSessionController(IChatSessionService chatSessionService)
+        public ChatSessionController(ILogger<ChatSessionController> logger, IChatSessionService chatSessionService) : base(logger)
         {
             _chatSessionService = chatSessionService;
         }
 
-        // GET: api/ChatSession
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ChatSession>>> GetChatSessions()
+        [HttpGet(ApiEndPointConstant.ChatSession.ChatSessionsEndpoint)]
+        [ProducesResponseType(typeof(List<ChatSession>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all chat sessions")]
+        public async Task<IActionResult> GetAllChatSessions()
         {
-            var chatSessions = await _chatSessionService.GetAllChatSessionsAsync();
-            return Ok(chatSessions);
+            var result = await _chatSessionService.GetChatSessionListAsync();
+            return Ok(result);
         }
 
-        // GET: api/ChatSession/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ChatSession>> GetChatSession(string id)
+        [HttpGet(ApiEndPointConstant.ChatSession.ChatSessionEndpoint)]
+        [ProducesResponseType(typeof(ChatSession), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a chat session by id")]
+        public async Task<IActionResult> GetChatSessionById(string id)
         {
-            var chatSession = await _chatSessionService.GetChatSessionByIdAsync(id);
-            if (chatSession == null)
+            var result = await _chatSessionService.GetChatSessionByIdAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return Ok(chatSession);
+            return Ok(result);
         }
 
-        // POST: api/ChatSession
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<ActionResult<ChatSession>> CreateChatSession([FromBody] ChatSession chatSession)
+        [HttpPost(ApiEndPointConstant.ChatSession.ChatSessionsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create chat session")]
+        public async Task<IActionResult> CreateChatSession(CreateChatSessionDTO chatSession)
         {
-            // Ensure the _id is not set
-            chatSession._id = null;
-
             await _chatSessionService.CreateChatSessionAsync(chatSession);
-            return CreatedAtAction(nameof(GetChatSession), new { id = chatSession._id }, chatSession);
+            return Ok("Action success");
         }
 
-        // PUT: api/ChatSession/{id}
-        [HttpPut("{id}")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> UpdateChatSession(string id, [FromBody] ChatSession chatSession)
+        [HttpPatch(ApiEndPointConstant.ChatSession.ChatSessionEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update a chat session's data")]
+        public async Task<IActionResult> UpdateChatSession(string id, [FromBody] UpdateChatSessionDTO updateChatSession)
         {
-            if (id != chatSession._id)
-            {
-                return BadRequest();
-            }
-
             var existingChatSession = await _chatSessionService.GetChatSessionByIdAsync(id);
             if (existingChatSession == null)
             {
                 return NotFound();
             }
 
-            await _chatSessionService.UpdateChatSessionAsync(id, chatSession);
-            return NoContent();
+            await _chatSessionService.UpdateChatSessionAsync(id, updateChatSession);
+            return Ok("Action success");
         }
 
-        // DELETE: api/ChatSession/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiEndPointConstant.ChatSession.ChatSessionEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete a chat session")]
         public async Task<IActionResult> DeleteChatSession(string id)
         {
             var chatSession = await _chatSessionService.GetChatSessionByIdAsync(id);
@@ -81,7 +78,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _chatSessionService.DeleteChatSessionAsync(id);
-            return NoContent();
+            return Ok("Action success");
         }
     }
 }

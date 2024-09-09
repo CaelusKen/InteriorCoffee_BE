@@ -1,18 +1,16 @@
-﻿using InteriorCoffee.Domain.Models;
-using System;
+﻿using InteriorCoffee.Application.DTOs.ProductCategory;
+using InteriorCoffee.Domain.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IProductCategoryService
     {
-        Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync();
+        Task<List<ProductCategory>> GetProductCategoryListAsync();
         Task<ProductCategory> GetProductCategoryByIdAsync(string id);
-        Task CreateProductCategoryAsync(ProductCategory productCategory);
-        Task UpdateProductCategoryAsync(string id, ProductCategory productCategory);
+        Task CreateProductCategoryAsync(CreateProductCategoryDTO productCategory);
+        Task UpdateProductCategoryAsync(string id, UpdateProductCategoryDTO productCategory);
         Task DeleteProductCategoryAsync(string id);
     }
 }

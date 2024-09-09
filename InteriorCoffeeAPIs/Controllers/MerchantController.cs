@@ -1,77 +1,74 @@
-﻿using InteriorCoffee.Application.Services.Interfaces;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.Merchant;
+using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")]
-    public class MerchantController : ControllerBase
+    public class MerchantController : BaseController<MerchantController>
     {
         private readonly IMerchantService _merchantService;
 
-        public MerchantController(IMerchantService merchantService)
+        public MerchantController(ILogger<MerchantController> logger, IMerchantService merchantService) : base(logger)
         {
             _merchantService = merchantService;
         }
 
-        // GET: api/Merchant
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Merchant>>> GetMerchants()
+        [HttpGet(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
+        [ProducesResponseType(typeof(List<Merchant>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all merchants")]
+        public async Task<IActionResult> GetAllMerchants()
         {
-            var merchants = await _merchantService.GetAllMerchantsAsync();
-            return Ok(merchants);
+            var result = await _merchantService.GetMerchantListAsync();
+            return Ok(result);
         }
 
-        // GET: api/Merchant/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Merchant>> GetMerchant(string id)
+        [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]
+        [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a merchant by id")]
+        public async Task<IActionResult> GetMerchantById(string id)
         {
-            var merchant = await _merchantService.GetMerchantByIdAsync(id);
-            if (merchant == null)
+            var result = await _merchantService.GetMerchantByIdAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return Ok(merchant);
+            return Ok(result);
         }
 
-        // POST: api/Merchant
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<ActionResult<Merchant>> CreateMerchant([FromBody] Merchant merchant)
+        [HttpPost(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create merchant")]
+        public async Task<IActionResult> CreateMerchant(CreateMerchantDTO merchant)
         {
-            // Ensure the _id is not set
-            merchant._id = null;
-
             await _merchantService.CreateMerchantAsync(merchant);
-            return CreatedAtAction(nameof(GetMerchant), new { id = merchant._id }, merchant);
+            return Ok("Action success");
         }
 
-        // PUT: api/Merchant/{id}
-        [HttpPut("{id}")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> UpdateMerchant(string id, [FromBody] Merchant merchant)
+        [HttpPatch(ApiEndPointConstant.Merchant.MerchantEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update a merchant's data")]
+        public async Task<IActionResult> UpdateMerchant(string id, [FromBody] UpdateMerchantDTO updateMerchant)
         {
-            if (id != merchant._id)
-            {
-                return BadRequest();
-            }
-
             var existingMerchant = await _merchantService.GetMerchantByIdAsync(id);
             if (existingMerchant == null)
             {
                 return NotFound();
             }
 
-            await _merchantService.UpdateMerchantAsync(id, merchant);
-            return NoContent();
+            await _merchantService.UpdateMerchantAsync(id, updateMerchant);
+            return Ok("Action success");
         }
 
-        // DELETE: api/Merchant/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiEndPointConstant.Merchant.MerchantEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete a merchant")]
         public async Task<IActionResult> DeleteMerchant(string id)
         {
             var merchant = await _merchantService.GetMerchantByIdAsync(id);
@@ -81,7 +78,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _merchantService.DeleteMerchantAsync(id);
-            return NoContent();
+            return Ok("Action success");
         }
     }
 }

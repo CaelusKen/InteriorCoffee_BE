@@ -67,5 +67,47 @@ namespace InteriorCoffee.Application.Constants
             public const string VoucherTypesEndpoint = ApiEndpoint + "/voucher-types";
             public const string VoucherTypeEndpoint = VoucherTypesEndpoint + "/{id}";
         }
+
+        // New endpoints for the entities I've worked on
+        public static class Account
+        {
+            public const string AccountsEndpoint = ApiEndpoint + "/accounts";
+            public const string AccountEndpoint = AccountsEndpoint + "/{id}";
+        }
+        public static class Product
+        {
+            public const string ProductsEndpoint = ApiEndpoint + "/products";
+            public const string ProductEndpoint = ProductsEndpoint + "/{id}";
+        }
+
+        public static class ProductCategory
+        {
+            public const string ProductCategoriesEndpoint = ApiEndpoint + "/product-categories";
+            public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{id}";
+        }
+
+        public static class Order
+        {
+            public const string OrdersEndpoint = ApiEndpoint + "/orders";
+            public const string OrderEndpoint = OrdersEndpoint + "/{id}";
+        }
+
+        public static class Merchant
+        {
+            public const string MerchantsEndpoint = ApiEndpoint + "/merchants";
+            public const string MerchantEndpoint = MerchantsEndpoint + "/{id}";
+        }
+
+        public static class Design
+        {
+            public const string DesignsEndpoint = ApiEndpoint + "/designs";
+            public const string DesignEndpoint = DesignsEndpoint + "/{id}";
+        }
+
+        public static class ChatSession
+        {
+            public const string ChatSessionsEndpoint = ApiEndpoint + "/chat-sessions";
+            public const string ChatSessionEndpoint = ChatSessionsEndpoint + "/{id}";
+        }
     }
 }

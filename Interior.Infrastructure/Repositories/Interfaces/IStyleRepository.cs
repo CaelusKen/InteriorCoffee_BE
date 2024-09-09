@@ -10,13 +10,11 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IStyleRepository
     {
-        Task<List<Style>> GetStyleList();
-        Task<Style> GetStyleById(string id);
         Task CreateStyle(Style style);
         Task UpdateStyle(Style style);
         Task DeleteStyle(string id);
 
-        public Task<List<Style>> GetStyleListByCondition(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null);
-        public Task<Style> GetStyleByCondition(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null);
+        public Task<List<Style>> GetStyleList(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null);
+        public Task<Style> GetStyle(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null);
     }
 }

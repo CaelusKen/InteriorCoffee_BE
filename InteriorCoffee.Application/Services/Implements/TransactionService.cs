@@ -26,12 +26,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<List<Transaction>> GetAllTransactions()
         {
-            return await _transactionRepository.GetTransactionListByCondition();
+            return await _transactionRepository.GetTransactionList();
         }
 
         public async Task<Transaction> GetTransactionById(string id)
         {
-            return await _transactionRepository.GetTransactionByCondition(
+            return await _transactionRepository.GetTransaction(
                 predicate: tr => tr._id.Equals(id));
         }
 
@@ -43,7 +43,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateTransaction(string id, UpdateTransacrtionDTO updateTransacrtion)
         {
-            Transaction transaction = await _transactionRepository.GetTransactionByCondition(
+            Transaction transaction = await _transactionRepository.GetTransaction(
                 predicate: tr => tr._id.Equals(id));
 
             if (transaction == null) throw new NotFoundException($"Transaction id {id} cannot be found");
@@ -60,7 +60,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteTransaction(string id)
         {
-            Transaction transaction = await _transactionRepository.GetTransactionByCondition(
+            Transaction transaction = await _transactionRepository.GetTransaction(
                 predicate: tr => tr._id.Equals(id));
 
             if (transaction == null) throw new NotFoundException($"Transaction id {id} cannot be found");

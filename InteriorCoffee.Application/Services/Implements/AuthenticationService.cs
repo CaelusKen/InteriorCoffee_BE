@@ -52,7 +52,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(registeredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRoleByCondition(
+            Role customerRole = await _roleRepository.GetRole(
                 predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
 
             //Setup new account information
@@ -77,7 +77,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(merchantRegisteredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRoleByCondition(
+            Role customerRole = await _roleRepository.GetRole(
                 predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
 
             //Setup new account information

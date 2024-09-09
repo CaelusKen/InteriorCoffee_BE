@@ -26,12 +26,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<List<Voucher>> GetAllVouchers()
         {
-            return await _voucherRepository.GetVoucherListByCondition();
+            return await _voucherRepository.GetVoucherList();
         }
 
         public async Task<Voucher> GetVoucherById(string id)
         {
-            return await _voucherRepository.GetVoucherByCondition(
+            return await _voucherRepository.GetVoucher(
                 predicate: v => v._id.Equals(id));
         }
 
@@ -43,7 +43,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateVoucher(string id, UpdateVoucherDTO updatedVoucher)
         {
-            Voucher voucher = await _voucherRepository.GetVoucherByCondition(
+            Voucher voucher = await _voucherRepository.GetVoucher(
                 predicate: v => v._id.Equals(id));
 
             if (voucher == null) throw new NotFoundException($"Voucher id {id} cannot be found");
@@ -67,7 +67,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteVoucher(string id)
         {
-            Voucher voucher = await _voucherRepository.GetVoucherByCondition(
+            Voucher voucher = await _voucherRepository.GetVoucher(
                 predicate: v => v._id.Equals(id));
 
             if (voucher == null) throw new NotFoundException($"Voucher id {id} cannot be found");

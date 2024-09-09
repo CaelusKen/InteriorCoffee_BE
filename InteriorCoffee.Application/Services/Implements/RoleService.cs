@@ -27,12 +27,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<List<Role>> GetAllRoles()
         {
-            return await _roleRepository.GetRoleListByCondition();
+            return await _roleRepository.GetRoleList();
         }
 
         public async Task<Role> GetRoleById(string id)
         {
-            return await _roleRepository.GetRoleByCondition(
+            return await _roleRepository.GetRole(
                 predicate: ro => ro._id.Equals(id));
         }
 
@@ -44,7 +44,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateRole(string id, RoleDTO roleDTO)
         {
-            Role role = await _roleRepository.GetRoleByCondition(
+            Role role = await _roleRepository.GetRole(
                 predicate: ro => ro._id.Equals(id));
 
             if (role == null) throw new NotFoundException($"Role id {id} cannot be found");
@@ -58,7 +58,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteRole(string id)
         {
-            Role role = await _roleRepository.GetRoleByCondition(
+            Role role = await _roleRepository.GetRole(
                 predicate: ro => ro._id.Equals(id));
 
             if (role == null) throw new NotFoundException($"Role id {id} cannot be found");

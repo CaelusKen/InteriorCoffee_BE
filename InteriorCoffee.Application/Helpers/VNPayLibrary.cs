@@ -12,7 +12,7 @@ using InteriorCoffee.Application.Utils;
 
 namespace InteriorCoffee.Application.Helpers
 {
-    public class VNPayHelper
+    public class VNPayLibrary
     {
         private readonly SortedList<string, string> _requestData = new SortedList<string, string>(new VnPayCompare());
         private readonly SortedList<string, string> _responseData = new SortedList<string, string>(new VnPayCompare());

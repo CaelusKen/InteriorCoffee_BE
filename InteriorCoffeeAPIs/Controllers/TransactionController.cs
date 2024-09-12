@@ -67,13 +67,12 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-
-
+        //Test purpose only
         [HttpGet(ApiEndPointConstant.Transaction.TransactionsPaymentReturnEndpoint)]
         [SwaggerOperation(Summary = "Test payment")]
-        public async Task<IActionResult> PaymentReturn(IQueryCollection collections)
+        public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
         {
-            var result = _paymentService.PaymentExecute(collections);
+            var result = _paymentService.PaymentExecute(model);
             return Ok(result);
         }
 

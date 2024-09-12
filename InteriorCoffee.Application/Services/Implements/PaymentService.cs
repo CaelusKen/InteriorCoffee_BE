@@ -11,6 +11,7 @@ using MongoDB.Driver.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,20 +51,21 @@ namespace InteriorCoffee.Application.Services.Implements
             return paymentUrl;
         }
 
-        public async Task<VnPaymentResponseModel> PaymentExecute(IQueryCollection collections)
+        public async Task<VnPaymentResponseModel> PaymentExecute(VnPayReturnResponseModel collections)
         {
             var vnpay = new VNPayLibrary();
-            foreach(var (key, value) in collections)
+
+            foreach (PropertyInfo pi in collections.GetType().GetProperties())
             {
-                if(!String.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
+                if (!String.IsNullOrEmpty(pi.Name) && pi.Name.StartsWith("vnp_"))
                 {
-                    vnpay.AddResponseData(key, value.ToString());
+                    vnpay.AddResponseData(pi.Name, pi.GetValue(collections).ToString());
                 }
             }
 
             var vnp_orderId = vnpay.GetResponseData("vnp_TxnRef");
             var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
-            var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
+            var vnp_SecureHash = collections.vnp_SecureHash;
             var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
             var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
 

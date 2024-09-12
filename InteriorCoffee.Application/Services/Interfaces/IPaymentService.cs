@@ -11,6 +11,6 @@ namespace InteriorCoffee.Application.Services.Interfaces
     public interface IPaymentService
     {
         public Task<string> CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model);
-        public Task<VnPaymentResponseModel> PaymentExecute(IQueryCollection collections);
+        public Task<VnPaymentResponseModel> PaymentExecute(VnPayReturnResponseModel collections);
     }
 }

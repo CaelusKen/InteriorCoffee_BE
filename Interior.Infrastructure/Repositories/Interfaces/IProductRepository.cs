@@ -9,7 +9,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<(List<Product>, int, int, int)> GetProductsAsync(int pageNumber, int pageSize);
         Task<Product> GetProductByIdAsync(string id);
         Task CreateProductAsync(Product product);
         Task UpdateProductAsync(string id, Product product);

@@ -22,12 +22,24 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all products")]
-        public async Task<IActionResult> GetAllProducts()
+        [SwaggerOperation(Summary = "Get all products with pagination")]
+        public async Task<IActionResult> GetProducts([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _productService.GetProductListAsync();
-            return Ok(result);
+            var (products, currentPage, currentPageSize, totalItems, totalPages) = await _productService.GetProductsAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = products.Count,
+                TotalPage = totalPages,
+                Products = products
+            };
+
+            return Ok(response);
         }
+
 
         [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]

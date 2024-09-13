@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -23,11 +24,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _productRepository = productRepository;
         }
 
-        public async Task<List<Product>> GetProductListAsync()
+        public async Task<(List<Product>, int, int, int, int)> GetProductsAsync(int? pageNo, int? pageSize)
         {
-            var products = await _productRepository.GetAllProductsAsync();
-            return products.ToList();
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? 1,
+                PageSize = pageSize ?? 12
+            };
+
+            var (products, totalItems, currentPageSize, totalPages) = await _productRepository.GetProductsAsync(pagination.PageNo, pagination.PageSize);
+            return (products, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<Product> GetProductByIdAsync(string id)
         {

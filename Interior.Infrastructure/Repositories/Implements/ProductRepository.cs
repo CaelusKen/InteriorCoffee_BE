@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace InteriorCoffee.Infrastructure.Repositories.Implements
 {
@@ -18,18 +19,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<(List<Product>, int, int, int)> GetProductsAsync(int pageNumber, int pageSize)
         {
             try
             {
-                return await _products.Find(product => true).ToListAsync();
+                var totalItemsLong = await _products.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var products = await _products.Find(product => true)
+                                              .Skip((pageNumber - 1) * pageSize)
+                                              .Limit(pageSize)
+                                              .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (products, totalItems, pageSize, totalPages);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting all products.");
+                _logger.LogError(ex, "Error occurred while getting paginated products.");
                 throw;
             }
         }
+
 
         public async Task<Product> GetProductByIdAsync(string id)
         {

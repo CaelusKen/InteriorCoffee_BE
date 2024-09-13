@@ -53,68 +53,28 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task<List<ChatSession>> GetChatSessionList()
         {
-            try
-            {
-                return await _chatSessions.Find(new BsonDocument()).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting chat session list.");
-                throw;
-            }
+            return await _chatSessions.Find(new BsonDocument()).ToListAsync();
         }
 
         public async Task<ChatSession> GetChatSessionById(string id)
         {
-            try
-            {
-                return await _chatSessions.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting chat session with id {id}.");
-                throw;
-            }
+            return await _chatSessions.Find(c => c._id == id).FirstOrDefaultAsync();
         }
 
         public async Task UpdateChatSession(ChatSession chatSession)
         {
-            try
-            {
-                await _chatSessions.ReplaceOneAsync(a => a._id == chatSession._id, chatSession);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating chat session with id {chatSession._id}.");
-                throw;
-            }
+            await _chatSessions.ReplaceOneAsync(a => a._id == chatSession._id, chatSession);
         }
 
         public async Task CreateChatSession(ChatSession chatSession)
         {
-            try
-            {
-                await _chatSessions.InsertOneAsync(chatSession);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an chat session.");
-                throw;
-            }
+            await _chatSessions.InsertOneAsync(chatSession);
         }
 
         public async Task DeleteChatSession(string id)
         {
-            try
-            {
-                FilterDefinition<ChatSession> filterDefinition = Builders<ChatSession>.Filter.Eq("_id", id);
-                await _chatSessions.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting chat session with id {id}.");
-                throw;
-            }
+            FilterDefinition<ChatSession> filterDefinition = Builders<ChatSession>.Filter.Eq("_id", id);
+            await _chatSessions.DeleteOneAsync(filterDefinition);
         }
     }
 }

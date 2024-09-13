@@ -10,13 +10,11 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface ITemplateRepository
     {
-        Task<List<Template>> GetTemplateList();
-        Task<Template> GetTemplateById(string id);
         Task CreateTemplate(Template template);
         Task UpdateTemplate(Template template);
         Task DeleteTemplate(string id);
 
-        public Task<List<Template>> GetTemplateListByCondition(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null);
-        public Task<Template> GetTemplateByCondition(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null);
+        public Task<List<Template>> GetTemplateList(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null);
+        public Task<Template> GetTemplate(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null);
     }
 }

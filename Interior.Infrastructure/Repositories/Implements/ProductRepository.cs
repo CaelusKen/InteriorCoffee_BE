@@ -42,54 +42,22 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task<Product> GetProductByIdAsync(string id)
         {
-            try
-            {
-                return await _products.Find<Product>(product => product._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting product with id {id}.");
-                throw;
-            }
+            return await _products.Find<Product>(product => product._id == id).FirstOrDefaultAsync();
         }
 
         public async Task CreateProductAsync(Product product)
         {
-            try
-            {
-                await _products.InsertOneAsync(product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a product.");
-                throw;
-            }
+            await _products.InsertOneAsync(product);
         }
 
         public async Task UpdateProductAsync(string id, Product product)
         {
-            try
-            {
-                await _products.ReplaceOneAsync(prod => prod._id == id, product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating product with id {id}.");
-                throw;
-            }
+            await _products.ReplaceOneAsync(prod => prod._id == id, product);
         }
 
         public async Task DeleteProductAsync(string id)
         {
-            try
-            {
-                await _products.DeleteOneAsync(product => product._id == id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting product with id {id}.");
-                throw;
-            }
+            await _products.DeleteOneAsync(product => product._id == id);
         }
     }
 }

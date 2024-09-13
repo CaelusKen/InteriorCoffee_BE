@@ -10,13 +10,11 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IVoucherTypeRepository
     {
-        Task<List<VoucherType>> GetVoucherTypeList();
-        Task<VoucherType> GetVoucherTypeById(string id);
         Task CreateVoucherType(VoucherType voucherType);
         Task UpdateVoucherType(VoucherType voucherType);
         Task DeleteVoucherType(string id);
 
-        public Task<List<VoucherType>> GetVoucherTypeListByCondition(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null);
-        public Task<VoucherType> GetVoucherTypeByCondition(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null);
+        public Task<List<VoucherType>> GetVoucherTypeList(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null);
+        public Task<VoucherType> GetVoucherType(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null);
     }
 }

@@ -26,13 +26,17 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<List<Style>> GetAllStyles()
         {
-            return await _styleRepository.GetStyleListByCondition();
+            return await _styleRepository.GetStyleList();
         }
 
         public async Task<Style> GetStyleById(string id)
         {
-            return await _styleRepository.GetStyleByCondition(
+            var result = await _styleRepository.GetStyle(
                 predicate: s => s._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Style id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateStyle(StyleDTO styleDTO)
@@ -43,7 +47,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateStyle(string id, StyleDTO styleDTO)
         {
-            Style style = await _styleRepository.GetStyleByCondition(
+            Style style = await _styleRepository.GetStyle(
                 predicate: s => s._id.Equals(id));
 
             if (style == null) throw new NotFoundException($"Style id {id} cannot be found");
@@ -57,7 +61,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteStyle(string id)
         {
-            Style style = await _styleRepository.GetStyleByCondition(
+            Style style = await _styleRepository.GetStyle(
                 predicate: s => s._id.Equals(id));
 
             if (style == null) throw new NotFoundException($"Style id {id} cannot be found");

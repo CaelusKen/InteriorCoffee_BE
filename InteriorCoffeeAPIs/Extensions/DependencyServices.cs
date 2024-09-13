@@ -45,6 +45,7 @@ namespace InteriorCoffeeAPIs.Extensions
         {
             #region Other
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IPaymentService, PaymentService>();
             #endregion
 
             #region Service Scope

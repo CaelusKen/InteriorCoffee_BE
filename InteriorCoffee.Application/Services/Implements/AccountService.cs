@@ -53,7 +53,7 @@ namespace InteriorCoffee.Application.Services.Implements
             if (existingAccount != null) throw new ConflictException("Email has already existed");
 
             // Get the role for the new account
-            Role customerRole = await _roleRepository.GetRoleByCondition(
+            Role customerRole = await _roleRepository.GetRole(
                 predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
 
             // Setup new account information
@@ -73,7 +73,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Account with id {id} not found.");
             }
             _mapper.Map(updateAccountDTO, account);
-            await _accountRepository.UpdateAccount(account);
+            await _accountRepository.CreateAccount(account);
         }
 
         public async Task DeleteAccountAsync(string id)

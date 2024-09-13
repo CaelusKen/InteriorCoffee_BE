@@ -3,6 +3,7 @@ using InteriorCoffee.Application.Helpers;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Application.Utils;
+using InteriorCoffee.Domain.PaymentModel.PayPal;
 using InteriorCoffee.Domain.PaymentModel.VNPay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -20,10 +21,12 @@ namespace InteriorCoffee.Application.Services.Implements
     public class PaymentService : BaseService<PaymentService>, IPaymentService
     {
         private readonly IConfiguration _configuration;
+        private readonly PaypalClient _paypalClient;
 
-        public PaymentService(ILogger<PaymentService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration) : base(logger, mapper, httpContextAccessor)
+        public PaymentService(ILogger<PaymentService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, PaypalClient paypalClient) : base(logger, mapper, httpContextAccessor)
         {
             _configuration = configuration;
+            _paypalClient = paypalClient;
         }
 
         #region VNPay
@@ -88,6 +91,20 @@ namespace InteriorCoffee.Application.Services.Implements
                 Token = vnp_SecureHash,
                 VnPayResponseCode = vnp_ResponseCode,
             };
+        }
+        #endregion
+
+        #region Paypal
+        public async Task<CreateOrderResponse> CreatePaypalOrder(PaypalRequestModel model)
+        {
+            var response = await _paypalClient.CreateOrder(model.Amount.ToString(), model.Currency, model.OrderId);
+            return response;
+        }
+
+        public async Task<CaptureOrderResponse> CapturePaypalOrder(string orderId)
+        {
+            var response = await _paypalClient.CaptureOrder(orderId);
+            return response;
         }
         #endregion
     }

@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Transaction;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.PaymentModel.PayPal;
 using InteriorCoffee.Domain.PaymentModel.VNPay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -68,7 +69,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         //Test purpose only
-        [HttpGet(ApiEndPointConstant.Transaction.TransactionsPaymentReturnEndpoint)]
+        [HttpGet(ApiEndPointConstant.Transaction.TransactionsVNPaymentReturnEndpoint)]
         [SwaggerOperation(Summary = "Test payment")]
         public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
         {
@@ -76,11 +77,28 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-        [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaymentEndpoint)]
+        [HttpPost(ApiEndPointConstant.Transaction.TransactionsVNPaymentEndpoint)]
         [SwaggerOperation(Summary = "Test payment")]
         public async Task<IActionResult> TestCreatePayment([FromBody]VnPaymentRequestModel model)
         {
             var result = _paymentService.CreatePaymentUrl(this.HttpContext, model);
+            return Ok(result);
+        }
+
+
+        [HttpGet(ApiEndPointConstant.Transaction.TransactionsPaypalCaptureEndpoint)]
+        [SwaggerOperation(Summary = "Test payment")]
+        public async Task<IActionResult> PaypalPaymentCapture(string orderId)
+        {
+            var result = _paymentService.CapturePaypalOrder(orderId);
+            return Ok(result);
+        }
+
+        [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalEndpoint)]
+        [SwaggerOperation(Summary = "Test payment")]
+        public async Task<IActionResult> TestCreatePaymentPaypal([FromBody] PaypalRequestModel model)
+        {
+            var result = _paymentService.CreatePaypalOrder(model);
             return Ok(result);
         }
     }

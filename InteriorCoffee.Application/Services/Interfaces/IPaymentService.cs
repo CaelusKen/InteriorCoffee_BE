@@ -1,4 +1,6 @@
-﻿using InteriorCoffee.Domain.PaymentModel.VNPay;
+﻿using InteriorCoffee.Application.Helpers;
+using InteriorCoffee.Domain.PaymentModel.PayPal;
+using InteriorCoffee.Domain.PaymentModel.VNPay;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -12,5 +14,8 @@ namespace InteriorCoffee.Application.Services.Interfaces
     {
         public Task<string> CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model);
         public Task<VnPaymentResponseModel> PaymentExecute(VnPayReturnResponseModel collections);
+
+        public Task<CreateOrderResponse> CreatePaypalOrder(PaypalRequestModel model);
+        public Task<CaptureOrderResponse> CapturePaypalOrder(string orderId);
     }
 }

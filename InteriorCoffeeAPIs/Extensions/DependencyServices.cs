@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
+using InteriorCoffee.Application.Helpers;
 
 namespace InteriorCoffeeAPIs.Extensions
 {
@@ -45,7 +46,14 @@ namespace InteriorCoffeeAPIs.Extensions
         {
             #region Other
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddSingleton(x => new PaypalClient(
+                config["PaypalOptions:AppId"],
+                config["PaypalOptions:AppSecret"],
+                config["PaypalOptions:Mode"]
+            ));
+
             #endregion
 
             #region Service Scope

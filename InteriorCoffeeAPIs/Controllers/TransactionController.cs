@@ -90,7 +90,7 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Test payment")]
         public async Task<IActionResult> PaypalPaymentCapture(string orderId)
         {
-            var result = _paymentService.CapturePaypalOrder(orderId);
+            var result = await _paymentService.CapturePaypalOrder(orderId);
             return Ok(result);
         }
 
@@ -98,7 +98,7 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Test payment")]
         public async Task<IActionResult> TestCreatePaymentPaypal([FromBody] PaypalRequestModel model)
         {
-            var result = _paymentService.CreatePaypalOrder(model);
+            var result = await _paymentService.CreatePaypalOrder(model);
             return Ok(result);
         }
     }

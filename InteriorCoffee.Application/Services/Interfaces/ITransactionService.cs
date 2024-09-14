@@ -10,7 +10,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface ITransactionService
     {
-        public Task<List<Transaction>> GetAllTransactions();
+        public Task<(List<Transaction>, int, int, int, int)> GetTransactionsAsync(int? pageNo, int? pageSize);
         public Task<Transaction> GetTransactionById(string id);
         public Task CreateTransaction(CreateTransactionDTO createTransaction);
         public Task UpdateTransaction(string id, UpdateTransacrtionDTO updateTransacrtion);

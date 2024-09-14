@@ -21,11 +21,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Voucher.VouchersEndpoint)]
         [ProducesResponseType(typeof(List<Voucher>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all vouchers")]
-        public async Task<IActionResult> GetAllVouchers()
+        [SwaggerOperation(Summary = "Get all vouchers with pagination")]
+        public async Task<IActionResult> GetVouchers([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _voucherService.GetAllVouchers();
-            return Ok(result);
+            var (vouchers, currentPage, currentPageSize, totalItems, totalPages) = await _voucherService.GetVouchersAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = vouchers.Count,
+                TotalPage = totalPages,
+                Vouchers = vouchers
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Voucher.VoucherEndpoint)]

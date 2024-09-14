@@ -26,16 +26,35 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        public async Task<List<Style>> GetStyleList(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)
+        //public async Task<List<Style>> GetStyleList(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)
+        //{
+        //    var filterBuilder = Builders<Style>.Filter;
+        //    var filter = filterBuilder.Empty;
+
+        //    if (predicate != null) filter = filterBuilder.Where(predicate);
+
+        //    if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).ToListAsync();
+
+        //    return await _styles.Find(filter).ToListAsync();
+        //}
+        public async Task<(List<Style>, int, int, int)> GetStylesAsync(int pageNumber, int pageSize)
         {
-            var filterBuilder = Builders<Style>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _styles.Find(filter).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _styles.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var styles = await _styles.Find(new BsonDocument())
+                                          .Skip((pageNumber - 1) * pageSize)
+                                          .Limit(pageSize)
+                                          .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (styles, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated styles.");
+                throw;
+            }
         }
 
         public async Task<Style> GetStyle(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)

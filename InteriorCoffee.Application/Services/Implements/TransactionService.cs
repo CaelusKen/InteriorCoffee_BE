@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Transaction;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -24,10 +26,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<List<Transaction>> GetAllTransactions()
+        public async Task<(List<Transaction>, int, int, int, int)> GetTransactionsAsync(int? pageNo, int? pageSize)
         {
-            return await _transactionRepository.GetTransactionList();
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (transactions, totalItems, currentPageSize, totalPages) = await _transactionRepository.GetTransactionsAsync(pagination.PageNo, pagination.PageSize);
+            return (transactions, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<Transaction> GetTransactionById(string id)
         {

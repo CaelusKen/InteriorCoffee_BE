@@ -7,7 +7,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IDesignService
     {
-        Task<List<Design>> GetDesignListAsync();
+        Task<(List<Design>, int, int, int, int)> GetDesignsAsync(int? pageNo, int? pageSize);
         Task<Design> GetDesignByIdAsync(string id);
         Task CreateDesignAsync(CreateDesignDTO design);
         Task UpdateDesignAsync(string id, UpdateDesignDTO design);

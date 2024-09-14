@@ -26,17 +26,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        public async Task<List<Voucher>> GetVoucherList(Expression<Func<Voucher, bool>> predicate = null, Expression<Func<Voucher, object>> orderBy = null)
+        public async Task<(List<Voucher>, int, int, int)> GetVouchersAsync(int pageNumber, int pageSize)
         {
-            var filterBuilder = Builders<Voucher>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _vouchers.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _vouchers.Find(filter).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _vouchers.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var vouchers = await _vouchers.Find(new BsonDocument())
+                                              .Skip((pageNumber - 1) * pageSize)
+                                              .Limit(pageSize)
+                                              .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (vouchers, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated vouchers.");
+                throw;
+            }
         }
+
 
         public async Task<Voucher> GetVoucher(Expression<Func<Voucher, bool>> predicate = null, Expression<Func<Voucher, object>> orderBy = null)
         {

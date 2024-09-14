@@ -27,17 +27,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        public async Task<List<Transaction>> GetTransactionList(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null)
+        public async Task<(List<Transaction>, int, int, int)> GetTransactionsAsync(int pageNumber, int pageSize)
         {
-            var filterBuilder = Builders<Transaction>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _transactions.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _transactions.Find(filter).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _transactions.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var transactions = await _transactions.Find(new BsonDocument())
+                                                      .Skip((pageNumber - 1) * pageSize)
+                                                      .Limit(pageSize)
+                                                      .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (transactions, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated transactions.");
+                throw;
+            }
         }
+
 
         public async Task<Transaction> GetTransaction(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null)
         {

@@ -14,7 +14,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateTransaction(Transaction transaction);
         Task DeleteTransaction(string id);
 
-        public Task<List<Transaction>> GetTransactionList(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null);
+        public Task<(List<Transaction>, int, int, int)> GetTransactionsAsync(int pageNumber, int pageSize);
         public Task<Transaction> GetTransaction(Expression<Func<Transaction, bool>> predicate = null, Expression<Func<Transaction, object>> orderBy = null);
     }
 }

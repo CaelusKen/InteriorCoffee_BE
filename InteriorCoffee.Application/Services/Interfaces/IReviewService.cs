@@ -10,7 +10,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IReviewService
     {
-        Task<(List<Review>, int, int, int, int)> GetReviewsAsync(int? pageNo, int? pageSize);
+        public Task<(List<Review>, int, int, int, int)> GetReviewsAsync(int? pageNo, int? pageSize);
         public Task<Review> GetReviewById(string id);
         public Task CreateReview(CreateReviewDTO createReviewDTO);
         public Task UpdateReview(string id, UpdateReviewDTO updateReviewDTO);

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Style;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -24,10 +26,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _styleRepository = styleRepository;
         }
 
-        public async Task<List<Style>> GetAllStyles()
+        public async Task<(List<Style>, int, int, int, int)> GetStylesAsync(int? pageNo, int? pageSize)
         {
-            return await _styleRepository.GetStyleList();
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (styles, totalItems, currentPageSize, totalPages) = await _styleRepository.GetStylesAsync(pagination.PageNo, pagination.PageSize);
+            return (styles, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<Style> GetStyleById(string id)
         {

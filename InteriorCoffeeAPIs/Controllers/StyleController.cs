@@ -21,11 +21,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Style.StylesEndpoint)]
         [ProducesResponseType(typeof(List<Style>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all styles")]
-        public async Task<IActionResult> GetAllStyles()
+        [SwaggerOperation(Summary = "Get all styles with pagination")]
+        public async Task<IActionResult> GetStyles([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _styleService.GetAllStyles();
-            return Ok(result);
+            var (styles, currentPage, currentPageSize, totalItems, totalPages) = await _styleService.GetStylesAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = styles.Count,
+                TotalPage = totalPages,
+                Styles = styles
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Style.StyleEndpoint)]

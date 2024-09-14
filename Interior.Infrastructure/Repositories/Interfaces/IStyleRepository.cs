@@ -14,7 +14,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateStyle(Style style);
         Task DeleteStyle(string id);
 
-        public Task<List<Style>> GetStyleList(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null);
+        public Task<(List<Style>, int, int, int)> GetStylesAsync(int pageNumber, int pageSize);
         public Task<Style> GetStyle(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null);
     }
 }

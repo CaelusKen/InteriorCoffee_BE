@@ -21,11 +21,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Template.TemplatesEndpoint)]
         [ProducesResponseType(typeof(List<Template>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all templates")]
-        public async Task<IActionResult> GetAllTemplates()
+        [SwaggerOperation(Summary = "Get all templates with pagination")]
+        public async Task<IActionResult> GetTemplates([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _templateService.GetAllTemplates();
-            return Ok(result);
+            var (templates, currentPage, currentPageSize, totalItems, totalPages) = await _templateService.GetTemplatesAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = templates.Count,
+                TotalPage = totalPages,
+                Templates = templates
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Template.TemplateEndpoint)]

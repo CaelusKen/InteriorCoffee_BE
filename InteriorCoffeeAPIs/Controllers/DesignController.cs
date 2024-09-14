@@ -22,11 +22,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Design.DesignsEndpoint)]
         [ProducesResponseType(typeof(List<Design>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all designs")]
-        public async Task<IActionResult> GetAllDesigns()
+        [SwaggerOperation(Summary = "Get all designs with pagination")]
+        public async Task<IActionResult> GetDesigns([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _designService.GetDesignListAsync();
-            return Ok(result);
+            var (designs, currentPage, currentPageSize, totalItems, totalPages) = await _designService.GetDesignsAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = designs.Count,
+                TotalPage = totalPages,
+                Designs = designs
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Design.DesignEndpoint)]

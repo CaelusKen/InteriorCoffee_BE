@@ -26,18 +26,27 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<VoucherType>> GetVoucherTypeList(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null)
+        #region CRUD Functions
+        public async Task<(List<VoucherType>, int, int, int)> GetVoucherTypesAsync(int pageNumber, int pageSize)
         {
-            var filterBuilder = Builders<VoucherType>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _voucherTypes.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _voucherTypes.Find(filter).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _voucherTypes.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var voucherTypes = await _voucherTypes.Find(new BsonDocument())
+                                                      .Skip((pageNumber - 1) * pageSize)
+                                                      .Limit(pageSize)
+                                                      .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (voucherTypes, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated voucher types.");
+                throw;
+            }
         }
+
 
         public async Task<VoucherType> GetVoucherType(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null)
         {

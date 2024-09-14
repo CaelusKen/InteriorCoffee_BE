@@ -26,17 +26,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        public async Task<List<Template>> GetTemplateList(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
+        public async Task<(List<Template>, int, int, int)> GetTemplatesAsync(int pageNumber, int pageSize)
         {
-            var filterBuilder = Builders<Template>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _templates.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _templates.Find(filter).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _templates.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var templates = await _templates.Find(new BsonDocument())
+                                                .Skip((pageNumber - 1) * pageSize)
+                                                .Limit(pageSize)
+                                                .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (templates, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated templates.");
+                throw;
+            }
         }
+
 
         public async Task<Template> GetTemplate(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
         {

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Design;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
@@ -23,11 +25,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _designRepository = designRepository;
         }
 
-        public async Task<List<Design>> GetDesignListAsync()
+        public async Task<(List<Design>, int, int, int, int)> GetDesignsAsync(int? pageNo, int? pageSize)
         {
-            var designs = await _designRepository.GetDesignList();
-            return designs;
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (designs, totalItems, currentPageSize, totalPages) = await _designRepository.GetDesignsAsync(pagination.PageNo, pagination.PageSize);
+            return (designs, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<Design> GetDesignByIdAsync(string id)
         {

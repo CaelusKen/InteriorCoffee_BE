@@ -51,10 +51,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        public async Task<List<Design>> GetDesignList()
+        public async Task<(List<Design>, int, int, int)> GetDesignsAsync(int pageNumber, int pageSize)
         {
-            return await _designs.Find(new BsonDocument()).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _designs.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var designs = await _designs.Find(new BsonDocument())
+                                            .Skip((pageNumber - 1) * pageSize)
+                                            .Limit(pageSize)
+                                            .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (designs, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated designs.");
+                throw;
+            }
         }
+
 
         public async Task<Design> GetDesignById(string id)
         {

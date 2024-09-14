@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Role;
 using InteriorCoffee.Application.DTOs.VoucherType;
 using InteriorCoffee.Application.Services.Base;
@@ -27,10 +29,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _voucherTypeRepository = voucherTypeRepository;
         }
 
-        public async Task<List<VoucherType>> GetAllVoucherTypes()
+        public async Task<(List<VoucherType>, int, int, int, int)> GetVoucherTypesAsync(int? pageNo, int? pageSize)
         {
-            return await _voucherTypeRepository.GetVoucherTypeList();
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (voucherTypes, totalItems, currentPageSize, totalPages) = await _voucherTypeRepository.GetVoucherTypesAsync(pagination.PageNo, pagination.PageSize);
+            return (voucherTypes, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<VoucherType> GetVoucherTypeById(string id)
         {

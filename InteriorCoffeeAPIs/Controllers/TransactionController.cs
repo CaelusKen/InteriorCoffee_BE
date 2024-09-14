@@ -24,11 +24,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Transaction.TransactionsEndpoint)]
         [ProducesResponseType(typeof(List<Transaction>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all transactions")]
-        public async Task<IActionResult> GetAllTransactions()
+        [SwaggerOperation(Summary = "Get all transactions with pagination")]
+        public async Task<IActionResult> GetTransactions([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _transactionService.GetAllTransactions();
-            return Ok(result);
+            var (transactions, currentPage, currentPageSize, totalItems, totalPages) = await _transactionService.GetTransactionsAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = transactions.Count,
+                TotalPage = totalPages,
+                Transactions = transactions
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Transaction.TransactionEndpoint)]

@@ -51,18 +51,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        //public async Task<List<ProductCategory>> GetProductCategoryList()
-        //{
-        //    try
-        //    {
-        //        return await _productCategories.Find(new BsonDocument()).ToListAsync();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error occurred while getting product category list.");
-        //        throw;
-        //    }
-        //}
         public async Task<(List<ProductCategory>, int, int, int)> GetProductCategoriesAsync(int pageNumber, int pageSize)
         {
             try
@@ -86,55 +74,23 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task<ProductCategory> GetProductCategoryById(string id)
         {
-            try
-            {
-                return await _productCategories.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting product category with id {id}.");
-                throw;
-            }
+            return await _productCategories.Find(c => c._id == id).FirstOrDefaultAsync();
         }
 
         public async Task UpdateProductCategory(ProductCategory productCategory)
         {
-            try
-            {
-                await _productCategories.ReplaceOneAsync(a => a._id == productCategory._id, productCategory);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating product category with id {productCategory._id}.");
-                throw;
-            }
+            await _productCategories.ReplaceOneAsync(a => a._id == productCategory._id, productCategory);
         }
 
         public async Task CreateProductCategory(ProductCategory productCategory)
         {
-            try
-            {
-                await _productCategories.InsertOneAsync(productCategory);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an product category.");
-                throw;
-            }
+            await _productCategories.InsertOneAsync(productCategory);
         }
 
         public async Task DeleteProductCategory(string id)
         {
-            try
-            {
-                FilterDefinition<ProductCategory> filterDefinition = Builders<ProductCategory>.Filter.Eq("_id", id);
-                await _productCategories.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting product category with id {id}.");
-                throw;
-            }
+            FilterDefinition<ProductCategory> filterDefinition = Builders<ProductCategory>.Filter.Eq("_id", id);
+            await _productCategories.DeleteOneAsync(filterDefinition);
         }
     }
 }

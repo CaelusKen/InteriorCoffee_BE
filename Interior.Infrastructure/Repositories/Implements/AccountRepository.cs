@@ -49,18 +49,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        //public async Task<List<Account>> GetAccountList()
-        //{
-        //    try
-        //    {
-        //        return await _accounts.Find(new BsonDocument()).ToListAsync();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error occurred while getting account list.");
-        //        throw;
-        //    }
-        //}
         public async Task<(List<Account>, int, int, int)> GetAccountsAsync(int pageNumber, int pageSize)
         {
             try
@@ -84,55 +72,23 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task<Account> GetAccountById(string id)
         {
-            try
-            {
-                return await _accounts.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting account with id {id}.");
-                throw;
-            }
+            return await _accounts.Find(c => c._id == id).FirstOrDefaultAsync();
         }
 
         public async Task UpdateAccount(Account account)
         {
-            try
-            {
-                await _accounts.ReplaceOneAsync(a => a._id == account._id, account);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating account with id {account._id}.");
-                throw;
-            }
+            await _accounts.ReplaceOneAsync(a => a._id == account._id, account);
         }
 
         public async Task CreateAccount(Account account)
         {
-            try
-            {
-                await _accounts.InsertOneAsync(account);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an account.");
-                throw;
-            }
+            await _accounts.InsertOneAsync(account);
         }
 
         public async Task DeleteAccount(string id)
         {
-            try
-            {
-                FilterDefinition<Account> filterDefinition = Builders<Account>.Filter.Eq("_id", id);
-                await _accounts.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting account with id {id}.");
-                throw;
-            }
+            FilterDefinition<Account> filterDefinition = Builders<Account>.Filter.Eq("_id", id);
+            await _accounts.DeleteOneAsync(filterDefinition);
         }
     }
 }

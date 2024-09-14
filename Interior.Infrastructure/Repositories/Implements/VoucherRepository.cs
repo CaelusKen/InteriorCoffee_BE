@@ -25,8 +25,8 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<Voucher>> GetVoucherListByCondition(Expression<Func<Voucher, bool>> predicate = null, Expression<Func<Voucher, object>> orderBy = null)
+        #region CRUD Functions
+        public async Task<List<Voucher>> GetVoucherList(Expression<Func<Voucher, bool>> predicate = null, Expression<Func<Voucher, object>> orderBy = null)
         {
             var filterBuilder = Builders<Voucher>.Filter;
             var filter = filterBuilder.Empty;
@@ -38,7 +38,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _vouchers.Find(filter).ToListAsync();
         }
 
-        public async Task<Voucher> GetVoucherByCondition(Expression<Func<Voucher, bool>> predicate = null, Expression<Func<Voucher, object>> orderBy = null)
+        public async Task<Voucher> GetVoucher(Expression<Func<Voucher, bool>> predicate = null, Expression<Func<Voucher, object>> orderBy = null)
         {
             var filterBuilder = Builders<Voucher>.Filter;
             var filter = filterBuilder.Empty;
@@ -49,72 +49,22 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _vouchers.Find(filter).FirstOrDefaultAsync();
         }
-        #endregion
-
-        public async Task<List<Voucher>> GetVoucherList()
-        {
-            try
-            {
-                return await _vouchers.Find(new BsonDocument()).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting voucher list.");
-                throw;
-            }
-        }
-
-        public async Task<Voucher> GetVoucherById(string id)
-        {
-            try
-            {
-                return await _vouchers.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting voucher with id {id}.");
-                throw;
-            }
-        }
 
         public async Task UpdateVoucher(Voucher voucher)
         {
-            try
-            {
-                await _vouchers.ReplaceOneAsync(a => a._id == voucher._id, voucher);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating voucher with id {voucher._id}.");
-                throw;
-            }
+            await _vouchers.ReplaceOneAsync(a => a._id == voucher._id, voucher);
         }
 
         public async Task CreateVoucher(Voucher voucher)
         {
-            try
-            {
-                await _vouchers.InsertOneAsync(voucher);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an voucher.");
-                throw;
-            }
+            await _vouchers.InsertOneAsync(voucher);
         }
 
         public async Task DeleteVoucher(string id)
         {
-            try
-            {
-                FilterDefinition<Voucher> filterDefinition = Builders<Voucher>.Filter.Eq("_id", id);
-                await _vouchers.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting voucher with id {id}.");
-                throw;
-            }
+            FilterDefinition<Voucher> filterDefinition = Builders<Voucher>.Filter.Eq("_id", id);
+            await _vouchers.DeleteOneAsync(filterDefinition);
         }
+        #endregion
     }
 }

@@ -12,11 +12,10 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
     {
         Task<(List<Review>, int, int, int)> GetReviewsAsync(int pageNumber, int pageSize);
         Task<Review> GetReviewById(string id);
+        public Task<List<Review>> GetReviewList(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);
+        public Task<Review> GetReview(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);
         Task CreateReview(Review review);
         Task UpdateReview(Review review);
         Task DeleteReview(string id);
-
-        public Task<List<Review>> GetReviewListByCondition(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);
-        public Task<Review> GetReviewByCondition(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);
     }
 }

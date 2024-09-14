@@ -25,8 +25,8 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<SaleCampaign>> GetSaleCampaignListByCondition(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
+        #region CRUD Functions
+        public async Task<List<SaleCampaign>> GetSaleCampaignList(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
         {
             var filterBuilder = Builders<SaleCampaign>.Filter;
             var filter = filterBuilder.Empty;
@@ -38,7 +38,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _saleCampaigns.Find(filter).ToListAsync();
         }
 
-        public async Task<SaleCampaign> GetSaleCampaignByCondition(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
+        public async Task<SaleCampaign> GetSaleCampaign(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
         {
             var filterBuilder = Builders<SaleCampaign>.Filter;
             var filter = filterBuilder.Empty;
@@ -87,42 +87,18 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task UpdateSaleCampaign(SaleCampaign saleCampaign)
         {
-            try
-            {
-                await _saleCampaigns.ReplaceOneAsync(a => a._id == saleCampaign._id, saleCampaign);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating sale campaign with id {saleCampaign._id}.");
-                throw;
-            }
+            await _saleCampaigns.ReplaceOneAsync(a => a._id == saleCampaign._id, saleCampaign);
         }
 
         public async Task CreateSaleCampaign(SaleCampaign saleCampaign)
         {
-            try
-            {
-                await _saleCampaigns.InsertOneAsync(saleCampaign);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an sale campaign.");
-                throw;
-            }
+            await _saleCampaigns.InsertOneAsync(saleCampaign);
         }
 
         public async Task DeleteSaleCampaign(string id)
         {
-            try
-            {
-                FilterDefinition<SaleCampaign> filterDefinition = Builders<SaleCampaign>.Filter.Eq("_id", id);
-                await _saleCampaigns.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting sale campaign with id {id}.");
-                throw;
-            }
+            FilterDefinition<SaleCampaign> filterDefinition = Builders<SaleCampaign>.Filter.Eq("_id", id);
+            await _saleCampaigns.DeleteOneAsync(filterDefinition);
         }
     }
 }

@@ -43,8 +43,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<SaleCampaign> GetCampaignById(string id)
         {
-            return await _saleCampaignRepository.GetSaleCampaignByCondition(
+            var result = await _saleCampaignRepository.GetSaleCampaign(
                 predicate: sc => sc._id.Equals(id));
+
+            if(result == null) throw new NotFoundException($"Sale campaign id {id} cannot be found");
+
+            return result;
         }
 
         public async Task CreateCampaign(CreateSaleCampaignDTO createdSaleCampaign)
@@ -55,7 +59,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateCampaign(string id, UpdateSaleCampaignDTO updatedCampaign)
         {
-            SaleCampaign campaign = await _saleCampaignRepository.GetSaleCampaignByCondition(
+            SaleCampaign campaign = await _saleCampaignRepository.GetSaleCampaign(
                 predicate: sc => sc._id.Equals(id));
 
             if (campaign == null) throw new NotFoundException($"Campaign id {id} cannot be found");
@@ -73,7 +77,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteCampagin(string id)
         {
-            SaleCampaign campaign = await _saleCampaignRepository.GetSaleCampaignByCondition(
+            SaleCampaign campaign = await _saleCampaignRepository.GetSaleCampaign(
                 predicate: sc => sc._id.Equals(id));
 
             if (campaign == null) throw new NotFoundException($"Campaign id {id} cannot be found");

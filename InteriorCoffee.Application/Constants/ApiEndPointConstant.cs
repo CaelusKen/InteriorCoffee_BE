@@ -54,6 +54,9 @@ namespace InteriorCoffee.Application.Constants
         {
             public const string TransactionsEndpoint = ApiEndpoint + "/transactions";
             public const string TransactionEndpoint = TransactionsEndpoint + "/{id}";
+
+            public const string TransactionsPaymentEndpoint = TransactionsEndpoint + "/vnpay";
+            public const string TransactionsPaymentReturnEndpoint = TransactionsEndpoint + "/vnpay-return";
         }
 
         public static class Voucher

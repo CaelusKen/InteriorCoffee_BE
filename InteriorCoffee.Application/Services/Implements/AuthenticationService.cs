@@ -24,7 +24,7 @@ namespace InteriorCoffee.Application.Services.Implements
         private readonly IMerchantRepository _merchantRepository;
 
         public AuthenticationService(ILogger<AuthenticationService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IAccountRepository accountRepository,
-            IRoleRepository roleRepository, IMerchantRepository merchantRepository) 
+            IRoleRepository roleRepository, IMerchantRepository merchantRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _accountRepository = accountRepository;
@@ -37,8 +37,9 @@ namespace InteriorCoffee.Application.Services.Implements
             Account account = await _accountRepository.GetAccountByCondition(
                 predicate: a => a.Email.Equals(loginDTO.Email) && a.Password.Equals(loginDTO.Password));
             if (account == null) throw new UnauthorizedAccessException("Incorrect email or password");
-                
-            Role accountRole = await _roleRepository.GetRoleById(account.RoleId);
+
+            Role accountRole = await _roleRepository.GetRole(
+                predicate: r => r._id.Equals(account.RoleId));
 
             var token = JwtUtil.GenerateJwtToken(account, accountRole.Name);
             AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, account.UserName, account.Email, account.Status);
@@ -52,7 +53,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(registeredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRoleByCondition(
+            Role customerRole = await _roleRepository.GetRole(
                 predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
 
             //Setup new account information
@@ -77,7 +78,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(merchantRegisteredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRoleByCondition(
+            Role customerRole = await _roleRepository.GetRole(
                 predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
 
             //Setup new account information

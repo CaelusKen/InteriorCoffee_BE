@@ -51,18 +51,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        //public async Task<List<Order>> GetOrderList()
-        //{
-        //    try
-        //    {
-        //        return await _orders.Find(new BsonDocument()).ToListAsync();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error occurred while getting order list.");
-        //        throw;
-        //    }
-        //}
 
         public async Task<(List<Order>, int, int, int)> GetOrdersAsync(int pageNumber, int pageSize)
         {
@@ -87,55 +75,23 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         public async Task<Order> GetOrderById(string id)
         {
-            try
-            {
-                return await _orders.Find(c => c._id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while getting order with id {id}.");
-                throw;
-            }
+            return await _orders.Find(c => c._id == id).FirstOrDefaultAsync();
         }
 
         public async Task UpdateOrder(Order order)
         {
-            try
-            {
-                await _orders.ReplaceOneAsync(a => a._id == order._id, order);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while updating order with id {order._id}.");
-                throw;
-            }
+            await _orders.ReplaceOneAsync(a => a._id == order._id, order);
         }
 
         public async Task CreateOrder(Order order)
         {
-            try
-            {
-                await _orders.InsertOneAsync(order);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating an order.");
-                throw;
-            }
+            await _orders.InsertOneAsync(order);
         }
 
         public async Task DeleteOrder(string id)
         {
-            try
-            {
-                FilterDefinition<Order> filterDefinition = Builders<Order>.Filter.Eq("_id", id);
-                await _orders.DeleteOneAsync(filterDefinition);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while deleting order with id {id}.");
-                throw;
-            }
+            FilterDefinition<Order> filterDefinition = Builders<Order>.Filter.Eq("_id", id);
+            await _orders.DeleteOneAsync(filterDefinition);
         }
     }
 }

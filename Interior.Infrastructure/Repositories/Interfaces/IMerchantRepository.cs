@@ -10,7 +10,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IMerchantRepository
     {
-        Task<List<Merchant>> GetMerchantList();
+        Task<(List<Merchant>, int, int, int)> GetMerchantsAsync(int pageNumber, int pageSize);
         Task<Merchant> GetMerchantById(string id);
         Task CreateMerchant(Merchant merchant);
         Task UpdateMerchant(Merchant merchant);

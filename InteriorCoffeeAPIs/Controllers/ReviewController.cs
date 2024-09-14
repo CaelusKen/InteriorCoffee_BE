@@ -20,11 +20,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Review.ReviewsEndpoint)]
         [ProducesResponseType(typeof(List<Review>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all reviews")]
-        public async Task<IActionResult> GetAllReviews()
+        [SwaggerOperation(Summary = "Get all reviews with pagination")]
+        public async Task<IActionResult> GetReviews([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _reviewService.GetAllReviews();
-            return Ok(result);
+            var (reviews, currentPage, currentPageSize, totalItems, totalPages) = await _reviewService.GetReviewsAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = reviews.Count,
+                TotalPage = totalPages,
+                Reviews = reviews
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Review.ReviewEndpoint)]

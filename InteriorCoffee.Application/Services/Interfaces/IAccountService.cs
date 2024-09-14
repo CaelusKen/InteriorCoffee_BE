@@ -7,7 +7,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IAccountService
     {
-        Task<List<Account>> GetAccountListAsync();
+        Task<(List<Account>, int, int, int, int)> GetAccountsAsync(int? pageNo, int? pageSize);
         Task<Account> GetAccountByIdAsync(string id);
         Task CreateAccountAsync(CreateAccountDTO createAccountDTO);
         Task UpdateAccountAsync(string id, UpdateAccountDTO account);

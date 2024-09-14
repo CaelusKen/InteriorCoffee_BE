@@ -10,7 +10,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IOrderRepository
     {
-        Task<List<Order>> GetOrderList();
+        Task<(List<Order>, int, int, int)> GetOrdersAsync(int pageNumber, int pageSize);
         Task<Order> GetOrderById(string id);
         Task CreateOrder(Order order);
         Task UpdateOrder(Order order);

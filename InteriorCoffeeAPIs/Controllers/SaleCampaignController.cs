@@ -19,14 +19,25 @@ namespace InteriorCoffeeAPIs.Controllers
             _saleCampaignService = saleCampaignService;
         }
 
-        [HttpGet(ApiEndPointConstant.SaleCampaign.SaleCampaignsEndpoint)]
-        [ProducesResponseType(typeof(List<SaleCampaign>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all sale campaigns")]
-        public async Task<IActionResult> GetAllSaleCampaigns()
+    [HttpGet(ApiEndPointConstant.SaleCampaign.SaleCampaignsEndpoint)]
+    [ProducesResponseType(typeof(List<SaleCampaign>), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get all sale campaigns with pagination")]
+    public async Task<IActionResult> GetSaleCampaigns([FromQuery] int? pageNo, [FromQuery] int? pageSize)
+    {
+        var (saleCampaigns, currentPage, currentPageSize, totalItems, totalPages) = await _saleCampaignService.GetSaleCampaignsAsync(pageNo, pageSize);
+
+        var response = new
         {
-            var result = await _saleCampaignService.GetAllCampaigns();
-            return Ok(result);
-        }
+            PageNo = currentPage,
+            PageSize = currentPageSize,
+            ListSize = totalItems,
+            CurrentPageSize = saleCampaigns.Count,
+            TotalPage = totalPages,
+            SaleCampaigns = saleCampaigns
+        };
+
+        return Ok(response);
+    }
 
         [HttpGet(ApiEndPointConstant.SaleCampaign.SaleCampaignEndpoint)]
         [ProducesResponseType(typeof(SaleCampaign), StatusCodes.Status200OK)]

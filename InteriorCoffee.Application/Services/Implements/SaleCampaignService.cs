@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.SaleCampaign;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -26,10 +28,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _saleCampaignRepository = saleCampaignRepository;
         }
 
-        public async Task<List<SaleCampaign>> GetAllCampaigns()
+        public async Task<(List<SaleCampaign>, int, int, int, int)> GetSaleCampaignsAsync(int? pageNo, int? pageSize)
         {
-            return await _saleCampaignRepository.GetSaleCampaignListByCondition();
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (saleCampaigns, totalItems, currentPageSize, totalPages) = await _saleCampaignRepository.GetSaleCampaignsAsync(pagination.PageNo, pagination.PageSize);
+            return (saleCampaigns, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<SaleCampaign> GetCampaignById(string id)
         {

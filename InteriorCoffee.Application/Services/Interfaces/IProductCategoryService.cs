@@ -7,7 +7,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IProductCategoryService
     {
-        Task<List<ProductCategory>> GetProductCategoryListAsync();
+        Task<(List<ProductCategory>, int, int, int, int)> GetProductCategoriesAsync(int? pageNo, int? pageSize);
         Task<ProductCategory> GetProductCategoryByIdAsync(string id);
         Task CreateProductCategoryAsync(CreateProductCategoryDTO productCategory);
         Task UpdateProductCategoryAsync(string id, UpdateProductCategoryDTO productCategory);

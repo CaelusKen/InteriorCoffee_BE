@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Order;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
@@ -23,11 +25,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _orderRepository = orderRepository;
         }
 
-        public async Task<List<Order>> GetOrderListAsync()
+        public async Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize)
         {
-            var orders = await _orderRepository.GetOrderList();
-            return orders;
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (orders, totalItems, currentPageSize, totalPages) = await _orderRepository.GetOrdersAsync(pagination.PageNo, pagination.PageSize);
+            return (orders, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<Order> GetOrderByIdAsync(string id)
         {

@@ -22,11 +22,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(List<Account>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all accounts")]
-        public async Task<IActionResult> GetAllAccounts()
+        [SwaggerOperation(Summary = "Get all accounts with pagination")]
+        public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _accountService.GetAccountListAsync();
-            return Ok(result);
+            var (accounts, currentPage, currentPageSize, totalItems, totalPages) = await _accountService.GetAccountsAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = accounts.Count,
+                TotalPage = totalPages,
+                Accounts = accounts
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]

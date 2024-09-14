@@ -49,18 +49,38 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        public async Task<List<Account>> GetAccountList()
+        //public async Task<List<Account>> GetAccountList()
+        //{
+        //    try
+        //    {
+        //        return await _accounts.Find(new BsonDocument()).ToListAsync();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error occurred while getting account list.");
+        //        throw;
+        //    }
+        //}
+        public async Task<(List<Account>, int, int, int)> GetAccountsAsync(int pageNumber, int pageSize)
         {
             try
             {
-                return await _accounts.Find(new BsonDocument()).ToListAsync();
+                var totalItemsLong = await _accounts.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var accounts = await _accounts.Find(new BsonDocument())
+                                              .Skip((pageNumber - 1) * pageSize)
+                                              .Limit(pageSize)
+                                              .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (accounts, totalItems, pageSize, totalPages);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting account list.");
+                _logger.LogError(ex, "Error occurred while getting paginated accounts.");
                 throw;
             }
         }
+
 
         public async Task<Account> GetAccountById(string id)
         {

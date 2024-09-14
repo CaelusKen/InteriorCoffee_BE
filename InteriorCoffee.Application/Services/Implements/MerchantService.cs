@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Merchant;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
@@ -23,11 +25,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _merchantRepository = merchantRepository;
         }
 
-        public async Task<List<Merchant>> GetMerchantListAsync()
+        public async Task<(List<Merchant>, int, int, int, int)> GetMerchantsAsync(int? pageNo, int? pageSize)
         {
-            var merchants = await _merchantRepository.GetMerchantList();
-            return merchants;
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (merchants, totalItems, currentPageSize, totalPages) = await _merchantRepository.GetMerchantsAsync(pagination.PageNo, pagination.PageSize);
+            return (merchants, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<Merchant> GetMerchantByIdAsync(string id)
         {

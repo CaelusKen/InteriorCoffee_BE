@@ -22,11 +22,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
         [ProducesResponseType(typeof(List<Merchant>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all merchants")]
-        public async Task<IActionResult> GetAllMerchants()
+        [SwaggerOperation(Summary = "Get all merchants with pagination")]
+        public async Task<IActionResult> GetMerchants([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _merchantService.GetMerchantListAsync();
-            return Ok(result);
+            var (merchants, currentPage, currentPageSize, totalItems, totalPages) = await _merchantService.GetMerchantsAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = merchants.Count,
+                TotalPage = totalPages,
+                Merchants = merchants
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]

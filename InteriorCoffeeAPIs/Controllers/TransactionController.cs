@@ -86,7 +86,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-        [HttpGet(ApiEndPointConstant.Transaction.TransactionsPaypalCaptureEndpoint)]
+        [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalCaptureEndpoint)]
         [SwaggerOperation(Summary = "Test payment")]
         public async Task<IActionResult> PaypalPaymentCapture(string orderId)
         {

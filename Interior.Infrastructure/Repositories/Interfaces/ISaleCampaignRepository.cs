@@ -10,6 +10,8 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface ISaleCampaignRepository
     {
+        Task<(List<SaleCampaign>, int, int, int)> GetSaleCampaignsAsync(int pageNumber, int pageSize);
+        Task<SaleCampaign> GetSaleCampaignById(string id);
         Task CreateSaleCampaign(SaleCampaign saleCampaign);
         Task UpdateSaleCampaign(SaleCampaign saleCampaign);
         Task DeleteSaleCampaign(string id);

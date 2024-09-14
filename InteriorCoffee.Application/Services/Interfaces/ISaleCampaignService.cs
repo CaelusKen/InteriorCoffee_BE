@@ -10,7 +10,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface ISaleCampaignService
     {
-        public Task<List<SaleCampaign>> GetAllCampaigns();
+        Task<(List<SaleCampaign>, int, int, int, int)> GetSaleCampaignsAsync(int? pageNo, int? pageSize);
         public Task<SaleCampaign> GetCampaignById(string id);
         public Task CreateCampaign(CreateSaleCampaignDTO createdSaleCampaign);
         public Task UpdateCampaign(string id, UpdateSaleCampaignDTO updatedCampaign);

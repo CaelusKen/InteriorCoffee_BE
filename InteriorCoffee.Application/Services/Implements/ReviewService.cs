@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
+using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Review;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -25,10 +27,18 @@ namespace InteriorCoffee.Application.Services.Implements
             _reviewRepository = reviewRepository;
         }
 
-        public async Task<List<Review>> GetAllReviews()
+        public async Task<(List<Review>, int, int, int, int)> GetReviewsAsync(int? pageNo, int? pageSize)
         {
-            return await _reviewRepository.GetReviewList();
+            var pagination = new Pagination
+            {
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
+            };
+
+            var (reviews, totalItems, currentPageSize, totalPages) = await _reviewRepository.GetReviewsAsync(pagination.PageNo, pagination.PageSize);
+            return (reviews, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
+
 
         public async Task<Review> GetReviewById(string id)
         {

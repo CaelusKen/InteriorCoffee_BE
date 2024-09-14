@@ -51,10 +51,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        public async Task<List<ProductCategory>> GetProductCategoryList()
+        public async Task<(List<ProductCategory>, int, int, int)> GetProductCategoriesAsync(int pageNumber, int pageSize)
         {
-            return await _productCategories.Find(new BsonDocument()).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _productCategories.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var productCategories = await _productCategories.Find(new BsonDocument())
+                                                                .Skip((pageNumber - 1) * pageSize)
+                                                                .Limit(pageSize)
+                                                                .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (productCategories, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated product categories.");
+                throw;
+            }
         }
+
 
         public async Task<ProductCategory> GetProductCategoryById(string id)
         {

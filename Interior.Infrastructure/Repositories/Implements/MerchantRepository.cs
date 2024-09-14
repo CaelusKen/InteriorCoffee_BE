@@ -51,10 +51,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        public async Task<List<Merchant>> GetMerchantList()
+        public async Task<(List<Merchant>, int, int, int)> GetMerchantsAsync(int pageNumber, int pageSize)
         {
-            return await _merchants.Find(new BsonDocument()).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _merchants.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var merchants = await _merchants.Find(new BsonDocument())
+                                                .Skip((pageNumber - 1) * pageSize)
+                                                .Limit(pageSize)
+                                                .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (merchants, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated merchants.");
+                throw;
+            }
         }
+
 
         public async Task<Merchant> GetMerchantById(string id)
         {

@@ -49,6 +49,41 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _reviews.Find(filter).FirstOrDefaultAsync();
         }
+        #endregion
+
+        public async Task<(List<Review>, int, int, int)> GetReviewsAsync(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var totalItemsLong = await _reviews.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var reviews = await _reviews.Find(new BsonDocument())
+                                            .Skip((pageNumber - 1) * pageSize)
+                                            .Limit(pageSize)
+                                            .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (reviews, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated reviews.");
+                throw;
+            }
+        }
+
+
+        public async Task<Review> GetReviewById(string id)
+        {
+            try
+            {
+                return await _reviews.Find(c => c._id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while getting review with id {id}.");
+                throw;
+            }
+        }
 
         public async Task UpdateReview(Review review)
         {
@@ -65,6 +100,5 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             FilterDefinition<Review> filterDefinition = Builders<Review>.Filter.Eq("_id", id);
             await _reviews.DeleteOneAsync(filterDefinition);
         }
-        #endregion 
     }
 }

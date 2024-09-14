@@ -49,6 +49,41 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _saleCampaigns.Find(filter).FirstOrDefaultAsync();
         }
+        #endregion
+
+        public async Task<(List<SaleCampaign>, int, int, int)> GetSaleCampaignsAsync(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var totalItemsLong = await _saleCampaigns.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var saleCampaigns = await _saleCampaigns.Find(new BsonDocument())
+                                                        .Skip((pageNumber - 1) * pageSize)
+                                                        .Limit(pageSize)
+                                                        .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (saleCampaigns, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated sale campaigns.");
+                throw;
+            }
+        }
+
+
+        public async Task<SaleCampaign> GetSaleCampaignById(string id)
+        {
+            try
+            {
+                return await _saleCampaigns.Find(c => c._id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while getting sale campaign with id {id}.");
+                throw;
+            }
+        }
 
         public async Task UpdateSaleCampaign(SaleCampaign saleCampaign)
         {
@@ -65,6 +100,5 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             FilterDefinition<SaleCampaign> filterDefinition = Builders<SaleCampaign>.Filter.Eq("_id", id);
             await _saleCampaigns.DeleteOneAsync(filterDefinition);
         }
-        #endregion
     }
 }

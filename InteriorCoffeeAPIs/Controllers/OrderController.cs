@@ -22,11 +22,22 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Order.OrdersEndpoint)]
         [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all orders")]
-        public async Task<IActionResult> GetAllOrders()
+        [SwaggerOperation(Summary = "Get all orders with pagination")]
+        public async Task<IActionResult> GetOrders([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var result = await _orderService.GetOrderListAsync();
-            return Ok(result);
+            var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetOrdersAsync(pageNo, pageSize);
+
+            var response = new
+            {
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = orders.Count,
+                TotalPage = totalPages,
+                Orders = orders
+            };
+
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Order.OrderEndpoint)]

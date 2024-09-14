@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Services.Base;
@@ -28,8 +29,8 @@ namespace InteriorCoffee.Application.Services.Implements
         {
             var pagination = new Pagination
             {
-                PageNo = pageNo ?? 1,
-                PageSize = pageSize ?? 12
+                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
+                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
             var (products, totalItems, currentPageSize, totalPages) = await _productRepository.GetProductsAsync(pagination.PageNo, pagination.PageSize);

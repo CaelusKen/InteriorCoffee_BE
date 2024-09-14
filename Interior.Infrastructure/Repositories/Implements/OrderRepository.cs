@@ -51,10 +51,27 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        public async Task<List<Order>> GetOrderList()
+
+        public async Task<(List<Order>, int, int, int)> GetOrdersAsync(int pageNumber, int pageSize)
         {
-            return await _orders.Find(new BsonDocument()).ToListAsync();
+            try
+            {
+                var totalItemsLong = await _orders.CountDocumentsAsync(new BsonDocument());
+                var totalItems = (int)totalItemsLong;
+                var orders = await _orders.Find(new BsonDocument())
+                                          .Skip((pageNumber - 1) * pageSize)
+                                          .Limit(pageSize)
+                                          .ToListAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                return (orders, totalItems, pageSize, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated orders.");
+                throw;
+            }
         }
+
 
         public async Task<Order> GetOrderById(string id)
         {

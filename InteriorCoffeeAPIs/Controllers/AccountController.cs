@@ -77,6 +77,15 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        [HttpPut(ApiEndPointConstant.Account.SoftDeleteAccountEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Soft delete an account")]
+        public async Task<IActionResult> SoftDeleteAccount(string id)
+        {
+            await _accountService.SoftDeleteAccountAsync(id);
+            return Ok("Account successfully soft deleted");
+        }
+
         [HttpDelete(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete an account")]

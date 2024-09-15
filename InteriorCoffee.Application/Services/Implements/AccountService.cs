@@ -85,6 +85,18 @@ namespace InteriorCoffee.Application.Services.Implements
             await _accountRepository.CreateAccount(account);
         }
 
+        public async Task SoftDeleteAccountAsync(string id)
+        {
+            var account = await _accountRepository.GetAccountById(id);
+            if (account == null)
+            {
+                throw new NotFoundException($"Account with id {id} not found.");
+            }
+
+            account.Status = AccountStatusEnum.INACTIVE.ToString();
+            await _accountRepository.UpdateAccount(account);
+        }
+
         public async Task DeleteAccountAsync(string id)
         {
             var account = await _accountRepository.GetAccountById(id);

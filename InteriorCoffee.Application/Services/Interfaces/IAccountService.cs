@@ -11,6 +11,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task<Account> GetAccountByIdAsync(string id);
         Task CreateAccountAsync(CreateAccountDTO createAccountDTO);
         Task UpdateAccountAsync(string id, UpdateAccountDTO account);
+        Task SoftDeleteAccountAsync(string id);
         Task DeleteAccountAsync(string id);
     }
 }

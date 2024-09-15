@@ -2,6 +2,7 @@
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Product;
+using InteriorCoffee.Application.Enums.Product;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
@@ -64,6 +65,19 @@ namespace InteriorCoffee.Application.Services.Implements
             _mapper.Map(updateProductDTO, existingProduct);
             await _productRepository.UpdateProductAsync(id, existingProduct);
         }
+
+        public async Task SoftDeleteProductAsync(string id)
+        {
+            var product = await _productRepository.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                throw new NotFoundException($"Product with id {id} not found.");
+            }
+
+            product.Status = ProductStatusEnum.INACTIVE.ToString();
+            await _productRepository.UpdateProductAsync(id, product);
+        }
+
 
         public async Task DeleteProductAsync(string id)
         {

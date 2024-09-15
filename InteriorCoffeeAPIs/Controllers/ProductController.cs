@@ -78,6 +78,22 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        [HttpPut(ApiEndPointConstant.Product.SoftDeleteProductEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Soft delete a product")]
+        public async Task<IActionResult> SoftDeleteProduct(string id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            await _productService.SoftDeleteProductAsync(id);
+            return Ok("Product successfully soft deleted");
+        }
+
+
         [HttpDelete(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a product")]

@@ -11,6 +11,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task<Product> GetProductByIdAsync(string id);
         Task CreateProductAsync(CreateProductDTO product);
         Task UpdateProductAsync(string id, UpdateProductDTO product);
+        Task SoftDeleteProductAsync(string id);
         Task DeleteProductAsync(string id);
     }
 }

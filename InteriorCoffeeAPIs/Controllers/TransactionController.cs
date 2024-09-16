@@ -90,26 +90,28 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsVNPaymentEndpoint)]
         [SwaggerOperation(Summary = "Test payment")]
-        public async Task<IActionResult> TestCreatePayment([FromBody]VnPaymentRequestModel model)
+        public async Task<IActionResult> TestCreatePayment([FromBody] CreateTransactionDTO model)
         {
             var result = _paymentService.CreatePaymentUrl(this.HttpContext, model);
+            await _transactionService.CreateTransaction(model);
             return Ok(result);
         }
 
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalCaptureEndpoint)]
         [SwaggerOperation(Summary = "Test payment")]
-        public async Task<IActionResult> PaypalPaymentCapture(string orderId)
+        public async Task<IActionResult> PaypalPaymentCapture(string paypalOrderId)
         {
-            var result = await _paymentService.CapturePaypalOrder(orderId);
+            var result = await _paymentService.CapturePaypalOrder(paypalOrderId);
             return Ok(result);
         }
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalEndpoint)]
         [SwaggerOperation(Summary = "Test payment")]
-        public async Task<IActionResult> TestCreatePaymentPaypal([FromBody] PaypalRequestModel model)
+        public async Task<IActionResult> TestCreatePaymentPaypal([FromBody] CreateTransactionDTO model)
         {
             var result = await _paymentService.CreatePaypalOrder(model);
+            await _transactionService.CreateTransaction(model);
             return Ok(result);
         }
     }

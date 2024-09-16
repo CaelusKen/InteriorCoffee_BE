@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.Transaction;
 using InteriorCoffee.Application.Helpers;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Application.Utils;
+using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.PaymentModel.PayPal;
 using InteriorCoffee.Domain.PaymentModel.VNPay;
+using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -15,6 +18,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
@@ -22,15 +26,17 @@ namespace InteriorCoffee.Application.Services.Implements
     {
         private readonly IConfiguration _configuration;
         private readonly PaypalClient _paypalClient;
+        private readonly ITransactionRepository _transactionRepository;
 
-        public PaymentService(ILogger<PaymentService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, PaypalClient paypalClient) : base(logger, mapper, httpContextAccessor)
+        public PaymentService(ILogger<PaymentService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, PaypalClient paypalClient, ITransactionRepository transactionRepository) : base(logger, mapper, httpContextAccessor)
         {
             _configuration = configuration;
             _paypalClient = paypalClient;
+            _transactionRepository = transactionRepository;
         }
 
         #region VNPay
-        public async Task<string> CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model)
+        public async Task<string> CreatePaymentUrl(HttpContext context, CreateTransactionDTO model)
         {
             var tick = DateTime.Now.Ticks.ToString();
 
@@ -39,7 +45,7 @@ namespace InteriorCoffee.Application.Services.Implements
             vnpay.AddRequestData("vnp_Version", _configuration["VnPay:Version"]);
             vnpay.AddRequestData("vnp_Command", _configuration["VnPay:Command"]);
             vnpay.AddRequestData("vnp_TmnCode", _configuration["VnPay:TmnCode"]);
-            vnpay.AddRequestData("vnp_Amount", (model.Amount * 100).ToString());
+            vnpay.AddRequestData("vnp_Amount", (model.TotalAmount * 100).ToString());
             vnpay.AddRequestData("vnp_CreateDate", model.CreatedDate.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", _configuration["VnPay:CurrencyCode"]);
             vnpay.AddRequestData("vnp_IpAddr", IPAddressUtil.GetIpAddress(context));
@@ -81,6 +87,14 @@ namespace InteriorCoffee.Application.Services.Implements
                 };
             }
 
+            #region Update Transaction
+            InteriorCoffee.Domain.Models.Transaction transaction = await _transactionRepository.GetTransaction(
+                predicate: tr => tr.OrderId.Equals(vnp_orderId));
+
+            transaction.Status = "COMPLETED";
+            await _transactionRepository.UpdateTransaction(transaction);
+            #endregion
+
             return new VnPaymentResponseModel
             {
                 Success = true,
@@ -95,15 +109,29 @@ namespace InteriorCoffee.Application.Services.Implements
         #endregion
 
         #region Paypal
-        public async Task<CreateOrderResponse> CreatePaypalOrder(PaypalRequestModel model)
+        public async Task<CreateOrderResponse> CreatePaypalOrder(CreateTransactionDTO model)
         {
-            var response = await _paypalClient.CreateOrder(model.Amount.ToString(), model.Currency, model.OrderId);
+            var response = await _paypalClient.CreateOrder(model.TotalAmount.ToString(), model.Currency, model.OrderId);
             return response;
         }
 
         public async Task<CaptureOrderResponse> CapturePaypalOrder(string orderId)
         {
             var response = await _paypalClient.CaptureOrder(orderId);
+
+            var purchaseUnits = response.purchase_units;
+
+            #region Update Transaction
+
+            foreach (var purchaseUnit in purchaseUnits)
+            {
+                InteriorCoffee.Domain.Models.Transaction transaction = await _transactionRepository.GetTransaction(
+                predicate: tr => tr.OrderId.Equals(purchaseUnit.reference_id));
+
+                transaction.Status = "COMPLETED";
+                await _transactionRepository.UpdateTransaction(transaction);
+            }
+            #endregion
             return response;
         }
         #endregion

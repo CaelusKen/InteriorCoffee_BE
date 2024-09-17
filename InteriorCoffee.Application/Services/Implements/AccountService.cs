@@ -2,6 +2,7 @@
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Account;
 using InteriorCoffee.Application.DTOs.Authentication;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Base;
@@ -31,7 +32,40 @@ namespace InteriorCoffee.Application.Services.Implements
             _roleRepository = roleRepository;
         }
 
-        public async Task<(List<Account>, int, int, int, int)> GetAccountsAsync(int? pageNo, int? pageSize)
+        private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
+        {
+            { "username", "UserName" },
+            { "email", "Email" },
+            { "createddate", "CreatedDate" },
+            { "updatedate", "UpdatedDate" },
+            { "status", "Status" }
+        };
+
+        #region "Sorting"
+        private List<Account> ApplySorting(List<Account> accounts, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Account).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        accounts = orderBy.Ascending
+                            ? accounts.OrderBy(a => propertyInfo.GetValue(a, null)).ToList()
+                            : accounts.OrderByDescending(a => propertyInfo.GetValue(a, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Account'.");
+                }
+            }
+            return accounts;
+        }
+        #endregion
+
+        public async Task<(List<Account>, int, int, int, int)> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy)
         {
             var pagination = new Pagination
             {
@@ -39,8 +73,29 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (accounts, totalItems, currentPageSize, totalPages) = await _accountRepository.GetAccountsAsync(pagination.PageNo, pagination.PageSize);
-            return (accounts, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allAccounts, totalItems) = await _accountRepository.GetAccountAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var accounts = allAccounts.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                          .Take(pagination.PageSize)
+                                          .ToList();
+
+                // Apply sorting logic only if orderBy is not null
+                accounts = ApplySorting(accounts, orderBy);
+
+                return (accounts, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated accounts.");
+                return (new List<Account>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
 
 

@@ -14,7 +14,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateTemplate(Template template);
         Task DeleteTemplate(string id);
 
-        public Task<(List<Template>, int, int, int)> GetTemplatesAsync(int pageNumber, int pageSize);
+        public Task<(List<Template>, int)> GetTemplatesAsync();
         public Task<Template> GetTemplate(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null);
     }
 }

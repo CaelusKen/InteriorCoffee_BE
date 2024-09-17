@@ -10,7 +10,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IDesignRepository
     {
-        Task<(List<Design>, int, int, int)> GetDesignsAsync(int pageNumber, int pageSize);
+        Task<(List<Design>, int)> GetDesignsAsync();
         Task<Design> GetDesignById(string id);
         Task CreateDesign(Design design);
         Task UpdateDesign(Design design);

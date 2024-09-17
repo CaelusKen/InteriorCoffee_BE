@@ -51,22 +51,18 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        public async Task<(List<Review>, int, int, int)> GetReviewsAsync(int pageNumber, int pageSize)
+        public async Task<(List<Review>, int)> GetReviewsAsync()
         {
             try
             {
                 var totalItemsLong = await _reviews.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var reviews = await _reviews.Find(new BsonDocument())
-                                            .Skip((pageNumber - 1) * pageSize)
-                                            .Limit(pageSize)
-                                            .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (reviews, totalItems, pageSize, totalPages);
+                var reviews = await _reviews.Find(new BsonDocument()).ToListAsync();
+                return (reviews, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated reviews.");
+                _logger.LogError(ex, "Error occurred while getting reviews.");
                 throw;
             }
         }

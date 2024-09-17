@@ -37,22 +37,18 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
         //    return await _styles.Find(filter).ToListAsync();
         //}
-        public async Task<(List<Style>, int, int, int)> GetStylesAsync(int pageNumber, int pageSize)
+        public async Task<(List<Style>, int)> GetStylesAsync()
         {
             try
             {
                 var totalItemsLong = await _styles.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var styles = await _styles.Find(new BsonDocument())
-                                          .Skip((pageNumber - 1) * pageSize)
-                                          .Limit(pageSize)
-                                          .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (styles, totalItems, pageSize, totalPages);
+                var styles = await _styles.Find(new BsonDocument()).ToListAsync();
+                return (styles, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated styles.");
+                _logger.LogError(ex, "Error occurred while getting styles.");
                 throw;
             }
         }

@@ -14,7 +14,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateVoucherType(VoucherType voucherType);
         Task DeleteVoucherType(string id);
 
-        public Task<(List<VoucherType>, int, int, int)> GetVoucherTypesAsync(int pageNumber, int pageSize);
+        public Task<(List<VoucherType>, int)> GetVoucherTypesAsync();
         public Task<VoucherType> GetVoucherType(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null);
     }
 }

@@ -34,9 +34,28 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (styles, totalItems, currentPageSize, totalPages) = await _styleRepository.GetStylesAsync(pagination.PageNo, pagination.PageSize);
-            return (styles, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allStyles, totalItems) = await _styleRepository.GetStylesAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var styles = allStyles.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                      .Take(pagination.PageSize)
+                                      .ToList();
+
+                return (styles, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated styles.");
+                return (new List<Style>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
+
 
 
         public async Task<Style> GetStyleById(string id)

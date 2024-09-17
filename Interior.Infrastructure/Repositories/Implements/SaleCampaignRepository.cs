@@ -51,22 +51,18 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
-        public async Task<(List<SaleCampaign>, int, int, int)> GetSaleCampaignsAsync(int pageNumber, int pageSize)
+        public async Task<(List<SaleCampaign>, int)> GetSaleCampaignsAsync()
         {
             try
             {
                 var totalItemsLong = await _saleCampaigns.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var saleCampaigns = await _saleCampaigns.Find(new BsonDocument())
-                                                        .Skip((pageNumber - 1) * pageSize)
-                                                        .Limit(pageSize)
-                                                        .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (saleCampaigns, totalItems, pageSize, totalPages);
+                var saleCampaigns = await _saleCampaigns.Find(new BsonDocument()).ToListAsync();
+                return (saleCampaigns, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated sale campaigns.");
+                _logger.LogError(ex, "Error occurred while getting sale campaigns.");
                 throw;
             }
         }

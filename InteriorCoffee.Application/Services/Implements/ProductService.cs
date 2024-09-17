@@ -8,6 +8,7 @@ using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -140,6 +141,32 @@ namespace InteriorCoffee.Application.Services.Implements
         #endregion
 
 
+        #region Testing Function
+        /// <summary>
+        /// Testing Service
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IPaginate<GetProductDTO>> GetProductList()
+        {
+            //OrderByAscending
+            return await _productRepository.GetProductPagination(
+                selector: p => new GetProductDTO(p.Name, p.Description), //selecting field
+                predicate: p => p.Name.Contains("A"),                    //filter by condition
+                orderBy: p => p.Name,                                    //Order by
+                page: 1,                                                 // Paginate
+                size: 3);
+
+            //OrderByDescending
+            return await _productRepository.GetProductPagination(
+                selector: p => new GetProductDTO(p.Name, p.Description),
+                predicate: p => p.Name.Contains("A"),
+                orderBy: p => p.Name,
+                isAscend: false,
+                page: 1,
+                size: 3);
+        }
+        #endregion
+
         public async Task<Product> GetProductByIdAsync(string id)
         {
             var product = await _productRepository.GetProductByIdAsync(id);
@@ -178,7 +205,6 @@ namespace InteriorCoffee.Application.Services.Implements
             product.Status = ProductStatusEnum.INACTIVE.ToString();
             await _productRepository.UpdateProductAsync(id, product);
         }
-
 
         public async Task DeleteProductAsync(string id)
         {

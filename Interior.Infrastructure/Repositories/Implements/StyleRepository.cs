@@ -28,7 +28,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        public async Task<(List<Style>, int, int, int)> GetStylesAsync(int pageNumber, int pageSize)
+        public async Task<(List<Style>, int)> GetStylesAsync()
         {
             try
             {

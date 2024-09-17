@@ -15,7 +15,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateTemplate(Template template);
         Task DeleteTemplate(string id);
 
-        public Task<(List<Template>, int, int, int)> GetTemplatesAsync(int pageNumber, int pageSize);
+        Task<(List<Template>, int)> GetTemplatesAsync();
 
         #region Get Function
         Task<Template> GetTemplate(Expression<Func<Template, bool>> predicate = null,

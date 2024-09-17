@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Product> GetProduct(Expression<Func<Product, bool>> predicate = null,
-                                 Expression<Func<Product, object>> orderBy = null);
+                                 Expression<Func<Product, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetProduct<TResult>(Expression<Func<Product, TResult>> selector,
                                           Expression<Func<Product, bool>> predicate = null,
-                                          Expression<Func<Product, object>> orderBy = null);
+                                          Expression<Func<Product, object>> orderBy = null, bool isAscend = true);
         Task<List<Product>> GetProductList(Expression<Func<Product, bool>> predicate = null,
-                                           Expression<Func<Product, object>> orderBy = null);
+                                           Expression<Func<Product, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetProductList<TResult>(Expression<Func<Product, TResult>> selector,
                                                     Expression<Func<Product, bool>> predicate = null,
-                                                    Expression<Func<Product, object>> orderBy = null);
+                                                    Expression<Func<Product, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Product>> GetProductPagination(Expression<Func<Product, bool>> predicate = null,
-                                                      Expression<Func<Product, object>> orderBy = null,
+                                                      Expression<Func<Product, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetProductPagination<TResult>(Expression<Func<Product, TResult>> selector,
                                                                Expression<Func<Product, bool>> predicate = null,
-                                                               Expression<Func<Product, object>> orderBy = null,
+                                                               Expression<Func<Product, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

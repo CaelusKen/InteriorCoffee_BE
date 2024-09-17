@@ -26,7 +26,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        public async Task<(List<Merchant>, int, int, int)> GetMerchantsAsync(int pageNumber, int pageSize)
+        public async Task<(List<Merchant>, int)> GetMerchantsAsync()
         {
             try
             {

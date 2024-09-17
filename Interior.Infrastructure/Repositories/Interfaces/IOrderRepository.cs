@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,24 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateOrder(Order order);
         Task DeleteOrder(string id);
 
-        public Task<List<Order>> GetOrderListByCondition(Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null);
-        public Task<Order> GetOrderByCondition(Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null);
+        #region Get Function
+        Task<Order> GetOrder(Expression<Func<Order, bool>> predicate = null,
+                                 Expression<Func<Order, object>> orderBy = null);
+        Task<TResult> GetOrder<TResult>(Expression<Func<Order, TResult>> selector,
+                                          Expression<Func<Order, bool>> predicate = null,
+                                          Expression<Func<Order, object>> orderBy = null);
+        Task<List<Order>> GetOrderList(Expression<Func<Order, bool>> predicate = null,
+                                           Expression<Func<Order, object>> orderBy = null);
+        Task<List<TResult>> GetOrderList<TResult>(Expression<Func<Order, TResult>> selector,
+                                                    Expression<Func<Order, bool>> predicate = null,
+                                                    Expression<Func<Order, object>> orderBy = null);
+        Task<IPaginate<Order>> GetOrderPagination(Expression<Func<Order, bool>> predicate = null,
+                                                      Expression<Func<Order, object>> orderBy = null,
+                                                      int page = 1, int size = 10);
+        Task<IPaginate<TResult>> GetOrderPagination<TResult>(Expression<Func<Order, TResult>> selector,
+                                                               Expression<Func<Order, bool>> predicate = null,
+                                                               Expression<Func<Order, object>> orderBy = null,
+                                                               int page = 1, int size = 10);
+        #endregion
     }
 }

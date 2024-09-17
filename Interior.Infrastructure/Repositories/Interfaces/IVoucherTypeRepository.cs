@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,26 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateVoucherType(VoucherType voucherType);
         Task DeleteVoucherType(string id);
 
-        public Task<(List<VoucherType>, int)> GetVoucherTypesAsync();
-        public Task<VoucherType> GetVoucherType(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null);
+        Task<(List<VoucherType>, int)> GetVoucherTypesAsync();
+
+        #region Get Function
+        Task<VoucherType> GetVoucherType(Expression<Func<VoucherType, bool>> predicate = null,
+                                 Expression<Func<VoucherType, object>> orderBy = null);
+        Task<TResult> GetVoucherType<TResult>(Expression<Func<VoucherType, TResult>> selector,
+                                          Expression<Func<VoucherType, bool>> predicate = null,
+                                          Expression<Func<VoucherType, object>> orderBy = null);
+        Task<List<VoucherType>> GetVoucherTypeList(Expression<Func<VoucherType, bool>> predicate = null,
+                                           Expression<Func<VoucherType, object>> orderBy = null);
+        Task<List<TResult>> GetVoucherTypeList<TResult>(Expression<Func<VoucherType, TResult>> selector,
+                                                    Expression<Func<VoucherType, bool>> predicate = null,
+                                                    Expression<Func<VoucherType, object>> orderBy = null);
+        Task<IPaginate<VoucherType>> GetVoucherTypePagination(Expression<Func<VoucherType, bool>> predicate = null,
+                                                      Expression<Func<VoucherType, object>> orderBy = null,
+                                                      int page = 1, int size = 10);
+        Task<IPaginate<TResult>> GetVoucherTypePagination<TResult>(Expression<Func<VoucherType, TResult>> selector,
+                                                               Expression<Func<VoucherType, bool>> predicate = null,
+                                                               Expression<Func<VoucherType, object>> orderBy = null,
+                                                               int page = 1, int size = 10);
+        #endregion
     }
 }

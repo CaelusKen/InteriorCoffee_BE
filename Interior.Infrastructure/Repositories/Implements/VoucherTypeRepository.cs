@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Util;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             }
         }
 
-
+        #region Get Function
         public async Task<VoucherType> GetVoucherType(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null)
         {
             var filterBuilder = Builders<VoucherType>.Filter;
@@ -55,6 +56,67 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _voucherTypes.Find(filter).FirstOrDefaultAsync();
         }
+
+        public async Task<TResult> GetVoucherType<TResult>(Expression<Func<VoucherType, TResult>> selector, Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<VoucherType>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _voucherTypes.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _voucherTypes.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<VoucherType>> GetVoucherTypeList(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<VoucherType>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _voucherTypes.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _voucherTypes.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<TResult>> GetVoucherTypeList<TResult>(Expression<Func<VoucherType, TResult>> selector, Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<VoucherType>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _voucherTypes.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+
+            return await _voucherTypes.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<VoucherType>> GetVoucherTypePagination(Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<VoucherType>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _voucherTypes.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _voucherTypes.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetVoucherTypePagination<TResult>(Expression<Func<VoucherType, TResult>> selector, Expression<Func<VoucherType, bool>> predicate = null, Expression<Func<VoucherType, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<VoucherType>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _voucherTypes.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _voucherTypes.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateVoucherType(VoucherType voucherType)
         {

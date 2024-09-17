@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -25,8 +26,42 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<ChatSession>> GetChatSessionListByCondition(Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null)
+        public async Task<List<ChatSession>> GetChatSessionList()
+        {
+            return await _chatSessions.Find(new BsonDocument()).ToListAsync();
+        }
+
+        public async Task<ChatSession> GetChatSessionById(string id)
+        {
+            return await _chatSessions.Find(c => c._id == id).FirstOrDefaultAsync();
+        }
+
+        #region Get Function
+        public async Task<ChatSession> GetChatSession(Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<ChatSession>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _chatSessions.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _chatSessions.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<TResult> GetChatSession<TResult>(Expression<Func<ChatSession, TResult>> selector, Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<ChatSession>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _chatSessions.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _chatSessions.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<ChatSession>> GetChatSessionList(Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null)
         {
             var filterBuilder = Builders<ChatSession>.Filter;
             var filter = filterBuilder.Empty;
@@ -38,28 +73,42 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _chatSessions.Find(filter).ToListAsync();
         }
 
-        public async Task<ChatSession> GetChatSessionByCondition(Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null)
+        public async Task<List<TResult>> GetChatSessionList<TResult>(Expression<Func<ChatSession, TResult>> selector, Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null)
         {
             var filterBuilder = Builders<ChatSession>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _chatSessions.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+            if (orderBy != null) return await _chatSessions.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
 
-            return await _chatSessions.Find(filter).FirstOrDefaultAsync();
+            return await _chatSessions.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<ChatSession>> GetChatSessionPagination(Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<ChatSession>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _chatSessions.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _chatSessions.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetChatSessionPagination<TResult>(Expression<Func<ChatSession, TResult>> selector, Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<ChatSession>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _chatSessions.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _chatSessions.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
         }
         #endregion
-
-        public async Task<List<ChatSession>> GetChatSessionList()
-        {
-            return await _chatSessions.Find(new BsonDocument()).ToListAsync();
-        }
-
-        public async Task<ChatSession> GetChatSessionById(string id)
-        {
-            return await _chatSessions.Find(c => c._id == id).FirstOrDefaultAsync();
-        }
 
         public async Task UpdateChatSession(ChatSession chatSession)
         {

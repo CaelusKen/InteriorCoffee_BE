@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,24 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateMerchant(Merchant merchant);
         Task DeleteMerchant(string id);
 
-        public Task<List<Merchant>> GetMerchantListByCondition(Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null);
-        public Task<Merchant> GetMerchantByCondition(Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null);
+        #region Get Function
+        Task<Merchant> GetMerchant(Expression<Func<Merchant, bool>> predicate = null,
+                                 Expression<Func<Merchant, object>> orderBy = null);
+        Task<TResult> GetMerchant<TResult>(Expression<Func<Merchant, TResult>> selector,
+                                          Expression<Func<Merchant, bool>> predicate = null,
+                                          Expression<Func<Merchant, object>> orderBy = null);
+        Task<List<Merchant>> GetMerchantList(Expression<Func<Merchant, bool>> predicate = null,
+                                           Expression<Func<Merchant, object>> orderBy = null);
+        Task<List<TResult>> GetMerchantList<TResult>(Expression<Func<Merchant, TResult>> selector,
+                                                    Expression<Func<Merchant, bool>> predicate = null,
+                                                    Expression<Func<Merchant, object>> orderBy = null);
+        Task<IPaginate<Merchant>> GetMerchantPagination(Expression<Func<Merchant, bool>> predicate = null,
+                                                      Expression<Func<Merchant, object>> orderBy = null,
+                                                      int page = 1, int size = 10);
+        Task<IPaginate<TResult>> GetMerchantPagination<TResult>(Expression<Func<Merchant, TResult>> selector,
+                                                               Expression<Func<Merchant, bool>> predicate = null,
+                                                               Expression<Func<Merchant, object>> orderBy = null,
+                                                               int page = 1, int size = 10);
+        #endregion
     }
 }

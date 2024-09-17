@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,24 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateDesign(Design design);
         Task DeleteDesign(string id);
 
-        public Task<List<Design>> GetDesignListByCondition(Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null);
-        public Task<Design> GetDesignByCondition(Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null);
+        #region Get Function
+        Task<Design> GetDesign(Expression<Func<Design, bool>> predicate = null,
+                                 Expression<Func<Design, object>> orderBy = null);
+        Task<TResult> GetDesign<TResult>(Expression<Func<Design, TResult>> selector,
+                                          Expression<Func<Design, bool>> predicate = null,
+                                          Expression<Func<Design, object>> orderBy = null);
+        Task<List<Design>> GetDesignList(Expression<Func<Design, bool>> predicate = null,
+                                           Expression<Func<Design, object>> orderBy = null);
+        Task<List<TResult>> GetDesignList<TResult>(Expression<Func<Design, TResult>> selector,
+                                                    Expression<Func<Design, bool>> predicate = null,
+                                                    Expression<Func<Design, object>> orderBy = null);
+        Task<IPaginate<Design>> GetDesignPagination(Expression<Func<Design, bool>> predicate = null,
+                                                      Expression<Func<Design, object>> orderBy = null,
+                                                      int page = 1, int size = 10);
+        Task<IPaginate<TResult>> GetDesignPagination<TResult>(Expression<Func<Design, TResult>> selector,
+                                                               Expression<Func<Design, bool>> predicate = null,
+                                                               Expression<Func<Design, object>> orderBy = null,
+                                                               int page = 1, int size = 10);
+        #endregion
     }
 }

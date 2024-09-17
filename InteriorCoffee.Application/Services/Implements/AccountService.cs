@@ -112,7 +112,7 @@ namespace InteriorCoffee.Application.Services.Implements
         public async Task CreateAccountAsync(CreateAccountDTO createAccountDTO)
         {
             // Check if an account with the given email already exists
-            Account existingAccount = await _accountRepository.GetAccountByCondition(
+            Account existingAccount = await _accountRepository.GetAccount(
                 predicate: a => a.Email.Equals(createAccountDTO.Email));
             if (existingAccount != null) throw new ConflictException("Email has already existed");
 

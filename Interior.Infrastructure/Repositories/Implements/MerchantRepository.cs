@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -25,32 +26,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<Merchant>> GetMerchantListByCondition(Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Merchant>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _merchants.Find(filter).ToListAsync();
-        }
-
-        public async Task<Merchant> GetMerchantByCondition(Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Merchant>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
-
-            return await _merchants.Find(filter).FirstOrDefaultAsync();
-        }
-        #endregion
-
         public async Task<(List<Merchant>, int)> GetMerchantsAsync()
         {
             try
@@ -72,6 +47,80 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         {
             return await _merchants.Find(c => c._id == id).FirstOrDefaultAsync();
         }
+
+        #region Get Function
+        public async Task<Merchant> GetMerchant(Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Merchant>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _merchants.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<TResult> GetMerchant<TResult>(Expression<Func<Merchant, TResult>> selector, Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Merchant>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _merchants.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Merchant>> GetMerchantList(Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Merchant>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _merchants.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<TResult>> GetMerchantList<TResult>(Expression<Func<Merchant, TResult>> selector, Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Merchant>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+
+            return await _merchants.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<Merchant>> GetMerchantPagination(Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Merchant>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _merchants.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetMerchantPagination<TResult>(Expression<Func<Merchant, TResult>> selector, Expression<Func<Merchant, bool>> predicate = null, Expression<Func<Merchant, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Merchant>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _merchants.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _merchants.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateMerchant(Merchant merchant)
         {

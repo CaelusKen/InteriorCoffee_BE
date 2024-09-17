@@ -9,6 +9,7 @@ using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
+using InteriorCoffee.Domain.Paginate;
 
 namespace InteriorCoffee.Infrastructure.Repositories.Implements
 {
@@ -22,32 +23,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _accounts = _database.GetCollection<Account>("Account");
             _logger = logger;
         }
-
-        #region Conditional Get
-        public async Task<List<Account>> GetAccountListByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Account>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _accounts.Find(filter).ToListAsync();
-        }
-
-        public async Task<Account> GetAccountByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Account>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
-
-            return await _accounts.Find(filter).FirstOrDefaultAsync();
-        }
-        #endregion
 
         public async Task<(List<Account>, int)> GetAccountAsync()
         {
@@ -71,6 +46,81 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         {
             return await _accounts.Find(c => c._id == id).FirstOrDefaultAsync();
         }
+
+
+        #region Get Function
+        public async Task<Account> GetAccount(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _accounts.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<TResult> GetAccount<TResult>(Expression<Func<Account, TResult>> selector, Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _accounts.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Account>> GetAccountList(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _accounts.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<TResult>> GetAccountList<TResult>(Expression<Func<Account, TResult>> selector, Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+
+            return await _accounts.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<Account>> GetAccountPagination(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _accounts.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetAccountPagination<TResult>(Expression<Func<Account, TResult>> selector, Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Account>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _accounts.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _accounts.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateAccount(Account account)
         {

@@ -34,7 +34,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO)
         {
-            Account account = await _accountRepository.GetAccountByCondition(
+            Account account = await _accountRepository.GetAccount(
                 predicate: a => a.Email.Equals(loginDTO.Email) && a.Password.Equals(loginDTO.Password));
             if (account == null) throw new UnauthorizedAccessException("Incorrect email or password");
 
@@ -49,7 +49,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO)
         {
-            Account account = await _accountRepository.GetAccountByCondition(
+            Account account = await _accountRepository.GetAccount(
                 predicate: a => a.Email.Equals(registeredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
@@ -71,10 +71,11 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AuthenticationResponseDTO> MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO)
         {
-            Merchant merchant = await _merchantRepository.GetMerchantByCondition(m => m.MerchantCode.Equals(merchantRegisteredDTO.MerchantCode));
+            Merchant merchant = await _merchantRepository.GetMerchant(
+                predicate:m => m.MerchantCode.Equals(merchantRegisteredDTO.MerchantCode));
             if (merchant == null) throw new NotFoundException("Merchant is not found");
 
-            Account account = await _accountRepository.GetAccountByCondition(
+            Account account = await _accountRepository.GetAccount(
                 predicate: a => a.Email.Equals(merchantRegisteredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 

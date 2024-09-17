@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace InteriorCoffee.Infrastructure.Repositories.Implements
 {
@@ -26,17 +28,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        //public async Task<List<Style>> GetStyleList(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)
-        //{
-        //    var filterBuilder = Builders<Style>.Filter;
-        //    var filter = filterBuilder.Empty;
-
-        //    if (predicate != null) filter = filterBuilder.Where(predicate);
-
-        //    if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).ToListAsync();
-
-        //    return await _styles.Find(filter).ToListAsync();
-        //}
         public async Task<(List<Style>, int)> GetStylesAsync()
         {
             try
@@ -53,6 +44,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             }
         }
 
+        #region Get Function
         public async Task<Style> GetStyle(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)
         {
             var filterBuilder = Builders<Style>.Filter;
@@ -64,6 +56,67 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _styles.Find(filter).FirstOrDefaultAsync();
         }
+
+        public async Task<TResult> GetStyle<TResult>(Expression<Func<Style, TResult>> selector, Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Style>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _styles.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Style>> GetStyleList(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Style>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _styles.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<TResult>> GetStyleList<TResult>(Expression<Func<Style, TResult>> selector, Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Style>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+
+            return await _styles.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<Style>> GetStylePagination(Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Style>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _styles.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetStylePagination<TResult>(Expression<Func<Style, TResult>> selector, Expression<Func<Style, bool>> predicate = null, Expression<Func<Style, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Style>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _styles.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _styles.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateStyle(Style style)
         {

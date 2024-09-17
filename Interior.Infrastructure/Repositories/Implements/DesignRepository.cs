@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -25,32 +26,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<Design>> GetDesignListByCondition(Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Design>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _designs.Find(filter).ToListAsync();
-        }
-
-        public async Task<Design> GetDesignByCondition(Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Design>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
-
-            return await _designs.Find(filter).FirstOrDefaultAsync();
-        }
-        #endregion
-
         public async Task<(List<Design>, int)> GetDesignsAsync()
         {
             try
@@ -71,6 +46,80 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         {
             return await _designs.Find(c => c._id == id).FirstOrDefaultAsync();
         }
+
+        #region Get Function
+        public async Task<Design> GetDesign(Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Design>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _designs.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<TResult> GetDesign<TResult>(Expression<Func<Design, TResult>> selector, Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Design>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _designs.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Design>> GetDesignList(Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Design>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _designs.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<TResult>> GetDesignList<TResult>(Expression<Func<Design, TResult>> selector, Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Design>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+
+            return await _designs.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<Design>> GetDesignPagination(Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Design>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _designs.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetDesignPagination<TResult>(Expression<Func<Design, TResult>> selector, Expression<Func<Design, bool>> predicate = null, Expression<Func<Design, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Design>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _designs.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _designs.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateDesign(Design design)
         {

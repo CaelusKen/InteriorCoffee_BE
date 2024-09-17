@@ -1,6 +1,7 @@
 ﻿using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,5 +16,8 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task UpdateProductAsync(string id, UpdateProductDTO product);
         Task SoftDeleteProductAsync(string id);
         Task DeleteProductAsync(string id);
+
+
+        Task<IPaginate<GetProductDTO>> GetProductList();
     }
 }

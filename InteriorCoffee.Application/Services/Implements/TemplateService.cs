@@ -34,9 +34,28 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (templates, totalItems, currentPageSize, totalPages) = await _templateRepository.GetTemplatesAsync(pagination.PageNo, pagination.PageSize);
-            return (templates, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allTemplates, totalItems) = await _templateRepository.GetTemplatesAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var templates = allTemplates.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                            .Take(pagination.PageSize)
+                                            .ToList();
+
+                return (templates, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated templates.");
+                return (new List<Template>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
+
 
 
         public async Task<Template> GetTemplateById(string id)

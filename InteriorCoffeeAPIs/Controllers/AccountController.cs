@@ -1,5 +1,6 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Account;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
 using Microsoft.AspNetCore.Http;
@@ -22,10 +23,17 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(List<Account>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all accounts with pagination")]
-        public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize)
+        [SwaggerOperation(Summary = "Get all accounts with pagination and sorting. " +
+            "Ex url: GET /api/accounts?pageNo=1&pageSize=10&sortBy=username&ascending=true\r\n")]
+        public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
         {
-            var (accounts, currentPage, currentPageSize, totalItems, totalPages) = await _accountService.GetAccountsAsync(pageNo, pageSize);
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                orderBy = new OrderBy(sortBy, ascending ?? true);
+            }
+
+            var (accounts, currentPage, currentPageSize, totalItems, totalPages) = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy);
 
             var response = new
             {
@@ -34,11 +42,14 @@ namespace InteriorCoffeeAPIs.Controllers
                 ListSize = totalItems,
                 CurrentPageSize = accounts.Count,
                 TotalPage = totalPages,
+                Filter = sortBy,
+                Ascending = ascending,
                 Accounts = accounts
             };
 
             return Ok(response);
         }
+
 
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]

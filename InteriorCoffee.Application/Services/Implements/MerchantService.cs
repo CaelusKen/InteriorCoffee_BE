@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Merchant;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -25,7 +26,16 @@ namespace InteriorCoffee.Application.Services.Implements
             _merchantRepository = merchantRepository;
         }
 
-        public async Task<(List<Merchant>, int, int, int, int)> GetMerchantsAsync(int? pageNo, int? pageSize)
+        private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
+        {
+            { "name", "Name" },
+            { "email", "Email" },
+            { "createddate", "CreatedDate" },
+            { "updatedate", "UpdatedDate" },
+            { "status", "Status" }
+        };
+
+        public async Task<(List<Merchant>, int, int, int, int)> GetMerchantsAsync(int? pageNo, int? pageSize, OrderBy orderBy)
         {
             var pagination = new Pagination
             {
@@ -33,9 +43,57 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (merchants, totalItems, currentPageSize, totalPages) = await _merchantRepository.GetMerchantsAsync(pagination.PageNo, pagination.PageSize);
-            return (merchants, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allMerchants, totalItems) = await _merchantRepository.GetMerchantsAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var merchants = allMerchants.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                            .Take(pagination.PageSize)
+                                            .ToList();
+
+                // Apply sorting logic only if orderBy is provided
+                if (orderBy != null)
+                {
+                    merchants = ApplySorting(merchants, orderBy);
+                }
+
+                return (merchants, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated merchants.");
+                return (new List<Merchant>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
+
+        #region "Sorting"
+        private List<Merchant> ApplySorting(List<Merchant> merchants, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Merchant).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        merchants = orderBy.Ascending
+                            ? merchants.OrderBy(m => propertyInfo.GetValue(m, null)).ToList()
+                            : merchants.OrderByDescending(m => propertyInfo.GetValue(m, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Merchant'.");
+                }
+            }
+            return merchants;
+        }
+        #endregion
 
 
         public async Task<Merchant> GetMerchantByIdAsync(string id)

@@ -10,7 +10,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IReviewRepository
     {
-        Task<(List<Review>, int, int, int)> GetReviewsAsync(int pageNumber, int pageSize);
+        Task<(List<Review>, int)> GetReviewsAsync();
         Task<Review> GetReviewById(string id);
         public Task<List<Review>> GetReviewList(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);
         public Task<Review> GetReview(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);

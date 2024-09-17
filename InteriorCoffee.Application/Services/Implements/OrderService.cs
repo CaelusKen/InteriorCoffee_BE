@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Order;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -25,7 +26,14 @@ namespace InteriorCoffee.Application.Services.Implements
             _orderRepository = orderRepository;
         }
 
-        public async Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize)
+        private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
+        {
+            { "orderdate", "OrderDate" },
+            { "status", "Status" },
+            { "totalamount", "TotalAmount" },
+            { "createddate", "CreatedDate" }
+        };
+        public async Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy)
         {
             var pagination = new Pagination
             {
@@ -33,9 +41,57 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (orders, totalItems, currentPageSize, totalPages) = await _orderRepository.GetOrdersAsync(pagination.PageNo, pagination.PageSize);
-            return (orders, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allOrders, totalItems) = await _orderRepository.GetOrdersAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var orders = allOrders.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                      .Take(pagination.PageSize)
+                                      .ToList();
+
+                // Apply sorting logic only if orderBy is provided
+                if (orderBy != null)
+                {
+                    orders = ApplySorting(orders, orderBy);
+                }
+
+                return (orders, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated orders.");
+                return (new List<Order>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
+
+        #region "Sorting"
+        private List<Order> ApplySorting(List<Order> orders, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Order).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        orders = orderBy.Ascending
+                            ? orders.OrderBy(o => propertyInfo.GetValue(o, null)).ToList()
+                            : orders.OrderByDescending(o => propertyInfo.GetValue(o, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Order'.");
+                }
+            }
+            return orders;
+        }
+        #endregion
 
 
         public async Task<Order> GetOrderByIdAsync(string id)

@@ -35,8 +35,26 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (reviews, totalItems, currentPageSize, totalPages) = await _reviewRepository.GetReviewsAsync(pagination.PageNo, pagination.PageSize);
-            return (reviews, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allReviews, totalItems) = await _reviewRepository.GetReviewsAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var reviews = allReviews.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                        .Take(pagination.PageSize)
+                                        .ToList();
+
+                return (reviews, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated reviews.");
+                return (new List<Review>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
 
 

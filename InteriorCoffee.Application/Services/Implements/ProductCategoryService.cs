@@ -33,9 +33,28 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (productCategories, totalItems, currentPageSize, totalPages) = await _productCategoryRepository.GetProductCategoriesAsync(pagination.PageNo, pagination.PageSize);
-            return (productCategories, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allProductCategories, totalItems) = await _productCategoryRepository.GetProductCategoriesAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var productCategories = allProductCategories.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                                            .Take(pagination.PageSize)
+                                                            .ToList();
+
+                return (productCategories, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated product categories.");
+                return (new List<ProductCategory>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
+
 
 
         public async Task<ProductCategory> GetProductCategoryByIdAsync(string id)

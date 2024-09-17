@@ -1,4 +1,5 @@
-﻿using InteriorCoffee.Application.DTOs.Product;
+﻿using InteriorCoffee.Application.DTOs.OrderBy;
+using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,7 +8,8 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IProductService
     {
-        Task<(List<Product>, int, int, int, int)> GetProductsAsync(int? pageNo, int? pageSize);
+        Task<(List<Product>, int, int, int, int, decimal, decimal, int)> GetProductsAsync(
+                    int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilter filter);
         Task<Product> GetProductByIdAsync(string id);
         Task CreateProductAsync(CreateProductDTO product);
         Task UpdateProductAsync(string id, UpdateProductDTO product);

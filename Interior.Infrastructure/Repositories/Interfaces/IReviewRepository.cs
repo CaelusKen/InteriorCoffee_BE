@@ -11,7 +11,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IReviewRepository
     {
-        Task<(List<Review>, int, int, int)> GetReviewsAsync(int pageNumber, int pageSize);
+        Task<(List<Review>, int)> GetReviewsAsync();
         Task<Review> GetReviewById(string id);
         Task CreateReview(Review review);
         Task UpdateReview(Review review);

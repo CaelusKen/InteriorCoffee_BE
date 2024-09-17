@@ -28,22 +28,18 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        public async Task<(List<Template>, int, int, int)> GetTemplatesAsync(int pageNumber, int pageSize)
+        public async Task<(List<Template>, int)> GetTemplatesAsync()
         {
             try
             {
                 var totalItemsLong = await _templates.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var templates = await _templates.Find(new BsonDocument())
-                                                .Skip((pageNumber - 1) * pageSize)
-                                                .Limit(pageSize)
-                                                .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (templates, totalItems, pageSize, totalPages);
+                var templates = await _templates.Find(new BsonDocument()).ToListAsync();
+                return (templates, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated templates.");
+                _logger.LogError(ex, "Error occurred while getting templates.");
                 throw;
             }
         }

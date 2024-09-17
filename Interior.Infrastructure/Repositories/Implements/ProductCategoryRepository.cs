@@ -32,19 +32,16 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             {
                 var totalItemsLong = await _productCategories.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var productCategories = await _productCategories.Find(new BsonDocument())
-                                                                .Skip((pageNumber - 1) * pageSize)
-                                                                .Limit(pageSize)
-                                                                .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (productCategories, totalItems, pageSize, totalPages);
+                var productCategories = await _productCategories.Find(new BsonDocument()).ToListAsync();
+                return (productCategories, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated product categories.");
+                _logger.LogError(ex, "Error occurred while getting product categories.");
                 throw;
             }
         }
+
 
 
         public async Task<ProductCategory> GetProductCategoryById(string id)

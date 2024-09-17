@@ -28,22 +28,18 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region CRUD Functions
-        public async Task<(List<VoucherType>, int, int, int)> GetVoucherTypesAsync(int pageNumber, int pageSize)
+        public async Task<(List<VoucherType>, int)> GetVoucherTypesAsync()
         {
             try
             {
                 var totalItemsLong = await _voucherTypes.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var voucherTypes = await _voucherTypes.Find(new BsonDocument())
-                                                      .Skip((pageNumber - 1) * pageSize)
-                                                      .Limit(pageSize)
-                                                      .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (voucherTypes, totalItems, pageSize, totalPages);
+                var voucherTypes = await _voucherTypes.Find(new BsonDocument()).ToListAsync();
+                return (voucherTypes, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated voucher types.");
+                _logger.LogError(ex, "Error occurred while getting voucher types.");
                 throw;
             }
         }

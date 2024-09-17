@@ -1,5 +1,6 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Merchant;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
 using Microsoft.AspNetCore.Http;
@@ -22,10 +23,17 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
         [ProducesResponseType(typeof(List<Merchant>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all merchants with pagination")]
-        public async Task<IActionResult> GetMerchants([FromQuery] int? pageNo, [FromQuery] int? pageSize)
+        [SwaggerOperation(Summary = "Get all merchants with pagination and sorting. " +
+            "Ex url: GET /api/merchants?pageNo=1&pageSize=10&sortBy=name&ascending=true\r\n")]
+        public async Task<IActionResult> GetMerchants([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
         {
-            var (merchants, currentPage, currentPageSize, totalItems, totalPages) = await _merchantService.GetMerchantsAsync(pageNo, pageSize);
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                orderBy = new OrderBy(sortBy, ascending ?? true);
+            }
+
+            var (merchants, currentPage, currentPageSize, totalItems, totalPages) = await _merchantService.GetMerchantsAsync(pageNo, pageSize, orderBy);
 
             var response = new
             {
@@ -34,11 +42,14 @@ namespace InteriorCoffeeAPIs.Controllers
                 ListSize = totalItems,
                 CurrentPageSize = merchants.Count,
                 TotalPage = totalPages,
+                Filter = sortBy,
+                Ascending = ascending,
                 Merchants = merchants
             };
 
             return Ok(response);
         }
+
 
         [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]

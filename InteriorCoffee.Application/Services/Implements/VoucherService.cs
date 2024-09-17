@@ -34,9 +34,28 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (vouchers, totalItems, currentPageSize, totalPages) = await _voucherRepository.GetVouchersAsync(pagination.PageNo, pagination.PageSize);
-            return (vouchers, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allVouchers, totalItems) = await _voucherRepository.GetVouchersAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var vouchers = allVouchers.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                          .Take(pagination.PageSize)
+                                          .ToList();
+
+                return (vouchers, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated vouchers.");
+                return (new List<Voucher>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
+
 
 
         public async Task<Voucher> GetVoucherById(string id)

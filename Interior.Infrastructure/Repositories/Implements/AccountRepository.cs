@@ -30,19 +30,17 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             {
                 var totalItemsLong = await _accounts.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var accounts = await _accounts.Find(new BsonDocument())
-                                              .Skip((pageNumber - 1) * pageSize)
-                                              .Limit(pageSize)
-                                              .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (accounts, totalItems, pageSize, totalPages);
+                var accounts = await _accounts.Find(account => true).ToListAsync();
+                return (accounts, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated accounts.");
+                _logger.LogError(ex, "Error occurred while getting accounts.");
                 throw;
             }
         }
+
+
 
         public async Task<Account> GetAccountById(string id)
         {

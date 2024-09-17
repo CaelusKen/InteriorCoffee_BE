@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
@@ -21,12 +22,30 @@ namespace InteriorCoffeeAPIs.Controllers
             _productService = productService;
         }
 
+
         [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all products with pagination")]
-        public async Task<IActionResult> GetProducts([FromQuery] int? pageNo, [FromQuery] int? pageSize)
+        [SwaggerOperation(Summary = "Get all products with pagination, price range, and sorting. " +
+            "Ex url: GET /api/products?pageNo=1&pageSize=10&minPrice=30&maxPrice=60&sortBy=name&ascending=true\r\n")]
+        public async Task<IActionResult> GetProducts([FromQuery] int? pageNo, [FromQuery] int? pageSize,
+            [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
+            [FromQuery] string status = null, [FromQuery] string categoryId = null, [FromQuery] string merchantId = null)
         {
-            var (products, currentPage, currentPageSize, totalItems, totalPages) = await _productService.GetProductsAsync(pageNo, pageSize);
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                orderBy = new OrderBy(sortBy, ascending ?? true);
+            }
+
+            var filter = new ProductFilter
+            {
+                Status = status,
+                CategoryId = categoryId,
+                MerchantId = merchantId
+            };
+
+            var (products, currentPage, currentPageSize, totalItems, filteredTotalPages, actualMinPrice, actualMaxPrice, listAfter)
+                = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter);
 
             var response = new
             {
@@ -34,7 +53,21 @@ namespace InteriorCoffeeAPIs.Controllers
                 PageSize = currentPageSize,
                 ListSize = totalItems,
                 CurrentPageSize = products.Count,
-                TotalPage = totalPages,
+                ListAfter = listAfter,
+                TotalPage = filteredTotalPages,
+                MinPrice = minPrice ?? actualMinPrice,
+                MaxPrice = maxPrice ?? actualMaxPrice,
+                OrderBy = new
+                {
+                    SortBy = sortBy,
+                    Ascending = ascending
+                },
+                Filter = new
+                {
+                    Status = status,
+                    CategoryId = categoryId,
+                    MerchantId = merchantId
+                },
                 Products = products
             };
 

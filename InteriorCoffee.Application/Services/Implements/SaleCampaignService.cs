@@ -36,9 +36,28 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (saleCampaigns, totalItems, currentPageSize, totalPages) = await _saleCampaignRepository.GetSaleCampaignsAsync(pagination.PageNo, pagination.PageSize);
-            return (saleCampaigns, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allSaleCampaigns, totalItems) = await _saleCampaignRepository.GetSaleCampaignsAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var saleCampaigns = allSaleCampaigns.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                                    .Take(pagination.PageSize)
+                                                    .ToList();
+
+                return (saleCampaigns, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated sale campaigns.");
+                return (new List<SaleCampaign>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
+
 
 
         public async Task<SaleCampaign> GetCampaignById(string id)

@@ -24,22 +24,18 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        public async Task<(List<Product>, int, int, int)> GetProductsAsync(int pageNumber, int pageSize)
+        public async Task<(List<Product>, int)> GetProductsAsync()
         {
             try
             {
                 var totalItemsLong = await _products.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
-                var products = await _products.Find(product => true)
-                                              .Skip((pageNumber - 1) * pageSize)
-                                              .Limit(pageSize)
-                                              .ToListAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-                return (products, totalItems, pageSize, totalPages);
+                var products = await _products.Find(product => true).ToListAsync();
+                return (products, totalItems);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated products.");
+                _logger.LogError(ex, "Error occurred while getting products.");
                 throw;
             }
         }

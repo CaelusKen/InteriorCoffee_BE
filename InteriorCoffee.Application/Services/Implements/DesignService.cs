@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Design;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -33,8 +34,26 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            var (designs, totalItems, currentPageSize, totalPages) = await _designRepository.GetDesignsAsync(pagination.PageNo, pagination.PageSize);
-            return (designs, pagination.PageNo, currentPageSize, totalItems, totalPages);
+            try
+            {
+                var (allDesigns, totalItems) = await _designRepository.GetDesignsAsync();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                var designs = allDesigns.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                        .Take(pagination.PageSize)
+                                        .ToList();
+
+                return (designs, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated designs.");
+                return (new List<Design>(), pagination.PageNo, pagination.PageSize, 0, 0);
+            }
         }
 
 

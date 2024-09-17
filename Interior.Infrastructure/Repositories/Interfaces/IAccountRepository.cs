@@ -12,7 +12,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IAccountRepository
     {
-        Task<(List<Account>, int, int, int)> GetAccountsAsync(int pageNumber, int pageSize);
+        Task<(List<Account>, int)> GetAccountAsync();
         Task<Account> GetAccountById(string id);
         Task CreateAccount(Account account);
         Task UpdateAccount(Account account);

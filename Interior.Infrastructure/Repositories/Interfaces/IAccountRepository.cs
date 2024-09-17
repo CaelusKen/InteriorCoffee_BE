@@ -1,4 +1,6 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,25 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task CreateAccount(Account account);
         Task UpdateAccount(Account account);
         Task DeleteAccount(string id);
-        Task<List<Account>> GetAccountListByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null);
-        Task<Account> GetAccountByCondition(Expression<Func<Account, bool>> predicate = null, Expression<Func<Account, object>> orderBy = null);
+
+        #region Get Function
+        Task<Account> GetAccount(Expression<Func<Account, bool>> predicate = null, 
+                                 Expression<Func<Account, object>> orderBy = null);
+        Task<TResult> GetAccount<TResult>(Expression<Func<Account, TResult>> selector, 
+                                          Expression<Func<Account, bool>> predicate = null, 
+                                          Expression<Func<Account, object>> orderBy = null);
+        Task<List<Account>> GetAccountList(Expression<Func<Account, bool>> predicate = null, 
+                                           Expression<Func<Account, object>> orderBy = null);
+        Task<List<TResult>> GetAccountList<TResult>(Expression<Func<Account, TResult>> selector, 
+                                                    Expression<Func<Account, bool>> predicate = null, 
+                                                    Expression<Func<Account, object>> orderBy = null);
+        Task<IPaginate<Account>> GetAccountPagination(Expression<Func<Account, bool>> predicate = null,
+                                                      Expression<Func<Account, object>> orderBy = null,
+                                                      int page = 1, int size = 10);
+        Task<IPaginate<TResult>> GetAccountPagination<TResult>(Expression<Func<Account, TResult>> selector, 
+                                                               Expression<Func<Account, bool>> predicate = null, 
+                                                               Expression<Func<Account, object>> orderBy = null, 
+                                                               int page = 1, int size = 10);
+        #endregion
     }
 }

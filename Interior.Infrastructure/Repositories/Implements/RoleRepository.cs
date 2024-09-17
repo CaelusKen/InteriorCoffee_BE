@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -24,8 +25,34 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _roles = _database.GetCollection<Role>("Role");
             _logger = logger;
         }
-        
+
         #region CRUD Functions
+
+        #region Get Function
+        public async Task<Role> GetRole(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Role>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _roles.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _roles.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<TResult> GetRole<TResult>(Expression<Func<Role, TResult>> selector, Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Role>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _roles.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _roles.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
         public async Task<List<Role>> GetRoleList(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null)
         {
             var filterBuilder = Builders<Role>.Filter;
@@ -38,17 +65,42 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _roles.Find(filter).ToListAsync();
         }
 
-        public async Task<Role> GetRole(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null)
+        public async Task<List<TResult>> GetRoleList<TResult>(Expression<Func<Role, TResult>> selector, Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null)
         {
             var filterBuilder = Builders<Role>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _roles.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+            if (orderBy != null) return await _roles.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
 
-            return await _roles.Find(filter).FirstOrDefaultAsync();
+            return await _roles.Find(filter).Project(selector).ToListAsync();
         }
+
+        public async Task<IPaginate<Role>> GetRolePagination(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Role>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _roles.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _roles.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetRolePagination<TResult>(Expression<Func<Role, TResult>> selector, Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Role>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _roles.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _roles.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateRole(Role role)
         {

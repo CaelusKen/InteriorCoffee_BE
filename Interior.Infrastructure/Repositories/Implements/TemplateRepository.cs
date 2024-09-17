@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace InteriorCoffee.Infrastructure.Repositories.Implements
 {
@@ -46,7 +48,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             }
         }
 
-
+        #region Get Function
         public async Task<Template> GetTemplate(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
         {
             var filterBuilder = Builders<Template>.Filter;
@@ -58,6 +60,67 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
 
             return await _templates.Find(filter).FirstOrDefaultAsync();
         }
+
+        public async Task<TResult> GetTemplate<TResult>(Expression<Func<Template, TResult>> selector, Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Template>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _templates.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _templates.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Template>> GetTemplateList(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Template>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _templates.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _templates.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<TResult>> GetTemplateList<TResult>(Expression<Func<Template, TResult>> selector, Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Template>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _templates.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+
+            return await _templates.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<Template>> GetTemplatePagination(Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Template>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _templates.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _templates.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetTemplatePagination<TResult>(Expression<Func<Template, TResult>> selector, Expression<Func<Template, bool>> predicate = null, Expression<Func<Template, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Template>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _templates.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _templates.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateTemplate(Template template)
         {

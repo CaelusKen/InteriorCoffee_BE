@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace InteriorCoffee.Infrastructure.Repositories.Implements
 {
@@ -25,7 +27,31 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region CRUD Functions
+        #region Get Function
+        public async Task<SaleCampaign> GetSaleCampaign(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<SaleCampaign>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _saleCampaigns.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _saleCampaigns.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<TResult> GetSaleCampaign<TResult>(Expression<Func<SaleCampaign, TResult>> selector, Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<SaleCampaign>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _saleCampaigns.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _saleCampaigns.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
         public async Task<List<SaleCampaign>> GetSaleCampaignList(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
         {
             var filterBuilder = Builders<SaleCampaign>.Filter;
@@ -38,16 +64,40 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _saleCampaigns.Find(filter).ToListAsync();
         }
 
-        public async Task<SaleCampaign> GetSaleCampaign(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
+        public async Task<List<TResult>> GetSaleCampaignList<TResult>(Expression<Func<SaleCampaign, TResult>> selector, Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null)
         {
             var filterBuilder = Builders<SaleCampaign>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _saleCampaigns.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+            if (orderBy != null) return await _saleCampaigns.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
 
-            return await _saleCampaigns.Find(filter).FirstOrDefaultAsync();
+            return await _saleCampaigns.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<SaleCampaign>> GetSaleCampaignPagination(Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<SaleCampaign>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _saleCampaigns.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _saleCampaigns.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetSaleCampaignPagination<TResult>(Expression<Func<SaleCampaign, TResult>> selector, Expression<Func<SaleCampaign, bool>> predicate = null, Expression<Func<SaleCampaign, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<SaleCampaign>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _saleCampaigns.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _saleCampaigns.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
         }
         #endregion
 

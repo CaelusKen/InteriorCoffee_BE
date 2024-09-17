@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,28 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IRoleRepository
     {
-        public Task<List<Role>> GetRoleList(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null);
-        public Task<Role> GetRole(Expression<Func<Role, bool>> predicate = null, Expression<Func<Role, object>> orderBy = null);
         Task CreateRole(Role role);
         Task UpdateRole(Role role);
         Task DeleteRole(string id);
+
+        #region Get Function
+        Task<Role> GetRole(Expression<Func<Role, bool>> predicate = null,
+                                 Expression<Func<Role, object>> orderBy = null);
+        Task<TResult> GetRole<TResult>(Expression<Func<Role, TResult>> selector,
+                                          Expression<Func<Role, bool>> predicate = null,
+                                          Expression<Func<Role, object>> orderBy = null);
+        Task<List<Role>> GetRoleList(Expression<Func<Role, bool>> predicate = null,
+                                           Expression<Func<Role, object>> orderBy = null);
+        Task<List<TResult>> GetRoleList<TResult>(Expression<Func<Role, TResult>> selector,
+                                                    Expression<Func<Role, bool>> predicate = null,
+                                                    Expression<Func<Role, object>> orderBy = null);
+        Task<IPaginate<Role>> GetRolePagination(Expression<Func<Role, bool>> predicate = null,
+                                                      Expression<Func<Role, object>> orderBy = null,
+                                                      int page = 1, int size = 10);
+        Task<IPaginate<TResult>> GetRolePagination<TResult>(Expression<Func<Role, TResult>> selector,
+                                                               Expression<Func<Role, bool>> predicate = null,
+                                                               Expression<Func<Role, object>> orderBy = null,
+                                                               int page = 1, int size = 10);
+        #endregion
     }
 }

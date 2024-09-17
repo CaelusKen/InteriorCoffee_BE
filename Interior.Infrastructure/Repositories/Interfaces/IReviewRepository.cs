@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,28 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
     {
         Task<(List<Review>, int, int, int)> GetReviewsAsync(int pageNumber, int pageSize);
         Task<Review> GetReviewById(string id);
-        public Task<List<Review>> GetReviewList(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);
-        public Task<Review> GetReview(Expression<Func<Review, bool>> predicate = null, Expression<Func<Review, object>> orderBy = null);
         Task CreateReview(Review review);
         Task UpdateReview(Review review);
         Task DeleteReview(string id);
+
+        #region Get Function
+        Task<Review> GetReview(Expression<Func<Review, bool>> predicate = null,
+                                 Expression<Func<Review, object>> orderBy = null);
+        Task<TResult> GetReview<TResult>(Expression<Func<Review, TResult>> selector,
+                                          Expression<Func<Review, bool>> predicate = null,
+                                          Expression<Func<Review, object>> orderBy = null);
+        Task<List<Review>> GetReviewList(Expression<Func<Review, bool>> predicate = null,
+                                           Expression<Func<Review, object>> orderBy = null);
+        Task<List<TResult>> GetReviewList<TResult>(Expression<Func<Review, TResult>> selector,
+                                                    Expression<Func<Review, bool>> predicate = null,
+                                                    Expression<Func<Review, object>> orderBy = null);
+        Task<IPaginate<Review>> GetReviewPagination(Expression<Func<Review, bool>> predicate = null,
+                                                      Expression<Func<Review, object>> orderBy = null,
+                                                      int page = 1, int size = 10);
+        Task<IPaginate<TResult>> GetReviewPagination<TResult>(Expression<Func<Review, TResult>> selector,
+                                                               Expression<Func<Review, bool>> predicate = null,
+                                                               Expression<Func<Review, object>> orderBy = null,
+                                                               int page = 1, int size = 10);
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Base;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -25,33 +26,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             _logger = logger;
         }
 
-        #region Conditional Get
-        public async Task<List<Order>> GetOrderListByCondition(Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Order>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).ToListAsync();
-
-            return await _orders.Find(filter).ToListAsync();
-        }
-
-        public async Task<Order> GetOrderByCondition(Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null)
-        {
-            var filterBuilder = Builders<Order>.Filter;
-            var filter = filterBuilder.Empty;
-
-            if (predicate != null) filter = filterBuilder.Where(predicate);
-
-            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
-
-            return await _orders.Find(filter).FirstOrDefaultAsync();
-        }
-        #endregion
-
-
         public async Task<(List<Order>, int, int, int)> GetOrdersAsync(int pageNumber, int pageSize)
         {
             try
@@ -72,11 +46,84 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             }
         }
 
-
         public async Task<Order> GetOrderById(string id)
         {
             return await _orders.Find(c => c._id == id).FirstOrDefaultAsync();
         }
+
+        #region Get Function
+        public async Task<Order> GetOrder(Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Order>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+
+            return await _orders.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<TResult> GetOrder<TResult>(Expression<Func<Order, TResult>> selector, Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Order>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+
+            return await _orders.Find(filter).Project(selector).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Order>> GetOrderList(Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Order>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).ToListAsync();
+
+            return await _orders.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<TResult>> GetOrderList<TResult>(Expression<Func<Order, TResult>> selector, Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null)
+        {
+            var filterBuilder = Builders<Order>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+
+            return await _orders.Find(filter).Project(selector).ToListAsync();
+        }
+
+        public async Task<IPaginate<Order>> GetOrderPagination(Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Order>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+
+            return await _orders.Find(filter).ToPaginateAsync(page, size, 1);
+        }
+
+        public async Task<IPaginate<TResult>> GetOrderPagination<TResult>(Expression<Func<Order, TResult>> selector, Expression<Func<Order, bool>> predicate = null, Expression<Func<Order, object>> orderBy = null, int page = 1, int size = 10)
+        {
+            var filterBuilder = Builders<Order>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (predicate != null) filter = filterBuilder.Where(predicate);
+
+            if (orderBy != null) return await _orders.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            return await _orders.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
+        }
+        #endregion
 
         public async Task UpdateOrder(Order order)
         {

@@ -2,6 +2,7 @@
 using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

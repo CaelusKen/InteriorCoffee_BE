@@ -50,67 +50,101 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
 
         #region Get Function
-        public async Task<ProductCategory> GetProductCategory(Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null)
+        public async Task<ProductCategory> GetProductCategory(Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true)
         {
             var filterBuilder = Builders<ProductCategory>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _productCategories.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+            if (orderBy != null)
+            {
+                if (isAscend)
+                    return await _productCategories.Find(filter).SortBy(orderBy).FirstOrDefaultAsync();
+                else
+                    return await _productCategories.Find(filter).SortByDescending(orderBy).FirstOrDefaultAsync();
+            }
 
             return await _productCategories.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<TResult> GetProductCategory<TResult>(Expression<Func<ProductCategory, TResult>> selector, Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null)
+        public async Task<TResult> GetProductCategory<TResult>(Expression<Func<ProductCategory, TResult>> selector, Expression<Func<ProductCategory, bool>> predicate = null,
+            Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true)
         {
             var filterBuilder = Builders<ProductCategory>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _productCategories.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+            if (orderBy != null)
+            {
+                if (isAscend)
+                    return await _productCategories.Find(filter).SortBy(orderBy).Project(selector).FirstOrDefaultAsync();
+                else
+                    return await _productCategories.Find(filter).SortByDescending(orderBy).Project(selector).FirstOrDefaultAsync();
+            }
 
             return await _productCategories.Find(filter).Project(selector).FirstOrDefaultAsync();
         }
 
-        public async Task<List<ProductCategory>> GetProductCategoryList(Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null)
+        public async Task<List<ProductCategory>> GetProductCategoryList(Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true)
         {
             var filterBuilder = Builders<ProductCategory>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _productCategories.Find(filter).SortBy(orderBy).ToListAsync();
+            if (orderBy != null)
+            {
+                if (isAscend)
+                    return await _productCategories.Find(filter).SortBy(orderBy).ToListAsync();
+                else
+                    return await _productCategories.Find(filter).SortByDescending(orderBy).ToListAsync();
+            }
 
             return await _productCategories.Find(filter).ToListAsync();
         }
 
-        public async Task<List<TResult>> GetProductCategoryList<TResult>(Expression<Func<ProductCategory, TResult>> selector, Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null)
+        public async Task<List<TResult>> GetProductCategoryList<TResult>(Expression<Func<ProductCategory, TResult>> selector, Expression<Func<ProductCategory, bool>> predicate = null,
+            Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true)
         {
             var filterBuilder = Builders<ProductCategory>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _productCategories.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+            if (orderBy != null)
+            {
+                if (isAscend)
+                    return await _productCategories.Find(filter).SortBy(orderBy).Project(selector).ToListAsync();
+                else
+                    return await _productCategories.Find(filter).SortByDescending(orderBy).Project(selector).ToListAsync();
+            }
 
             return await _productCategories.Find(filter).Project(selector).ToListAsync();
         }
 
-        public async Task<IPaginate<ProductCategory>> GetProductCategoryPagination(Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null, int page = 1, int size = 10)
+        public async Task<IPaginate<ProductCategory>> GetProductCategoryPagination(Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null,
+            bool isAscend = true, int page = 1, int size = 10)
         {
             var filterBuilder = Builders<ProductCategory>.Filter;
             var filter = filterBuilder.Empty;
 
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
-            if (orderBy != null) return await _productCategories.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+            if (orderBy != null)
+            {
+                if (isAscend)
+                    return await _productCategories.Find(filter).SortBy(orderBy).ToPaginateAsync(page, size, 1);
+                else
+                    return await _productCategories.Find(filter).SortByDescending(orderBy).ToPaginateAsync(page, size, 1);
+            }
 
             return await _productCategories.Find(filter).ToPaginateAsync(page, size, 1);
         }
 
-        public async Task<IPaginate<TResult>> GetProductCategoryPagination<TResult>(Expression<Func<ProductCategory, TResult>> selector, Expression<Func<ProductCategory, bool>> predicate = null, Expression<Func<ProductCategory, object>> orderBy = null, int page = 1, int size = 10)
+        public async Task<IPaginate<TResult>> GetProductCategoryPagination<TResult>(Expression<Func<ProductCategory, TResult>> selector, Expression<Func<ProductCategory, bool>> predicate = null,
+            Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true, int page = 1, int size = 10)
         {
             var filterBuilder = Builders<ProductCategory>.Filter;
             var filter = filterBuilder.Empty;
@@ -118,6 +152,14 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             if (predicate != null) filter = filterBuilder.Where(predicate);
 
             if (orderBy != null) return await _productCategories.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+
+            if (orderBy != null)
+            {
+                if (isAscend)
+                    return await _productCategories.Find(filter).SortBy(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+                else
+                    return await _productCategories.Find(filter).SortByDescending(orderBy).Project(selector).ToPaginateAsync(page, size, 1);
+            }
 
             return await _productCategories.Find(filter).Project(selector).ToPaginateAsync(page, size, 1);
         }

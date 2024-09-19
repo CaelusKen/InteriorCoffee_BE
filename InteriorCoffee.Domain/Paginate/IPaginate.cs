@@ -10,7 +10,7 @@ namespace InteriorCoffee.Domain.Paginate
     {
         int Size { get; }
         int Page { get; }
-        long Total { get; }
+        long TotalItems { get; }
         int TotalPages { get; }
         IList<TResult> Items { get; }
     }

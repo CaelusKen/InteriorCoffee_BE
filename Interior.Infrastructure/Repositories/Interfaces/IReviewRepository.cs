@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Review> GetReview(Expression<Func<Review, bool>> predicate = null,
-                                 Expression<Func<Review, object>> orderBy = null);
+                                 Expression<Func<Review, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetReview<TResult>(Expression<Func<Review, TResult>> selector,
                                           Expression<Func<Review, bool>> predicate = null,
-                                          Expression<Func<Review, object>> orderBy = null);
+                                          Expression<Func<Review, object>> orderBy = null, bool isAscend = true);
         Task<List<Review>> GetReviewList(Expression<Func<Review, bool>> predicate = null,
-                                           Expression<Func<Review, object>> orderBy = null);
+                                           Expression<Func<Review, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetReviewList<TResult>(Expression<Func<Review, TResult>> selector,
                                                     Expression<Func<Review, bool>> predicate = null,
-                                                    Expression<Func<Review, object>> orderBy = null);
+                                                    Expression<Func<Review, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Review>> GetReviewPagination(Expression<Func<Review, bool>> predicate = null,
-                                                      Expression<Func<Review, object>> orderBy = null,
+                                                      Expression<Func<Review, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetReviewPagination<TResult>(Expression<Func<Review, TResult>> selector,
                                                                Expression<Func<Review, bool>> predicate = null,
-                                                               Expression<Func<Review, object>> orderBy = null,
+                                                               Expression<Func<Review, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

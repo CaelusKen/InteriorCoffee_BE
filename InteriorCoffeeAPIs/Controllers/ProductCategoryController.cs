@@ -2,6 +2,7 @@
 using InteriorCoffee.Application.DTOs.ProductCategory;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -21,20 +22,19 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.ProductCategory.ProductCategoriesEndpoint)]
-        [ProducesResponseType(typeof(List<ProductCategory>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<ProductCategory>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all product categories with pagination")]
         public async Task<IActionResult> GetProductCategories([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
             var (productCategories, currentPage, currentPageSize, totalItems, totalPages) = await _productCategoryService.GetProductCategoriesAsync(pageNo, pageSize);
 
-            var response = new
+            var response = new Paginate<ProductCategory>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = productCategories.Count,
-                TotalPage = totalPages,
-                ProductCategories = productCategories
+                Items = productCategories,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = productCategories.Count,
             };
 
             return Ok(response);

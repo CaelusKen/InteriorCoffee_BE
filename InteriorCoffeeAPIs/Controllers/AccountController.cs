@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Account;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,7 +23,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
-        [ProducesResponseType(typeof(List<Account>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Account>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all accounts with pagination and sorting. " +
             "Ex url: GET /api/accounts?pageNo=1&pageSize=10&sortBy=username&ascending=true\r\n")]
         public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
@@ -35,21 +36,17 @@ namespace InteriorCoffeeAPIs.Controllers
 
             var (accounts, currentPage, currentPageSize, totalItems, totalPages) = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy);
 
-            var response = new
+            var response = new Paginate<Account>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = accounts.Count,
-                TotalPage = totalPages,
-                Filter = sortBy,
-                Ascending = ascending,
-                Accounts = accounts
+                Items = accounts,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalItems = totalItems,
+                TotalPages = totalPages
             };
 
             return Ok(response);
         }
-
 
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static InteriorCoffee.Application.Constants.ApiEndPointConstant;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -24,7 +25,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
 
         [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint)]
-        [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<InteriorCoffee.Domain.Models.Product>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all products with pagination, price range, and sorting. " +
             "Ex url: GET /api/products?pageNo=1&pageSize=10&minPrice=30&maxPrice=60&sortBy=name&ascending=true\r\n")]
         public async Task<IActionResult> GetProducts([FromQuery] int? pageNo, [FromQuery] int? pageSize,
@@ -47,54 +48,20 @@ namespace InteriorCoffeeAPIs.Controllers
             var (products, currentPage, currentPageSize, totalItems, filteredTotalPages, actualMinPrice, actualMaxPrice, listAfter)
                 = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter);
 
-            var response = new
+            var response = new Paginate<InteriorCoffee.Domain.Models.Product>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = products.Count,
-                ListAfter = listAfter,
-                TotalPage = filteredTotalPages,
-                MinPrice = minPrice ?? actualMinPrice,
-                MaxPrice = maxPrice ?? actualMaxPrice,
-                OrderBy = new
-                {
-                    SortBy = sortBy,
-                    Ascending = ascending
-                },
-                Filter = new
-                {
-                    Status = status,
-                    CategoryId = categoryId,
-                    MerchantId = merchantId
-                },
-                Products = products
+                Items = products,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalItems = totalItems,
+                TotalPages = filteredTotalPages,
             };
 
             return Ok(response);
         }
 
-        /// <summary>
-        /// Testing Controller
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint + "/test")]
-        [ProducesResponseType(typeof(IPaginate<GetProductDTO>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get a product by id")]
-        public async Task<IActionResult> GetProductTest()
-        {
-            var result = await _productService.GetProductList();
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
-
-
         [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a product by id")]
         public async Task<IActionResult> GetProductById(string id)
         {
@@ -144,7 +111,6 @@ namespace InteriorCoffeeAPIs.Controllers
             await _productService.SoftDeleteProductAsync(id);
             return Ok("Product successfully soft deleted");
         }
-
 
         [HttpDelete(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

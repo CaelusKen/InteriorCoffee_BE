@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Design> GetDesign(Expression<Func<Design, bool>> predicate = null,
-                                 Expression<Func<Design, object>> orderBy = null);
+                                 Expression<Func<Design, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetDesign<TResult>(Expression<Func<Design, TResult>> selector,
                                           Expression<Func<Design, bool>> predicate = null,
-                                          Expression<Func<Design, object>> orderBy = null);
+                                          Expression<Func<Design, object>> orderBy = null, bool isAscend = true);
         Task<List<Design>> GetDesignList(Expression<Func<Design, bool>> predicate = null,
-                                           Expression<Func<Design, object>> orderBy = null);
+                                           Expression<Func<Design, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetDesignList<TResult>(Expression<Func<Design, TResult>> selector,
                                                     Expression<Func<Design, bool>> predicate = null,
-                                                    Expression<Func<Design, object>> orderBy = null);
+                                                    Expression<Func<Design, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Design>> GetDesignPagination(Expression<Func<Design, bool>> predicate = null,
-                                                      Expression<Func<Design, object>> orderBy = null,
+                                                      Expression<Func<Design, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetDesignPagination<TResult>(Expression<Func<Design, TResult>> selector,
                                                                Expression<Func<Design, bool>> predicate = null,
-                                                               Expression<Func<Design, object>> orderBy = null,
+                                                               Expression<Func<Design, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

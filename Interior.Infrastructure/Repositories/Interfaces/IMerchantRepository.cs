@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Merchant> GetMerchant(Expression<Func<Merchant, bool>> predicate = null,
-                                 Expression<Func<Merchant, object>> orderBy = null);
+                                 Expression<Func<Merchant, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetMerchant<TResult>(Expression<Func<Merchant, TResult>> selector,
                                           Expression<Func<Merchant, bool>> predicate = null,
-                                          Expression<Func<Merchant, object>> orderBy = null);
+                                          Expression<Func<Merchant, object>> orderBy = null, bool isAscend = true);
         Task<List<Merchant>> GetMerchantList(Expression<Func<Merchant, bool>> predicate = null,
-                                           Expression<Func<Merchant, object>> orderBy = null);
+                                           Expression<Func<Merchant, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetMerchantList<TResult>(Expression<Func<Merchant, TResult>> selector,
                                                     Expression<Func<Merchant, bool>> predicate = null,
-                                                    Expression<Func<Merchant, object>> orderBy = null);
+                                                    Expression<Func<Merchant, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Merchant>> GetMerchantPagination(Expression<Func<Merchant, bool>> predicate = null,
-                                                      Expression<Func<Merchant, object>> orderBy = null,
+                                                      Expression<Func<Merchant, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetMerchantPagination<TResult>(Expression<Func<Merchant, TResult>> selector,
                                                                Expression<Func<Merchant, bool>> predicate = null,
-                                                               Expression<Func<Merchant, object>> orderBy = null,
+                                                               Expression<Func<Merchant, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

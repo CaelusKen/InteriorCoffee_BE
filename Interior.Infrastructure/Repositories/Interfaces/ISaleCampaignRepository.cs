@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<SaleCampaign> GetSaleCampaign(Expression<Func<SaleCampaign, bool>> predicate = null,
-                                 Expression<Func<SaleCampaign, object>> orderBy = null);
+                                 Expression<Func<SaleCampaign, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetSaleCampaign<TResult>(Expression<Func<SaleCampaign, TResult>> selector,
                                           Expression<Func<SaleCampaign, bool>> predicate = null,
-                                          Expression<Func<SaleCampaign, object>> orderBy = null);
+                                          Expression<Func<SaleCampaign, object>> orderBy = null, bool isAscend = true);
         Task<List<SaleCampaign>> GetSaleCampaignList(Expression<Func<SaleCampaign, bool>> predicate = null,
-                                           Expression<Func<SaleCampaign, object>> orderBy = null);
+                                           Expression<Func<SaleCampaign, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetSaleCampaignList<TResult>(Expression<Func<SaleCampaign, TResult>> selector,
                                                     Expression<Func<SaleCampaign, bool>> predicate = null,
-                                                    Expression<Func<SaleCampaign, object>> orderBy = null);
+                                                    Expression<Func<SaleCampaign, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<SaleCampaign>> GetSaleCampaignPagination(Expression<Func<SaleCampaign, bool>> predicate = null,
-                                                      Expression<Func<SaleCampaign, object>> orderBy = null,
+                                                      Expression<Func<SaleCampaign, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetSaleCampaignPagination<TResult>(Expression<Func<SaleCampaign, TResult>> selector,
                                                                Expression<Func<SaleCampaign, bool>> predicate = null,
-                                                               Expression<Func<SaleCampaign, object>> orderBy = null,
+                                                               Expression<Func<SaleCampaign, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

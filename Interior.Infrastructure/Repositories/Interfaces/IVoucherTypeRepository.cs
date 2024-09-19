@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<VoucherType> GetVoucherType(Expression<Func<VoucherType, bool>> predicate = null,
-                                 Expression<Func<VoucherType, object>> orderBy = null);
+                                 Expression<Func<VoucherType, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetVoucherType<TResult>(Expression<Func<VoucherType, TResult>> selector,
                                           Expression<Func<VoucherType, bool>> predicate = null,
-                                          Expression<Func<VoucherType, object>> orderBy = null);
+                                          Expression<Func<VoucherType, object>> orderBy = null, bool isAscend = true);
         Task<List<VoucherType>> GetVoucherTypeList(Expression<Func<VoucherType, bool>> predicate = null,
-                                           Expression<Func<VoucherType, object>> orderBy = null);
+                                           Expression<Func<VoucherType, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetVoucherTypeList<TResult>(Expression<Func<VoucherType, TResult>> selector,
                                                     Expression<Func<VoucherType, bool>> predicate = null,
-                                                    Expression<Func<VoucherType, object>> orderBy = null);
+                                                    Expression<Func<VoucherType, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<VoucherType>> GetVoucherTypePagination(Expression<Func<VoucherType, bool>> predicate = null,
-                                                      Expression<Func<VoucherType, object>> orderBy = null,
+                                                      Expression<Func<VoucherType, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetVoucherTypePagination<TResult>(Expression<Func<VoucherType, TResult>> selector,
                                                                Expression<Func<VoucherType, bool>> predicate = null,
-                                                               Expression<Func<VoucherType, object>> orderBy = null,
+                                                               Expression<Func<VoucherType, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

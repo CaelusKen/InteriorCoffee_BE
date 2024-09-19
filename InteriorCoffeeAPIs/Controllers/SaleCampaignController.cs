@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.SaleCampaign;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -14,30 +15,29 @@ namespace InteriorCoffeeAPIs.Controllers
     {
         private readonly ISaleCampaignService _saleCampaignService;
 
-        public SaleCampaignController(ILogger<SaleCampaignController> logger,ISaleCampaignService saleCampaignService) : base(logger)
+        public SaleCampaignController(ILogger<SaleCampaignController> logger, ISaleCampaignService saleCampaignService) : base(logger)
         {
             _saleCampaignService = saleCampaignService;
         }
 
-    [HttpGet(ApiEndPointConstant.SaleCampaign.SaleCampaignsEndpoint)]
-    [ProducesResponseType(typeof(List<SaleCampaign>), StatusCodes.Status200OK)]
-    [SwaggerOperation(Summary = "Get all sale campaigns with pagination")]
-    public async Task<IActionResult> GetSaleCampaigns([FromQuery] int? pageNo, [FromQuery] int? pageSize)
-    {
-        var (saleCampaigns, currentPage, currentPageSize, totalItems, totalPages) = await _saleCampaignService.GetSaleCampaignsAsync(pageNo, pageSize);
-
-        var response = new
+        [HttpGet(ApiEndPointConstant.SaleCampaign.SaleCampaignsEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<SaleCampaign>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all sale campaigns with pagination")]
+        public async Task<IActionResult> GetSaleCampaigns([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            PageNo = currentPage,
-            PageSize = currentPageSize,
-            ListSize = totalItems,
-            CurrentPageSize = saleCampaigns.Count,
-            TotalPage = totalPages,
-            SaleCampaigns = saleCampaigns
-        };
+            var (saleCampaigns, currentPage, currentPageSize, totalItems, totalPages) = await _saleCampaignService.GetSaleCampaignsAsync(pageNo, pageSize);
 
-        return Ok(response);
-    }
+            var response = new Paginate<SaleCampaign>
+            {
+                Items = saleCampaigns,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = saleCampaigns.Count
+            };
+
+            return Ok(response);
+        }
 
         [HttpGet(ApiEndPointConstant.SaleCampaign.SaleCampaignEndpoint)]
         [ProducesResponseType(typeof(SaleCampaign), StatusCodes.Status200OK)]

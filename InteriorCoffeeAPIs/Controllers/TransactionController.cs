@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Transaction;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Domain.PaymentModel.PayPal;
 using InteriorCoffee.Domain.PaymentModel.VNPay;
 using Microsoft.AspNetCore.Http;
@@ -24,20 +25,19 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Transaction.TransactionsEndpoint)]
-        [ProducesResponseType(typeof(List<Transaction>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Transaction>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all transactions with pagination")]
         public async Task<IActionResult> GetTransactions([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
             var (transactions, currentPage, currentPageSize, totalItems, totalPages) = await _transactionService.GetTransactionsAsync(pageNo, pageSize);
 
-            var response = new
+            var response = new Paginate<Transaction>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = transactions.Count,
-                TotalPage = totalPages,
-                Transactions = transactions
+                Items = transactions,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = transactions.Count,
             };
 
             return Ok(response);

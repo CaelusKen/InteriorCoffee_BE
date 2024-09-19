@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Merchant;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,7 +23,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
-        [ProducesResponseType(typeof(List<Merchant>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Merchant>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all merchants with pagination and sorting. " +
             "Ex url: GET /api/merchants?pageNo=1&pageSize=10&sortBy=name&ascending=true\r\n")]
         public async Task<IActionResult> GetMerchants([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
@@ -35,16 +36,13 @@ namespace InteriorCoffeeAPIs.Controllers
 
             var (merchants, currentPage, currentPageSize, totalItems, totalPages) = await _merchantService.GetMerchantsAsync(pageNo, pageSize, orderBy);
 
-            var response = new
+            var response = new Paginate<Merchant>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = merchants.Count,
-                TotalPage = totalPages,
-                Filter = sortBy,
-                Ascending = ascending,
-                Merchants = merchants
+                Items = merchants,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = merchants.Count
             };
 
             return Ok(response);

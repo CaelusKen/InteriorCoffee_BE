@@ -17,21 +17,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Role> GetRole(Expression<Func<Role, bool>> predicate = null,
-                                 Expression<Func<Role, object>> orderBy = null);
+                                 Expression<Func<Role, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetRole<TResult>(Expression<Func<Role, TResult>> selector,
                                           Expression<Func<Role, bool>> predicate = null,
-                                          Expression<Func<Role, object>> orderBy = null);
+                                          Expression<Func<Role, object>> orderBy = null, bool isAscend = true);
         Task<List<Role>> GetRoleList(Expression<Func<Role, bool>> predicate = null,
-                                           Expression<Func<Role, object>> orderBy = null);
+                                           Expression<Func<Role, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetRoleList<TResult>(Expression<Func<Role, TResult>> selector,
                                                     Expression<Func<Role, bool>> predicate = null,
-                                                    Expression<Func<Role, object>> orderBy = null);
+                                                    Expression<Func<Role, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Role>> GetRolePagination(Expression<Func<Role, bool>> predicate = null,
-                                                      Expression<Func<Role, object>> orderBy = null,
+                                                      Expression<Func<Role, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetRolePagination<TResult>(Expression<Func<Role, TResult>> selector,
                                                                Expression<Func<Role, bool>> predicate = null,
-                                                               Expression<Func<Role, object>> orderBy = null,
+                                                               Expression<Func<Role, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

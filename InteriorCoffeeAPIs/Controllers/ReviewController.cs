@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Review;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,20 +20,19 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Review.ReviewsEndpoint)]
-        [ProducesResponseType(typeof(List<Review>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Review>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all reviews with pagination")]
         public async Task<IActionResult> GetReviews([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
             var (reviews, currentPage, currentPageSize, totalItems, totalPages) = await _reviewService.GetReviewsAsync(pageNo, pageSize);
 
-            var response = new
+            var response = new Paginate<Review>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = reviews.Count,
-                TotalPage = totalPages,
-                Reviews = reviews
+                Items = reviews,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = reviews.Count,
             };
 
             return Ok(response);

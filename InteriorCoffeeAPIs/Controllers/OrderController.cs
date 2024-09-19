@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Order;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,7 +23,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Order.OrdersEndpoint)]
-        [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all orders with pagination and sorting")]
         public async Task<IActionResult> GetOrders([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
         {
@@ -34,16 +35,13 @@ namespace InteriorCoffeeAPIs.Controllers
 
             var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetOrdersAsync(pageNo, pageSize, orderBy);
 
-            var response = new
+            var response = new Paginate<Order>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = orders.Count,
-                TotalPage = totalPages,
-                Filter = sortBy,
-                Ascending = ascending,
-                Orders = orders
+                Items = orders,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = orders.Count,
             };
 
             return Ok(response);

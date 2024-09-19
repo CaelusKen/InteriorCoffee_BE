@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Voucher> GetVoucher(Expression<Func<Voucher, bool>> predicate = null,
-                                 Expression<Func<Voucher, object>> orderBy = null);
+                                 Expression<Func<Voucher, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetVoucher<TResult>(Expression<Func<Voucher, TResult>> selector,
                                           Expression<Func<Voucher, bool>> predicate = null,
-                                          Expression<Func<Voucher, object>> orderBy = null);
+                                          Expression<Func<Voucher, object>> orderBy = null, bool isAscend = true);
         Task<List<Voucher>> GetVoucherList(Expression<Func<Voucher, bool>> predicate = null,
-                                           Expression<Func<Voucher, object>> orderBy = null);
+                                           Expression<Func<Voucher, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetVoucherList<TResult>(Expression<Func<Voucher, TResult>> selector,
                                                     Expression<Func<Voucher, bool>> predicate = null,
-                                                    Expression<Func<Voucher, object>> orderBy = null);
+                                                    Expression<Func<Voucher, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Voucher>> GetVoucherPagination(Expression<Func<Voucher, bool>> predicate = null,
-                                                      Expression<Func<Voucher, object>> orderBy = null,
+                                                      Expression<Func<Voucher, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetVoucherPagination<TResult>(Expression<Func<Voucher, TResult>> selector,
                                                                Expression<Func<Voucher, bool>> predicate = null,
-                                                               Expression<Func<Voucher, object>> orderBy = null,
+                                                               Expression<Func<Voucher, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

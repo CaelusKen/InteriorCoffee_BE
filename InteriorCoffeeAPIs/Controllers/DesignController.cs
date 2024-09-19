@@ -2,6 +2,7 @@
 using InteriorCoffee.Application.DTOs.Design;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -21,20 +22,19 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Design.DesignsEndpoint)]
-        [ProducesResponseType(typeof(List<Design>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Design>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all designs with pagination")]
         public async Task<IActionResult> GetDesigns([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
             var (designs, currentPage, currentPageSize, totalItems, totalPages) = await _designService.GetDesignsAsync(pageNo, pageSize);
 
-            var response = new
+            var response = new Paginate<Design>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = designs.Count,
-                TotalPage = totalPages,
-                Designs = designs
+                Items = designs,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = designs.Count,
             };
 
             return Ok(response);

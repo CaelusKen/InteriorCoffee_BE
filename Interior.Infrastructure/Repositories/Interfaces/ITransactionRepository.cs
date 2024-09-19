@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Transaction> GetTransaction(Expression<Func<Transaction, bool>> predicate = null,
-                                 Expression<Func<Transaction, object>> orderBy = null);
+                                 Expression<Func<Transaction, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetTransaction<TResult>(Expression<Func<Transaction, TResult>> selector,
                                           Expression<Func<Transaction, bool>> predicate = null,
-                                          Expression<Func<Transaction, object>> orderBy = null);
+                                          Expression<Func<Transaction, object>> orderBy = null, bool isAscend = true);
         Task<List<Transaction>> GetTransactionList(Expression<Func<Transaction, bool>> predicate = null,
-                                           Expression<Func<Transaction, object>> orderBy = null);
+                                           Expression<Func<Transaction, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetTransactionList<TResult>(Expression<Func<Transaction, TResult>> selector,
                                                     Expression<Func<Transaction, bool>> predicate = null,
-                                                    Expression<Func<Transaction, object>> orderBy = null);
+                                                    Expression<Func<Transaction, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Transaction>> GetTransactionPagination(Expression<Func<Transaction, bool>> predicate = null,
-                                                      Expression<Func<Transaction, object>> orderBy = null,
+                                                      Expression<Func<Transaction, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetTransactionPagination<TResult>(Expression<Func<Transaction, TResult>> selector,
                                                                Expression<Func<Transaction, bool>> predicate = null,
-                                                               Expression<Func<Transaction, object>> orderBy = null,
+                                                               Expression<Func<Transaction, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

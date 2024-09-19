@@ -10,6 +10,7 @@ using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Application.Utils;
 using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Infrastructure.Repositories.Implements;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +33,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _roleRepository = roleRepository;
         }
 
+        #region Service Filtering
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
             { "username", "UserName" },
@@ -97,7 +99,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 return (new List<Account>(), pagination.PageNo, pagination.PageSize, 0, 0);
             }
         }
-
+        #endregion
 
         public async Task<Account> GetAccountByIdAsync(string id)
         {
@@ -127,7 +129,6 @@ namespace InteriorCoffee.Application.Services.Implements
             // Create new account
             await _accountRepository.CreateAccount(newAccount);
         }
-
 
         public async Task UpdateAccountAsync(string id, UpdateAccountDTO updateAccountDTO)
         {

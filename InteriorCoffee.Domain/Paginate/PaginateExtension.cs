@@ -21,7 +21,7 @@ namespace InteriorCoffee.Domain.Paginate
             {
                 Page = page,
                 Size = size,
-                Total = total,
+                TotalItems = total,
                 Items = items,
                 TotalPages = totalPages
             };

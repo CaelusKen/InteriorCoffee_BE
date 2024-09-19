@@ -2,6 +2,7 @@
 using InteriorCoffee.Application.DTOs.VoucherType;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,20 +20,19 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.VoucherType.VoucherTypesEndpoint)]
-        [ProducesResponseType(typeof(List<VoucherType>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<VoucherType>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all voucher types with pagination")]
         public async Task<IActionResult> GetVoucherTypes([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
             var (voucherTypes, currentPage, currentPageSize, totalItems, totalPages) = await _voucherTypeService.GetVoucherTypesAsync(pageNo, pageSize);
 
-            var response = new
+            var response = new Paginate<VoucherType>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = voucherTypes.Count,
-                TotalPage = totalPages,
-                VoucherTypes = voucherTypes
+                Items = voucherTypes,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = voucherTypes.Count
             };
 
             return Ok(response);

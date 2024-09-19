@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;

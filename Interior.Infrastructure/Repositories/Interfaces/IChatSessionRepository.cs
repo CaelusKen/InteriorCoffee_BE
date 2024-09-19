@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<ChatSession> GetChatSession(Expression<Func<ChatSession, bool>> predicate = null,
-                                 Expression<Func<ChatSession, object>> orderBy = null);
+                                 Expression<Func<ChatSession, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetChatSession<TResult>(Expression<Func<ChatSession, TResult>> selector,
                                           Expression<Func<ChatSession, bool>> predicate = null,
-                                          Expression<Func<ChatSession, object>> orderBy = null);
+                                          Expression<Func<ChatSession, object>> orderBy = null, bool isAscend = true);
         Task<List<ChatSession>> GetChatSessionList(Expression<Func<ChatSession, bool>> predicate = null,
-                                           Expression<Func<ChatSession, object>> orderBy = null);
+                                           Expression<Func<ChatSession, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetChatSessionList<TResult>(Expression<Func<ChatSession, TResult>> selector,
                                                     Expression<Func<ChatSession, bool>> predicate = null,
-                                                    Expression<Func<ChatSession, object>> orderBy = null);
+                                                    Expression<Func<ChatSession, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<ChatSession>> GetChatSessionPagination(Expression<Func<ChatSession, bool>> predicate = null,
-                                                      Expression<Func<ChatSession, object>> orderBy = null,
+                                                      Expression<Func<ChatSession, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetChatSessionPagination<TResult>(Expression<Func<ChatSession, TResult>> selector,
                                                                Expression<Func<ChatSession, bool>> predicate = null,
-                                                               Expression<Func<ChatSession, object>> orderBy = null,
+                                                               Expression<Func<ChatSession, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

@@ -20,21 +20,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<ProductCategory> GetProductCategory(Expression<Func<ProductCategory, bool>> predicate = null,
-                                 Expression<Func<ProductCategory, object>> orderBy = null);
+                                 Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetProductCategory<TResult>(Expression<Func<ProductCategory, TResult>> selector,
                                           Expression<Func<ProductCategory, bool>> predicate = null,
-                                          Expression<Func<ProductCategory, object>> orderBy = null);
+                                          Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true);
         Task<List<ProductCategory>> GetProductCategoryList(Expression<Func<ProductCategory, bool>> predicate = null,
-                                           Expression<Func<ProductCategory, object>> orderBy = null);
+                                           Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetProductCategoryList<TResult>(Expression<Func<ProductCategory, TResult>> selector,
                                                     Expression<Func<ProductCategory, bool>> predicate = null,
-                                                    Expression<Func<ProductCategory, object>> orderBy = null);
+                                                    Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<ProductCategory>> GetProductCategoryPagination(Expression<Func<ProductCategory, bool>> predicate = null,
-                                                      Expression<Func<ProductCategory, object>> orderBy = null,
+                                                      Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetProductCategoryPagination<TResult>(Expression<Func<ProductCategory, TResult>> selector,
                                                                Expression<Func<ProductCategory, bool>> predicate = null,
-                                                               Expression<Func<ProductCategory, object>> orderBy = null,
+                                                               Expression<Func<ProductCategory, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

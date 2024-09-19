@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Style;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -20,20 +21,19 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Style.StylesEndpoint)]
-        [ProducesResponseType(typeof(List<Style>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Style>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all styles with pagination")]
         public async Task<IActionResult> GetStyles([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
             var (styles, currentPage, currentPageSize, totalItems, totalPages) = await _styleService.GetStylesAsync(pageNo, pageSize);
 
-            var response = new
+            var response = new Paginate<Style>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = styles.Count,
-                TotalPage = totalPages,
-                Styles = styles
+                Items = styles,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = styles.Count,
             };
 
             return Ok(response);

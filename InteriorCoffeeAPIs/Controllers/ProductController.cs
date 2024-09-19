@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static InteriorCoffee.Application.Constants.ApiEndPointConstant;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -54,7 +55,6 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-
         /// <summary>
         /// Testing Controller
         /// </summary>
@@ -73,9 +73,8 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-
         [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a product by id")]
         public async Task<IActionResult> GetProductById(string id)
         {
@@ -147,7 +146,6 @@ namespace InteriorCoffeeAPIs.Controllers
             await _productService.SoftDeleteProductAsync(id);
             return Ok("Product successfully soft deleted");
         }
-
 
         [HttpDelete(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

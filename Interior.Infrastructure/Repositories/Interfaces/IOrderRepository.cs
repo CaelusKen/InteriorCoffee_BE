@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Order> GetOrder(Expression<Func<Order, bool>> predicate = null,
-                                 Expression<Func<Order, object>> orderBy = null);
+                                 Expression<Func<Order, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetOrder<TResult>(Expression<Func<Order, TResult>> selector,
                                           Expression<Func<Order, bool>> predicate = null,
-                                          Expression<Func<Order, object>> orderBy = null);
+                                          Expression<Func<Order, object>> orderBy = null, bool isAscend = true);
         Task<List<Order>> GetOrderList(Expression<Func<Order, bool>> predicate = null,
-                                           Expression<Func<Order, object>> orderBy = null);
+                                           Expression<Func<Order, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetOrderList<TResult>(Expression<Func<Order, TResult>> selector,
                                                     Expression<Func<Order, bool>> predicate = null,
-                                                    Expression<Func<Order, object>> orderBy = null);
+                                                    Expression<Func<Order, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Order>> GetOrderPagination(Expression<Func<Order, bool>> predicate = null,
-                                                      Expression<Func<Order, object>> orderBy = null,
+                                                      Expression<Func<Order, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetOrderPagination<TResult>(Expression<Func<Order, TResult>> selector,
                                                                Expression<Func<Order, bool>> predicate = null,
-                                                               Expression<Func<Order, object>> orderBy = null,
+                                                               Expression<Func<Order, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

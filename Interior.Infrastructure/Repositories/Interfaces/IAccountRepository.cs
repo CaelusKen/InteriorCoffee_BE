@@ -19,22 +19,22 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task DeleteAccount(string id);
 
         #region Get Function
-        Task<Account> GetAccount(Expression<Func<Account, bool>> predicate = null, 
-                                 Expression<Func<Account, object>> orderBy = null);
-        Task<TResult> GetAccount<TResult>(Expression<Func<Account, TResult>> selector, 
-                                          Expression<Func<Account, bool>> predicate = null, 
-                                          Expression<Func<Account, object>> orderBy = null);
-        Task<List<Account>> GetAccountList(Expression<Func<Account, bool>> predicate = null, 
-                                           Expression<Func<Account, object>> orderBy = null);
-        Task<List<TResult>> GetAccountList<TResult>(Expression<Func<Account, TResult>> selector, 
-                                                    Expression<Func<Account, bool>> predicate = null, 
-                                                    Expression<Func<Account, object>> orderBy = null);
+        Task<Account> GetAccount(Expression<Func<Account, bool>> predicate = null,
+                                 Expression<Func<Account, object>> orderBy = null, bool isAscend = true);
+        Task<TResult> GetAccount<TResult>(Expression<Func<Account, TResult>> selector,
+                                          Expression<Func<Account, bool>> predicate = null,
+                                          Expression<Func<Account, object>> orderBy = null, bool isAscend = true);
+        Task<List<Account>> GetAccountList(Expression<Func<Account, bool>> predicate = null,
+                                           Expression<Func<Account, object>> orderBy = null, bool isAscend = true);
+        Task<List<TResult>> GetAccountList<TResult>(Expression<Func<Account, TResult>> selector,
+                                                    Expression<Func<Account, bool>> predicate = null,
+                                                    Expression<Func<Account, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Account>> GetAccountPagination(Expression<Func<Account, bool>> predicate = null,
-                                                      Expression<Func<Account, object>> orderBy = null,
+                                                      Expression<Func<Account, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
-        Task<IPaginate<TResult>> GetAccountPagination<TResult>(Expression<Func<Account, TResult>> selector, 
-                                                               Expression<Func<Account, bool>> predicate = null, 
-                                                               Expression<Func<Account, object>> orderBy = null, 
+        Task<IPaginate<TResult>> GetAccountPagination<TResult>(Expression<Func<Account, TResult>> selector,
+                                                               Expression<Func<Account, bool>> predicate = null,
+                                                               Expression<Func<Account, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

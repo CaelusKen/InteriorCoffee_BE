@@ -19,21 +19,21 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 
         #region Get Function
         Task<Template> GetTemplate(Expression<Func<Template, bool>> predicate = null,
-                                 Expression<Func<Template, object>> orderBy = null);
+                                 Expression<Func<Template, object>> orderBy = null, bool isAscend = true);
         Task<TResult> GetTemplate<TResult>(Expression<Func<Template, TResult>> selector,
                                           Expression<Func<Template, bool>> predicate = null,
-                                          Expression<Func<Template, object>> orderBy = null);
+                                          Expression<Func<Template, object>> orderBy = null, bool isAscend = true);
         Task<List<Template>> GetTemplateList(Expression<Func<Template, bool>> predicate = null,
-                                           Expression<Func<Template, object>> orderBy = null);
+                                           Expression<Func<Template, object>> orderBy = null, bool isAscend = true);
         Task<List<TResult>> GetTemplateList<TResult>(Expression<Func<Template, TResult>> selector,
                                                     Expression<Func<Template, bool>> predicate = null,
-                                                    Expression<Func<Template, object>> orderBy = null);
+                                                    Expression<Func<Template, object>> orderBy = null, bool isAscend = true);
         Task<IPaginate<Template>> GetTemplatePagination(Expression<Func<Template, bool>> predicate = null,
-                                                      Expression<Func<Template, object>> orderBy = null,
+                                                      Expression<Func<Template, object>> orderBy = null, bool isAscend = true,
                                                       int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetTemplatePagination<TResult>(Expression<Func<Template, TResult>> selector,
                                                                Expression<Func<Template, bool>> predicate = null,
-                                                               Expression<Func<Template, object>> orderBy = null,
+                                                               Expression<Func<Template, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
     }

@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Template;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Paginate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -20,20 +21,19 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Template.TemplatesEndpoint)]
-        [ProducesResponseType(typeof(List<Template>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<Template>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all templates with pagination")]
         public async Task<IActionResult> GetTemplates([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
             var (templates, currentPage, currentPageSize, totalItems, totalPages) = await _templateService.GetTemplatesAsync(pageNo, pageSize);
 
-            var response = new
+            var response = new Paginate<Template>
             {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = templates.Count,
-                TotalPage = totalPages,
-                Templates = templates
+                Items = templates,
+                Page = currentPage,
+                Size = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = templates.Count,
             };
 
             return Ok(response);

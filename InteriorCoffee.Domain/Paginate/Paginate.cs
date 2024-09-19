@@ -10,7 +10,7 @@ namespace InteriorCoffee.Domain.Paginate
     {
         public int Size { get; set; }
         public int Page { get; set; }
-        public long Total { get; set; }
+        public long TotalItems { get; set; }
         public int TotalPages { get; set; }
         public IList<TResult> Items { get; set; }
 
@@ -24,17 +24,17 @@ namespace InteriorCoffee.Domain.Paginate
             {
                 Page = page;
                 Size = size;
-                Total = queryable.Count();
+                TotalItems = queryable.Count();
                 Items = queryable.Skip((page - firstPage) * size).Take(size).ToList();
-                TotalPages = (int)Math.Ceiling(Total / (double)Size);
+                TotalPages = (int)Math.Ceiling(TotalItems / (double)Size);
             }
             else
             {
                 Page = page;
                 Size = size;
-                Total = enumerable.Length;
+                TotalItems = enumerable.Length;
                 Items = enumerable.Skip((page - firstPage) * size).Take(size).ToList();
-                TotalPages = (int)Math.Ceiling(Total / (double)Size);
+                TotalPages = (int)Math.Ceiling(TotalItems / (double)Size);
             }
         }
 

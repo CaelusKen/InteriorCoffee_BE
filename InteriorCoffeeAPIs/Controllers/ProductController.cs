@@ -4,8 +4,10 @@ using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,25 +18,27 @@ namespace InteriorCoffeeAPIs.Controllers
     public class ProductController : BaseController<ProductController>
     {
         private readonly IProductService _productService;
+        private readonly IDictionary<string, JsonValidationService> _validationServices;
 
-        public ProductController(ILogger<ProductController> logger, IProductService productService) : base(logger)
+        public ProductController(ILogger<ProductController> logger, IProductService productService, IDictionary<string, JsonValidationService> validationServices) : base(logger)
         {
             _productService = productService;
+            _validationServices = validationServices;
         }
 
 
         [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint)]
-        [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductResponseDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all products with pagination, price range, and sorting. " +
-            "Ex url: GET /api/products?pageNo=1&pageSize=10&minPrice=30&maxPrice=60&sortBy=name&ascending=true\r\n")]
+            "Ex url: GET /api/products?pageNo=1&pageSize=10&minPrice=30&maxPrice=60&sortBy=name&isAscending=true&...(more)\r\n")]
         public async Task<IActionResult> GetProducts([FromQuery] int? pageNo, [FromQuery] int? pageSize,
-            [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
-            [FromQuery] string status = null, [FromQuery] string categoryId = null, [FromQuery] string merchantId = null)
+            [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string sortBy = null, [FromQuery] bool? isAscending = null,
+            [FromQuery] string status = null, [FromQuery] string categoryId = null, [FromQuery] string merchantId = null, [FromQuery] string keyword = null)
         {
             OrderBy orderBy = null;
             if (!string.IsNullOrEmpty(sortBy))
             {
-                orderBy = new OrderBy(sortBy, ascending ?? true);
+                orderBy = new OrderBy(sortBy, isAscending ?? true);
             }
 
             var filter = new ProductFilter
@@ -44,35 +48,12 @@ namespace InteriorCoffeeAPIs.Controllers
                 MerchantId = merchantId
             };
 
-            var (products, currentPage, currentPageSize, totalItems, filteredTotalPages, actualMinPrice, actualMaxPrice, listAfter)
-                = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter);
-
-            var response = new
-            {
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                ListSize = totalItems,
-                CurrentPageSize = products.Count,
-                ListAfter = listAfter,
-                TotalPage = filteredTotalPages,
-                MinPrice = minPrice ?? actualMinPrice,
-                MaxPrice = maxPrice ?? actualMaxPrice,
-                OrderBy = new
-                {
-                    SortBy = sortBy,
-                    Ascending = ascending
-                },
-                Filter = new
-                {
-                    Status = status,
-                    CategoryId = categoryId,
-                    MerchantId = merchantId
-                },
-                Products = products
-            };
+            var response = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter, keyword);
 
             return Ok(response);
         }
+
+
 
         /// <summary>
         /// Testing Controller
@@ -109,8 +90,18 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpPost(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create product")]
-        public async Task<IActionResult> CreateProduct(CreateProductDTO product)
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO product)
         {
+            var schemaFilePath = "ProductValidate"; // Use the correct key
+            var validationService = _validationServices[schemaFilePath];
+            var jsonString = JsonConvert.SerializeObject(product);
+            var (isValid, errors) = validationService.ValidateJson(jsonString);
+
+            if (!isValid)
+            {
+                return BadRequest(new { Errors = errors });
+            }
+
             await _productService.CreateProductAsync(product);
             return Ok("Action success");
         }
@@ -120,6 +111,16 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Update a product's data")]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] UpdateProductDTO updateProduct)
         {
+            var schemaFilePath = "ProductValidate"; // Use the correct key
+            var validationService = _validationServices[schemaFilePath];
+            var jsonString = JsonConvert.SerializeObject(updateProduct);
+            var (isValid, errors) = validationService.ValidateJson(jsonString);
+
+            if (!isValid)
+            {
+                return BadRequest(new { Errors = errors });
+            }
+
             var existingProduct = await _productService.GetProductByIdAsync(id);
             if (existingProduct == null)
             {
@@ -129,6 +130,8 @@ namespace InteriorCoffeeAPIs.Controllers
             await _productService.UpdateProductAsync(id, updateProduct);
             return Ok("Action success");
         }
+
+
 
         [HttpPut(ApiEndPointConstant.Product.SoftDeleteProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

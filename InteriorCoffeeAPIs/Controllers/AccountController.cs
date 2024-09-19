@@ -3,8 +3,10 @@ using InteriorCoffee.Application.DTOs.Account;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,10 +17,12 @@ namespace InteriorCoffeeAPIs.Controllers
     public class AccountController : BaseController<AccountController>
     {
         private readonly IAccountService _accountService;
+        private readonly IDictionary<string, JsonValidationService> _validationServices;
 
-        public AccountController(ILogger<AccountController> logger, IAccountService accountService) : base(logger)
+        public AccountController(ILogger<AccountController> logger, IAccountService accountService, IDictionary<string, JsonValidationService> validationServices) : base(logger)
         {
             _accountService = accountService;
+            _validationServices = validationServices;
         }
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
@@ -67,8 +71,18 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpPost(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create account")]
-        public async Task<IActionResult> CreateAccount(CreateAccountDTO account)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDTO account)
         {
+            var schemaFilePath = "AccountValidate"; // Use the correct key
+            var validationService = _validationServices[schemaFilePath];
+            var jsonString = JsonConvert.SerializeObject(account);
+            var (isValid, errors) = validationService.ValidateJson(jsonString);
+
+            if (!isValid)
+            {
+                return BadRequest(new { Errors = errors });
+            }
+
             await _accountService.CreateAccountAsync(account);
             return Ok("Action success");
         }
@@ -82,6 +96,16 @@ namespace InteriorCoffeeAPIs.Controllers
             if (existingAccount == null)
             {
                 return NotFound();
+            }
+
+            var schemaFilePath = "AccountValidate"; // Use the correct key
+            var validationService = _validationServices[schemaFilePath];
+            var jsonString = JsonConvert.SerializeObject(updateAccount);
+            var (isValid, errors) = validationService.ValidateJson(jsonString);
+
+            if (!isValid)
+            {
+                return BadRequest(new { Errors = errors });
             }
 
             await _accountService.UpdateAccountAsync(id, updateAccount);

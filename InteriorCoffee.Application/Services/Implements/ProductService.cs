@@ -9,6 +9,7 @@ using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
+using InteriorCoffee.Infrastructure.Repositories.Implements;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -21,13 +22,17 @@ namespace InteriorCoffee.Application.Services.Implements
     public class ProductService : BaseService<ProductService>, IProductService
     {
         private readonly IProductRepository _productRepository;
+        private readonly IProductCategoryRepository _productCategoryRepository;
 
-        public ProductService(ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IProductRepository productRepository)
+        public ProductService(ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, 
+            IProductRepository productRepository, IProductCategoryRepository productCategoryRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _productRepository = productRepository;
+            _productCategoryRepository = productCategoryRepository;
         }
 
+        #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
             { "price", "TruePrice" },
@@ -36,10 +41,11 @@ namespace InteriorCoffee.Application.Services.Implements
             { "updatedate", "UpdatedDate" },
             { "status", "Status" }
         };
+        #endregion
 
 
-        public async Task<(List<Product>, int, int, int, int, decimal, decimal, int)> GetProductsAsync(
-            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilter filter)
+        public async Task<ProductResponseDTO> GetProductsAsync(
+            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilter filter, string keyword = null)
         {
             var pagination = new Pagination
             {
@@ -49,6 +55,14 @@ namespace InteriorCoffee.Application.Services.Implements
 
             // Fetch all products from the repository
             var (products, totalItems) = await _productRepository.GetProductsAsync();
+
+            // Apply keyword search
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                products = products.Where(p => p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                               p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                   .ToList();
+            }
 
             // Apply filters
             products = ApplyFilters(products, filter, minPrice, maxPrice);
@@ -76,10 +90,56 @@ namespace InteriorCoffee.Application.Services.Implements
             var paginatedProducts = products.Skip((pagination.PageNo - 1) * pagination.PageSize)
                                             .Take(pagination.PageSize)
                                             .ToList();
+            #region "Mapping"
+            // Map to ProductResponseItemDTO
+            var productResponseItems = paginatedProducts.Select(p => new ProductResponseItemDTO
+            {
+                _id = p._id,
+                CategoryId = p.CategoryId,
+                Name = p.Name,
+                Description = p.Description,
+                Images = p.Images,
+                SellingPrice = p.SellingPrice,
+                Discount = p.Discount,
+                TruePrice = p.TruePrice,
+                Quantity = p.Quantity,
+                Status = p.Status,
+                Dimensions = p.Dimensions,
+                Materials = p.Materials,
+                ModelTextureUrl = p.ModelTextureUrl,
+                CreatedDate = p.CreatedDate,
+                UpdatedDate = p.UpdatedDate,
+                CampaignId = p.CampaignId,
+                MerchantId = p.MerchantId
+            }).ToList();
 
-            return (paginatedProducts, pagination.PageNo, pagination.PageSize, totalItems, filteredTotalPages, minPrice.Value, maxPrice.Value, listAfter);
+            // Create and return the response DTO
+            return new ProductResponseDTO
+            {
+                PageNo = pagination.PageNo,
+                PageSize = pagination.PageSize,
+                ListSize = totalItems,
+                CurrentPageSize = productResponseItems.Count,
+                ListSizeAfter = listAfter,
+                TotalPage = filteredTotalPages,
+                MinPrice = minPrice.Value,
+                MaxPrice = maxPrice.Value,
+                OrderBy = new OrderByDTO
+                {
+                    SortBy = orderBy?.SortBy,
+                    isAscending = orderBy?.Ascending ?? true
+                },
+                Filter = new FilterDTO
+                {
+                    Status = filter.Status,
+                    CategoryId = filter.CategoryId,
+                    MerchantId = filter.MerchantId
+                },
+                Keyword = keyword,
+                Products = productResponseItems
+            };
+            #endregion
         }
-
 
         #region "Filtering"
         private List<Product> ApplyFilters(List<Product> products, ProductFilter filter, decimal? minPrice, decimal? maxPrice)
@@ -153,7 +213,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 selector: p => new GetProductDTO(p.Name, p.Description), //selecting field
                 predicate: p => p.Name.Contains("A"),                    //filter by condition
                 orderBy: p => p.Name,                                    //Order by
-                page: 1,                                                 // Paginate
+                page: 2,                                                 // Paginate
                 size: 3);
 
             //OrderByDescending
@@ -179,6 +239,14 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task CreateProductAsync(CreateProductDTO createProductDTO)
         {
+            foreach (var categoryId in createProductDTO.CategoryId)
+            {
+                if (!await _productCategoryRepository.CategoryExistsAsync(categoryId))
+                {
+                    throw new NotFoundException($"Category with id {categoryId} not found.");
+                }
+            }
+
             var product = _mapper.Map<Product>(createProductDTO);
             await _productRepository.CreateProductAsync(product);
         }
@@ -190,9 +258,19 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 throw new NotFoundException($"Product with id {id} not found.");
             }
+
+            foreach (var categoryId in updateProductDTO.CategoryId)
+            {
+                if (!await _productCategoryRepository.CategoryExistsAsync(categoryId))
+                {
+                    throw new NotFoundException($"Category with id {categoryId} not found.");
+                }
+            }
+
             _mapper.Map(updateProductDTO, existingProduct);
             await _productRepository.UpdateProductAsync(id, existingProduct);
         }
+
 
         public async Task SoftDeleteProductAsync(string id)
         {

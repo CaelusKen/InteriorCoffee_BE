@@ -12,6 +12,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
     public interface IProductCategoryRepository
     {
         Task<(List<ProductCategory>, int)> GetProductCategoriesAsync();
+        Task<bool> CategoryExistsAsync(string categoryId);
         Task<ProductCategory> GetProductCategoryById(string id);
         Task CreateProductCategory(ProductCategory productCategory);
         Task UpdateProductCategory(ProductCategory productCategory);

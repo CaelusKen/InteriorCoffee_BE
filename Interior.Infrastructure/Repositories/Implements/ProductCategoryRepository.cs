@@ -42,6 +42,13 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             }
         }
 
+        public async Task<bool> CategoryExistsAsync(string categoryId)
+        {
+            var (categories, _) = await GetProductCategoriesAsync();
+            return categories.Any(c => c._id == categoryId);
+        }
+
+
 
 
         public async Task<ProductCategory> GetProductCategoryById(string id)

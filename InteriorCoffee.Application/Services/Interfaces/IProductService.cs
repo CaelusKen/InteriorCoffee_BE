@@ -9,8 +9,8 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IProductService
     {
-        Task<(List<Product>, int, int, int, int, decimal, decimal, int)> GetProductsAsync(
-                    int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilter filter);
+        Task<ProductResponseDTO> GetProductsAsync(
+            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilter filter, string keyword = null);
         Task<Product> GetProductByIdAsync(string id);
         Task CreateProductAsync(CreateProductDTO product);
         Task UpdateProductAsync(string id, UpdateProductDTO product);

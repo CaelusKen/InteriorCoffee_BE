@@ -11,6 +11,9 @@ using MongoDB.Driver;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using InteriorCoffee.Application.Helpers;
+using Newtonsoft.Json.Schema.Generation;
+using Newtonsoft.Json.Schema;
+using InteriorCoffeeAPIs.Validate;
 
 namespace InteriorCoffeeAPIs.Extensions
 {
@@ -157,5 +160,36 @@ namespace InteriorCoffeeAPIs.Extensions
             });
             return services;
         }
+
+        public static IServiceCollection AddJsonSchemaValidation(this IServiceCollection services, string schemaDirectoryPath)
+        {
+            var schemaFiles = Directory.GetFiles(schemaDirectoryPath, "*.json");
+            var validationServices = new Dictionary<string, JsonValidationService>();
+
+            using (var serviceProvider = services.BuildServiceProvider())
+            {
+                var logger = serviceProvider.GetRequiredService<ILogger<JsonValidationService>>();
+
+                foreach (var schemaFile in schemaFiles)
+                {
+                    try
+                    {
+                        var validationService = new JsonValidationService(schemaFile, logger);
+                        var schemaName = Path.GetFileNameWithoutExtension(schemaFile);
+                        validationServices[schemaName] = validationService;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, $"Failed to load schema from file: {schemaFile}");
+                    }
+                }
+            }
+
+            services.AddSingleton<IDictionary<string, JsonValidationService>>(validationServices);
+
+            return services;
+        }
+
+
     }
 }

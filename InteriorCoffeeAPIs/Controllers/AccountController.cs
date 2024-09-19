@@ -1,11 +1,12 @@
-﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Account;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
-using InteriorCoffee.Domain.Paginate;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,14 +17,16 @@ namespace InteriorCoffeeAPIs.Controllers
     public class AccountController : BaseController<AccountController>
     {
         private readonly IAccountService _accountService;
+        private readonly IDictionary<string, JsonValidationService> _validationServices;
 
-        public AccountController(ILogger<AccountController> logger, IAccountService accountService) : base(logger)
+        public AccountController(ILogger<AccountController> logger, IAccountService accountService, IDictionary<string, JsonValidationService> validationServices) : base(logger)
         {
             _accountService = accountService;
+            _validationServices = validationServices;
         }
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<Account>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Account>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all accounts with pagination and sorting. " +
             "Ex url: GET /api/accounts?pageNo=1&pageSize=10&sortBy=username&ascending=true\r\n")]
         public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
@@ -36,17 +39,21 @@ namespace InteriorCoffeeAPIs.Controllers
 
             var (accounts, currentPage, currentPageSize, totalItems, totalPages) = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy);
 
-            var response = new Paginate<Account>
+            var response = new
             {
-                Items = accounts,
-                Page = currentPage,
-                Size = currentPageSize,
-                TotalItems = totalItems,
-                TotalPages = totalPages
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                ListSize = totalItems,
+                CurrentPageSize = accounts.Count,
+                TotalPage = totalPages,
+                Filter = sortBy,
+                Ascending = ascending,
+                Accounts = accounts
             };
 
             return Ok(response);
         }
+
 
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
@@ -64,8 +71,18 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpPost(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create account")]
-        public async Task<IActionResult> CreateAccount(CreateAccountDTO account)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDTO account)
         {
+            var schemaFilePath = "AccountValidate"; // Use the correct key
+            var validationService = _validationServices[schemaFilePath];
+            var jsonString = JsonConvert.SerializeObject(account);
+            var (isValid, errors) = validationService.ValidateJson(jsonString);
+
+            if (!isValid)
+            {
+                return BadRequest(new { Errors = errors });
+            }
+
             await _accountService.CreateAccountAsync(account);
             return Ok("Action success");
         }
@@ -79,6 +96,16 @@ namespace InteriorCoffeeAPIs.Controllers
             if (existingAccount == null)
             {
                 return NotFound();
+            }
+
+            var schemaFilePath = "AccountValidate"; // Use the correct key
+            var validationService = _validationServices[schemaFilePath];
+            var jsonString = JsonConvert.SerializeObject(updateAccount);
+            var (isValid, errors) = validationService.ValidateJson(jsonString);
+
+            if (!isValid)
+            {
+                return BadRequest(new { Errors = errors });
             }
 
             await _accountService.UpdateAccountAsync(id, updateAccount);

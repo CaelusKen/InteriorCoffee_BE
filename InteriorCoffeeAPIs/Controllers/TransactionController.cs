@@ -79,9 +79,9 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //Test purpose only
+        //Third-Party Payment
         [HttpGet(ApiEndPointConstant.Transaction.TransactionsVNPaymentReturnEndpoint)]
-        [SwaggerOperation(Summary = "Test payment")]
+        [SwaggerOperation(Summary = "VnPay data return")]
         public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
         {
             var result = _paymentService.PaymentExecute(model);
@@ -89,8 +89,8 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsVNPaymentEndpoint)]
-        [SwaggerOperation(Summary = "Test payment")]
-        public async Task<IActionResult> TestCreatePayment([FromBody] CreateTransactionDTO model)
+        [SwaggerOperation(Summary = "Create VnPay Url")]
+        public async Task<IActionResult> CreateVNPayment([FromBody] CreateTransactionDTO model)
         {
             var result = _paymentService.CreatePaymentUrl(this.HttpContext, model);
             await _transactionService.CreateTransaction(model);
@@ -99,7 +99,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalCaptureEndpoint)]
-        [SwaggerOperation(Summary = "Test payment")]
+        [SwaggerOperation(Summary = "Paypal Data Capture")]
         public async Task<IActionResult> PaypalPaymentCapture(string paypalOrderId)
         {
             var result = await _paymentService.CapturePaypalOrder(paypalOrderId);
@@ -107,8 +107,8 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalEndpoint)]
-        [SwaggerOperation(Summary = "Test payment")]
-        public async Task<IActionResult> TestCreatePaymentPaypal([FromBody] CreateTransactionDTO model)
+        [SwaggerOperation(Summary = "Create Paypal Order")]
+        public async Task<IActionResult> CreatePaypalPayment([FromBody] CreateTransactionDTO model)
         {
             var result = await _paymentService.CreatePaypalOrder(model);
             await _transactionService.CreateTransaction(model);

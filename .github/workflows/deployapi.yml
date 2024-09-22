@@ -5,6 +5,7 @@ name: Deploy Interior Coffee API
 on:
   workflow_dispatch:
 
+# define jobs
 jobs:
   build:
     runs-on: ubuntu-latest

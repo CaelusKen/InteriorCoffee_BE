@@ -55,24 +55,6 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-        /// <summary>
-        /// Testing Controller
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint + "/test")]
-        [ProducesResponseType(typeof(IPaginate<GetProductDTO>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get a product by id")]
-        public async Task<IActionResult> GetProductTest()
-        {
-            var result = await _productService.GetProductList();
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
-
         [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a product by id")]

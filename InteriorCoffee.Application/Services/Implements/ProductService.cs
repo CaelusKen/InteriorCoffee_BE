@@ -92,26 +92,28 @@ namespace InteriorCoffee.Application.Services.Implements
                                             .ToList();
             #region "Mapping"
             // Map to ProductResponseItemDTO
-            var productResponseItems = paginatedProducts.Select(p => new ProductResponseItemDTO
-            {
-                _id = p._id,
-                CategoryId = p.CategoryId,
-                Name = p.Name,
-                Description = p.Description,
-                Images = p.Images,
-                SellingPrice = p.SellingPrice,
-                Discount = p.Discount,
-                TruePrice = p.TruePrice,
-                Quantity = p.Quantity,
-                Status = p.Status,
-                Dimensions = p.Dimensions,
-                Materials = p.Materials,
-                ModelTextureUrl = p.ModelTextureUrl,
-                CreatedDate = p.CreatedDate,
-                UpdatedDate = p.UpdatedDate,
-                CampaignId = p.CampaignId,
-                MerchantId = p.MerchantId
-            }).ToList();
+            //var productResponseItems = paginatedProducts.Select(p => new ProductResponseItemDTO
+            //{
+            //    _id = p._id,
+            //    CategoryId = p.CategoryId,
+            //    Name = p.Name,
+            //    Description = p.Description,
+            //    Images = p.Images,
+            //    SellingPrice = p.SellingPrice,
+            //    Discount = p.Discount,
+            //    TruePrice = p.TruePrice,
+            //    Quantity = p.Quantity,
+            //    Status = p.Status,
+            //    Dimensions = p.Dimensions,
+            //    Materials = p.Materials,
+            //    ModelTextureUrl = p.ModelTextureUrl,
+            //    CreatedDate = p.CreatedDate,
+            //    UpdatedDate = p.UpdatedDate,
+            //    CampaignId = p.CampaignId,
+            //    MerchantId = p.MerchantId
+            //}).ToList();
+
+            var productResponseItems = _mapper.Map<List<ProductResponseItemDTO>>(paginatedProducts);
 
             // Create and return the response DTO
             return new ProductResponseDTO

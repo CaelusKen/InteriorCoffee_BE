@@ -19,8 +19,8 @@ namespace InteriorCoffee.Domain.Paginate
             var totalPages = (int)Math.Ceiling(total / (double)size);
             return new Paginate<TResult>
             {
-                Page = page,
-                Size = size,
+                PageNo = page,
+                PageSize = size,
                 TotalItems = total,
                 Items = items,
                 TotalPages = totalPages

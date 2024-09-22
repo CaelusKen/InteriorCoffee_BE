@@ -8,8 +8,8 @@ namespace InteriorCoffee.Domain.Paginate
 {
     public interface IPaginate<TResult>
     {
-        int Size { get; }
-        int Page { get; }
+        int PageSize { get; }
+        int PageNo { get; }
         long TotalItems { get; }
         int TotalPages { get; }
         IList<TResult> Items { get; }

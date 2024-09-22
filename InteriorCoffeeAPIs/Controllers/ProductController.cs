@@ -54,6 +54,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
+
         [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a product by id")]

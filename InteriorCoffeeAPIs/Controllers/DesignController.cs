@@ -31,8 +31,8 @@ namespace InteriorCoffeeAPIs.Controllers
             var response = new Paginate<Design>
             {
                 Items = designs,
-                Page = currentPage,
-                Size = currentPageSize,
+                PageNo = currentPage,
+                PageSize = currentPageSize,
                 TotalPages = totalPages,
                 TotalItems = designs.Count,
             };

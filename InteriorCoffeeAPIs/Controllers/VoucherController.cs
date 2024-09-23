@@ -30,8 +30,8 @@ namespace InteriorCoffeeAPIs.Controllers
             var response = new Paginate<Voucher>
             {
                 Items = vouchers,
-                Page = currentPage,
-                Size = currentPageSize,
+                PageNo = currentPage,
+                PageSize = currentPageSize,
                 TotalPages = totalPages,
                 TotalItems = vouchers.Count,
             };

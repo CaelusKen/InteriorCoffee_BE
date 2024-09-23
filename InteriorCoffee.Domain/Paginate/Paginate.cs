@@ -8,8 +8,8 @@ namespace InteriorCoffee.Domain.Paginate
 {
     public class Paginate<TResult> : IPaginate<TResult>
     {
-        public int Size { get; set; }
-        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int PageNo { get; set; }
         public long TotalItems { get; set; }
         public int TotalPages { get; set; }
         public IList<TResult> Items { get; set; }
@@ -22,19 +22,19 @@ namespace InteriorCoffee.Domain.Paginate
 
             if(source is IQueryable<TResult> queryable)
             {
-                Page = page;
-                Size = size;
+                PageNo = page;
+                PageSize = size;
                 TotalItems = queryable.Count();
                 Items = queryable.Skip((page - firstPage) * size).Take(size).ToList();
-                TotalPages = (int)Math.Ceiling(TotalItems / (double)Size);
+                TotalPages = (int)Math.Ceiling(TotalItems / (double)PageSize);
             }
             else
             {
-                Page = page;
-                Size = size;
+                PageNo = page;
+                PageSize = size;
                 TotalItems = enumerable.Length;
                 Items = enumerable.Skip((page - firstPage) * size).Take(size).ToList();
-                TotalPages = (int)Math.Ceiling(TotalItems / (double)Size);
+                TotalPages = (int)Math.Ceiling(TotalItems / (double)PageSize);
             }
         }
 

@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -94,6 +96,28 @@ namespace InteriorCoffee.Application.Services.Implements
             AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, newAccount.UserName, newAccount.Email, newAccount.Status);
 
             return authenticationResponse;
+        }
+
+        public async Task SendForgetPasswordEmail(string customerEmail)
+        {
+            string fromMail = "appsp377@gmail.com";
+            string fromPass = "ebgy tbji verm kiyk";
+
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(fromMail);
+            message.Subject = "Test";
+            message.To.Add(new MailAddress(customerEmail));
+            message.Body = "<html><body> mèo ú meo, mèo ú meo </body></html>";
+            message.IsBodyHtml = true;
+
+            var smtpClient = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential(fromMail, fromPass),
+                EnableSsl = true
+            };
+
+            smtpClient.Send(message);   
         }
     }
 }

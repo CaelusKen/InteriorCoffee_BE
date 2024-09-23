@@ -15,7 +15,8 @@ namespace InteriorCoffee.Application.Constants
         public static class Authentication
         {
             public const string AuthenticationEndpoint = ApiEndpoint + "/auth";
-            public const string LoginEndpoint = AuthenticationEndpoint + "login";
+            public const string ForgetPasswordEndpoint = AuthenticationEndpoint + "/forget-password";
+            public const string LoginEndpoint = AuthenticationEndpoint + "/login";
             public const string RegisterEndpoint = AuthenticationEndpoint + "/register";
             public const string MerchantRegisterEndpoint = AuthenticationEndpoint + "/merchant/register";
         }

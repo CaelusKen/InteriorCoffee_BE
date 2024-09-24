@@ -8,6 +8,12 @@ namespace InteriorCoffee.Application.Enums.Transaction
 {
     public enum TransactionStatusEnum
     {
-        CREATED
+        PENDING = 1,
+        COMPLETED = 2,
+        FAILED = 3,
+        CANCELLED = 4,
+        REFUNDED = 5,
+        EXPIRED = 6,
+        DECLINED = 7
     }
 }

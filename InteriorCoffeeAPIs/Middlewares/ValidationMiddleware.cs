@@ -36,7 +36,8 @@ namespace InteriorCoffeeAPIs.Middlewares
                     var schemaFilePath = GetSchemaFilePath(context.Request.Path);
                     if (schemaFilePath != null && _validationServices.TryGetValue(schemaFilePath, out var jsonValidationService))
                     {
-                        var (isValid, errors) = jsonValidationService.ValidateJson(body);
+                        bool isUpdate = context.Request.Method == HttpMethods.Patch;
+                        var (isValid, errors) = jsonValidationService.ValidateJson(body, isUpdate);
 
                         if (!isValid)
                         {
@@ -64,5 +65,4 @@ namespace InteriorCoffeeAPIs.Middlewares
             return null;
         }
     }
-
 }

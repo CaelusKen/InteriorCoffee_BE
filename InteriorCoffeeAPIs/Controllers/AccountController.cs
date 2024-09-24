@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -73,7 +75,7 @@ namespace InteriorCoffeeAPIs.Controllers
         {
             var schemaFilePath = "AccountValidate"; // Use the correct key
             var validationService = _validationServices[schemaFilePath];
-            var jsonString = JsonConvert.SerializeObject(account);
+            var jsonString = JsonSerializer.Serialize(account, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
             var (isValid, errors) = validationService.ValidateJson(jsonString);
 
             if (!isValid)
@@ -88,17 +90,24 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpPatch(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update an account's data")]
-        public async Task<IActionResult> UpdateAccount(string id, [FromBody] UpdateAccountDTO updateAccount)
+        public async Task<IActionResult> UpdateAccount(string id, [FromBody] JsonElement updateAccount)
         {
             var existingAccount = await _accountService.GetAccountByIdAsync(id);
             if (existingAccount == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "Account not found" });
             }
 
             var schemaFilePath = "AccountValidate"; // Use the correct key
             var validationService = _validationServices[schemaFilePath];
-            var jsonString = JsonConvert.SerializeObject(updateAccount);
+
+            // Merge existing account data with the incoming update data
+            var existingAccountJson = JsonSerializer.Serialize(existingAccount, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
+            var existingAccountElement = JsonDocument.Parse(existingAccountJson).RootElement;
+
+            var mergedAccount = MergeJsonElements(existingAccountElement, updateAccount);
+
+            var jsonString = JsonSerializer.Serialize(mergedAccount, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
             var (isValid, errors) = validationService.ValidateJson(jsonString);
 
             if (!isValid)
@@ -106,9 +115,55 @@ namespace InteriorCoffeeAPIs.Controllers
                 return BadRequest(new { Errors = errors });
             }
 
-            await _accountService.UpdateAccountAsync(id, updateAccount);
+            // Map the merged account data to an UpdateAccountDTO
+            var updateAccountDto = JsonSerializer.Deserialize<UpdateAccountDTO>(jsonString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
+
+            await _accountService.UpdateAccountAsync(id, updateAccountDto);
             return Ok("Action success");
         }
+
+        private JsonElement MergeJsonElements(JsonElement original, JsonElement update)
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new Utf8JsonWriter(stream))
+                {
+                    writer.WriteStartObject();
+
+                    foreach (var property in original.EnumerateObject())
+                    {
+                        if (update.TryGetProperty(property.Name, out var updatedProperty))
+                        {
+                            writer.WritePropertyName(property.Name);
+                            updatedProperty.WriteTo(writer);
+                        }
+                        else
+                        {
+                            property.WriteTo(writer);
+                        }
+                    }
+
+                    foreach (var property in update.EnumerateObject())
+                    {
+                        if (!original.TryGetProperty(property.Name, out _))
+                        {
+                            writer.WritePropertyName(property.Name);
+                            property.Value.WriteTo(writer);
+                        }
+                    }
+
+                    writer.WriteEndObject();
+                }
+
+                stream.Position = 0;
+                using (var document = JsonDocument.Parse(stream))
+                {
+                    return document.RootElement.Clone();
+                }
+            }
+        }
+
+
 
         [HttpPut(ApiEndPointConstant.Account.SoftDeleteAccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

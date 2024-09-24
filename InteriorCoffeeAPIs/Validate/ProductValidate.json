@@ -5,10 +5,7 @@
   "description": "A product in the inventory",
   "type": "object",
   "properties": {
-    "_id": {
-      "type": "string"
-    },
-    "categoryId": {
+    "category-id": {
       "type": "array",
       "items": {
         "type": "string"
@@ -26,17 +23,19 @@
       "type": "object",
       "properties": {
         "thumbnail": {
-          "type": "string"
+          "type": "string",
+          "format": "uri"
         },
-        "normalImages": {
+        "normal-images": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "format": "uri"
           }
         }
       }
     },
-    "sellingPrice": {
+    "selling-price": {
       "type": "number",
       "minimum": 0
     },
@@ -44,7 +43,7 @@
       "type": "number",
       "minimum": 0
     },
-    "truePrice": {
+    "true-price": {
       "type": "number",
       "minimum": 0
     },
@@ -54,7 +53,7 @@
     },
     "status": {
       "type": "string",
-      "minLength": 1
+      "enum": [ "ACTIVE", "INACTIVE", "IN_STOCK", "OUT_OF_STOCK", "DISCONTINUED" ]
     },
     "dimensions": {
       "type": "string"
@@ -65,23 +64,34 @@
         "type": "string"
       }
     },
-    "modelTextureUrl": {
+    "model-texture-url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "campaign-id": {
       "type": "string"
     },
-    "createdDate": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "updatedDate": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "campaignId": {
-      "type": "string"
-    },
-    "merchantId": {
+    "merchant-id": {
       "type": "string"
     }
   },
-  "required": [ "categoryId", "name", "sellingPrice", "truePrice", "discount", "status" ]
+  "required": [ "category-id", "name", "selling-price", "true-price", "discount", "status" ],
+  "additionalProperties": true,
+  "if": {
+    "properties": {
+      "category-id": { "type": "array" },
+      "name": { "type": "string" },
+      "selling-price": { "type": "number" },
+      "true-price": { "type": "number" },
+      "discount": { "type": "number" },
+      "status": { "type": "string" }
+    },
+    "required": [ "category-id", "name", "selling-price", "true-price", "discount", "status" ]
+  },
+  "then": {
+    "required": [ "category-id", "name", "selling-price", "true-price", "discount", "status" ]
+  },
+  "else": {
+    "required": []
+  }
 }

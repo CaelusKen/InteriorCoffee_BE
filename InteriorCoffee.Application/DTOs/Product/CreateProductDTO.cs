@@ -18,7 +18,6 @@ namespace InteriorCoffee.Application.DTOs.Product
         public string Dimensions { get; set; }
         public List<string> Materials { get; set; }
         public string ModelTextureUrl { get; set; }
-        public DateTime CreatedDate { get; set; }
         public string CampaignId { get; set; }
         public string MerchantId { get; set; }
     }

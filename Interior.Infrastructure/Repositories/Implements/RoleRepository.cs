@@ -144,6 +144,12 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         }
         #endregion
 
+        public async Task<Role> GetRoleById(string id)
+        {
+            var filter = Builders<Role>.Filter.Eq("_id", id);
+            return await _roles.Find(filter).FirstOrDefaultAsync();
+        }
+
         public async Task UpdateRole(Role role)
         {
             await _roles.ReplaceOneAsync(a => a._id == role._id, role);

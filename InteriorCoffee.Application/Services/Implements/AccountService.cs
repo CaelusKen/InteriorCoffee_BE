@@ -132,14 +132,28 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task UpdateAccountAsync(string id, UpdateAccountDTO updateAccountDTO)
         {
-            var account = await _accountRepository.GetAccountById(id);
-            if (account == null)
+            var existingAccount = await _accountRepository.GetAccountById(id);
+            if (existingAccount == null)
             {
                 throw new NotFoundException($"Account with id {id} not found.");
             }
-            _mapper.Map(updateAccountDTO, account);
-            await _accountRepository.CreateAccount(account);
+
+            // Validate role-id if provided
+            if (updateAccountDTO.RoleId != null)
+            {
+                var role = await _roleRepository.GetRoleById(updateAccountDTO.RoleId);
+                if (role == null)
+                {
+                    throw new NotFoundException($"Role with id {updateAccountDTO.RoleId} not found.");
+                }
+            }
+
+            _mapper.Map(updateAccountDTO, existingAccount);
+            await _accountRepository.UpdateAccount(existingAccount);
+
         }
+
+
 
         public async Task SoftDeleteAccountAsync(string id)
         {

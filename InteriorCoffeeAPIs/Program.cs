@@ -8,6 +8,7 @@ using InteriorCoffeeAPIs.Extensions;
 using InteriorCoffeeAPIs.Middlewares;
 using InteriorCoffeeAPIs.Validate;
 using MongoDB.Driver;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -20,7 +21,11 @@ builder.Services.AddCors(options =>
         policy => { policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod(); });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower;
+    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.KebabCaseLower;
+});
 builder.Services.Configure<MongoDBContext>(builder.Configuration.GetSection("MongoDbSection"));
 
 builder.Services.AddDatabase(builder.Configuration);
@@ -30,7 +35,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddConfigSwagger();
-builder.Services.AddJsonSchemaValidation("Validate"); // Add JSON Schema validation from the directory
+builder.Services.AddJsonSchemaValidation("Validate"); // Add JSON Schema validation from the directory (from root to Validate folder)
 
 var app = builder.Build();
 

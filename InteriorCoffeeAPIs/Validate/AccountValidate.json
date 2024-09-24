@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/account.schema.json",
-  "title": "Account",
-  "description": "An account in the system",
+  "$id": "https://example.com/account-patch.schema.json",
+  "title": "AccountPatch",
+  "description": "Partial update for an account",
   "type": "object",
   "properties": {
-    "userName": {
+    "user-name": {
       "type": "string",
       "minLength": 1,
       "description": "The user's name"
@@ -18,9 +18,10 @@
     "email": {
       "type": "string",
       "format": "email",
+      "minLength": 1,
       "description": "The user's email address"
     },
-    "phoneNumber": {
+    "phone-number": {
       "type": "string",
       "pattern": "^[0-9]{10,12}$",
       "description": "The user's phone number"
@@ -29,28 +30,43 @@
       "type": "string",
       "description": "The user's address"
     },
-    "status": {
-      "type": "string",
-      "minLength": 1,
-      "description": "The account status"
-    },
     "avatar": {
       "type": "string",
       "description": "The user's avatar URL"
     },
-    "createdDate": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The date the account was created"
-    },
-    "merchantId": {
+    "merchant-id": {
       "type": "string",
       "description": "The merchant ID associated with the account"
     },
-    "roleId": {
-      "type": "string",
-      "description": "The role ID associated with the account"
+    "role-id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [ "MANAGER", "MERCHANT", "CUSTOMER" ]
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The role ID associated with the account"
+        }
+      ],
+      "description": "The role ID or role name associated with the account"
     }
   },
-  "required": [ "userName", "password", "email", "phoneNumber", "status" ]
+  "additionalProperties": true,
+  "if": {
+    "properties": {
+      "user-name": { "type": "string" },
+      "password": { "type": "string" },
+      "email": { "type": "string" },
+      "phone-number": { "type": "string" }
+    },
+    "required": [ "user-name", "password", "email", "phone-number" ]
+  },
+  "then": {
+    "required": [ "user-name", "password", "email", "phone-number" ]
+  },
+  "else": {
+    "required": []
+  }
 }

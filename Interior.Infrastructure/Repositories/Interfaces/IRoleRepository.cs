@@ -11,6 +11,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
 {
     public interface IRoleRepository
     {
+        Task<Role> GetRoleById(string id);
         Task CreateRole(Role role);
         Task UpdateRole(Role role);
         Task DeleteRole(string id);

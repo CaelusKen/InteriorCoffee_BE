@@ -39,7 +39,8 @@ namespace InteriorCoffeeAPIs.Controllers
             "Ex url: GET /api/products?pageNo=1&pageSize=10&minPrice=30&maxPrice=60&sortBy=name&isAscending=true&...(more)\r\n")]
         public async Task<IActionResult> GetProducts([FromQuery] int? pageNo, [FromQuery] int? pageSize,
             [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string sortBy = null, [FromQuery] bool? isAscending = null,
-            [FromQuery] string status = null, [FromQuery] string categoryId = null, [FromQuery] string merchantId = null, [FromQuery] string keyword = null)
+            [FromQuery] string status = null, [FromQuery] string categoryId = null, [FromQuery] string merchantId = null, [FromQuery] string keyword = null,
+            [FromQuery] bool? isAvailability = null)
         {
             OrderBy orderBy = null;
             if (!string.IsNullOrEmpty(sortBy))
@@ -47,17 +48,21 @@ namespace InteriorCoffeeAPIs.Controllers
                 orderBy = new OrderBy(sortBy, isAscending ?? true);
             }
 
-            var filter = new ProductFilter
+            var filter = new FilterDTO
             {
                 Status = status,
                 CategoryId = categoryId,
-                MerchantId = merchantId
+                MerchantId = merchantId,
+                IsAvailability = isAvailability
             };
 
             var response = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter, keyword);
 
             return Ok(response);
         }
+
+
+
 
         [HttpPost(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

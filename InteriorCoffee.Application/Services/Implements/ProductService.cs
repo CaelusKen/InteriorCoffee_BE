@@ -45,7 +45,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
 
         public async Task<ProductResponseDTO> GetProductsAsync(
-            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilter filter, string keyword = null)
+            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, FilterDTO filter, string keyword = null)
         {
             var pagination = new Pagination
             {
@@ -90,29 +90,11 @@ namespace InteriorCoffee.Application.Services.Implements
             var paginatedProducts = products.Skip((pagination.PageNo - 1) * pagination.PageSize)
                                             .Take(pagination.PageSize)
                                             .ToList();
-            #region "Mapping"
-            // Map to ProductResponseItemDTO
-            //var productResponseItems = paginatedProducts.Select(p => new ProductResponseItemDTO
-            //{
-            //    _id = p._id,
-            //    CategoryId = p.CategoryId,
-            //    Name = p.Name,
-            //    Description = p.Description,
-            //    Images = p.Images,
-            //    SellingPrice = p.SellingPrice,
-            //    Discount = p.Discount,
-            //    TruePrice = p.TruePrice,
-            //    Quantity = p.Quantity,
-            //    Status = p.Status,
-            //    Dimensions = p.Dimensions,
-            //    Materials = p.Materials,
-            //    ModelTextureUrl = p.ModelTextureUrl,
-            //    CreatedDate = p.CreatedDate,
-            //    UpdatedDate = p.UpdatedDate,
-            //    CampaignId = p.CampaignId,
-            //    MerchantId = p.MerchantId
-            //}).ToList();
 
+            var inStockCount = products.Count(p => p.Quantity > 0);
+            var outOfStockCount = products.Count(p => p.Quantity == 0);
+
+            #region "Mapping"
             var productResponseItems = _mapper.Map<List<ProductResponseItemDTO>>(paginatedProducts);
 
             // Create and return the response DTO
@@ -126,6 +108,8 @@ namespace InteriorCoffee.Application.Services.Implements
                 TotalPage = filteredTotalPages,
                 MinPrice = minPrice.Value,
                 MaxPrice = maxPrice.Value,
+                InStock = inStockCount,
+                OutOfStock = outOfStockCount,
                 OrderBy = new OrderByDTO
                 {
                     SortBy = orderBy?.SortBy,
@@ -135,7 +119,8 @@ namespace InteriorCoffee.Application.Services.Implements
                 {
                     Status = filter.Status,
                     CategoryId = filter.CategoryId,
-                    MerchantId = filter.MerchantId
+                    MerchantId = filter.MerchantId,
+                    IsAvailability = filter.IsAvailability
                 },
                 Keyword = keyword,
                 Products = productResponseItems
@@ -143,8 +128,9 @@ namespace InteriorCoffee.Application.Services.Implements
             #endregion
         }
 
+
         #region "Filtering"
-        private List<Product> ApplyFilters(List<Product> products, ProductFilter filter, decimal? minPrice, decimal? maxPrice)
+        private List<Product> ApplyFilters(List<Product> products, FilterDTO filter, decimal? minPrice, decimal? maxPrice)
         {
             if (!string.IsNullOrEmpty(filter.Status))
             {
@@ -154,12 +140,12 @@ namespace InteriorCoffee.Application.Services.Implements
 
             if (!string.IsNullOrEmpty(filter.CategoryId))
             {
-                products = products.Where(p => p.CategoryId.Contains(filter.CategoryId)).ToList();
+                products = products.Where(p => p.CategoryId != null && p.CategoryId.Contains(filter.CategoryId)).ToList();
             }
 
             if (!string.IsNullOrEmpty(filter.MerchantId))
             {
-                products = products.Where(p => p.MerchantId == filter.MerchantId).ToList();
+                products = products.Where(p => p.MerchantId != null && p.MerchantId == filter.MerchantId).ToList();
             }
 
             if (minPrice.HasValue)
@@ -170,6 +156,15 @@ namespace InteriorCoffee.Application.Services.Implements
             if (maxPrice.HasValue)
             {
                 products = products.Where(p => (decimal)p.TruePrice <= maxPrice.Value).ToList();
+            }
+
+            if (filter.IsAvailability == true)
+            {
+                products = products.Where(p => p.Quantity > 0).ToList();
+            }
+            else if (filter.IsAvailability == false)
+            {
+                products = products.Where(p => p.Quantity == 0).ToList();
             }
 
             return products;

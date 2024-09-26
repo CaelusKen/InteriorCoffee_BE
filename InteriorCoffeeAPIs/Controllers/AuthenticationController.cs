@@ -43,5 +43,14 @@ namespace InteriorCoffeeAPIs.Controllers
             var result = await _authenticationService.MerchantRegister(merchantRegisteredDTO);
             return Ok(result);
         }
+
+        [HttpPost(ApiEndPointConstant.Authentication.ForgetPasswordEndpoint)]
+        [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Send forget password email")]
+        public async Task<IActionResult> SendForgetPasswordEmail([FromQuery]string email)
+        {
+            await _authenticationService.SendForgetPasswordEmail(email);
+            return Ok("Action Success");
+        }
     }
 }

@@ -10,7 +10,8 @@ namespace InteriorCoffee.Application.Services.Interfaces
     public interface IProductService
     {
         Task<ProductResponseDTO> GetProductsAsync(
-            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilter filter, string keyword = null);
+                    int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, 
+                    OrderBy orderBy, FilterDTO filter, string keyword = null);
         Task<Product> GetProductByIdAsync(string id);
         Task CreateProductAsync(CreateProductDTO product);
         Task UpdateProductAsync(string id, UpdateProductDTO product);

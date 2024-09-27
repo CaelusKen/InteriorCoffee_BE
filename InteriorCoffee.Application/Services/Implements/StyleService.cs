@@ -56,8 +56,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
-
         public async Task<Style> GetStyleById(string id)
         {
             var result = await _styleRepository.GetStyle(

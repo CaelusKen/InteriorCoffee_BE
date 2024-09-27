@@ -46,10 +46,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> GetDesignById(string id)
         {
             var result = await _designService.GetDesignByIdAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
             return Ok(result);
         }
 
@@ -68,10 +64,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> UpdateDesign(string id, [FromBody] UpdateDesignDTO updateDesign)
         {
             var existingDesign = await _designService.GetDesignByIdAsync(id);
-            if (existingDesign == null)
-            {
-                return NotFound();
-            }
 
             await _designService.UpdateDesignAsync(id, updateDesign);
             return Ok("Action success");
@@ -83,10 +75,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> DeleteDesign(string id)
         {
             var design = await _designService.GetDesignByIdAsync(id);
-            if (design == null)
-            {
-                return NotFound();
-            }
 
             await _designService.DeleteDesignAsync(id);
             return Ok("Action success");

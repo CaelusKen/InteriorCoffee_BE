@@ -50,7 +50,7 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> SendForgetPasswordEmail([FromQuery]string email)
         {
             await _authenticationService.SendForgetPasswordEmail(email);
-            return Ok("Action Success");
+            return Ok("Action Success, please check your assigned email.");
         }
     }
 }

@@ -33,6 +33,7 @@ namespace InteriorCoffee.Application.Services.Implements
             { "totalamount", "TotalAmount" },
             { "createddate", "CreatedDate" }
         };
+
         public async Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy)
         {
             var pagination = new Pagination
@@ -92,7 +93,6 @@ namespace InteriorCoffee.Application.Services.Implements
             return orders;
         }
         #endregion
-
 
         public async Task<Order> GetOrderByIdAsync(string id)
         {

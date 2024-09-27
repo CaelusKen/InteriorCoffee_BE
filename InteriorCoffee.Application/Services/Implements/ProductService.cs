@@ -43,7 +43,6 @@ namespace InteriorCoffee.Application.Services.Implements
         };
         #endregion
 
-
         public async Task<ProductResponseDTO> GetProductsAsync(
             int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilterDTO filter, string keyword = null)
         {
@@ -195,7 +194,6 @@ namespace InteriorCoffee.Application.Services.Implements
         }
         #endregion
 
-
         #region "OrderBy/Sort"
         private List<Product> ApplySorting(List<Product> products, OrderBy orderBy)
         {
@@ -220,7 +218,6 @@ namespace InteriorCoffee.Application.Services.Implements
             return products;
         }
         #endregion
-
 
         public async Task<Product> GetProductByIdAsync(string id)
         {
@@ -265,7 +262,6 @@ namespace InteriorCoffee.Application.Services.Implements
             _mapper.Map(updateProductDTO, existingProduct);
             await _productRepository.UpdateProductAsync(id, existingProduct);
         }
-
 
         public async Task SoftDeleteProductAsync(string id)
         {

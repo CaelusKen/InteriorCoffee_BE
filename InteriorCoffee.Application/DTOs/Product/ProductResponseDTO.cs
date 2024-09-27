@@ -17,6 +17,8 @@ namespace InteriorCoffee.Application.DTOs.Product
         public int TotalPage { get; set; }                  // total pages that the list need //
         public decimal MinPrice { get; set; }               // minimum price of the product in the list (get truePrice) //
         public decimal MaxPrice { get; set; }               // maximum price of the product in the list (get truePrice) //
+        public int InStock { get; set; }                    // in stock counting //
+        public int OutOfStock { get; set; }                 // out of stock counting //
         public OrderByDTO OrderBy { get; set; }             // get the sorting options list currently apply //
         public FilterDTO Filter { get; set; }               // get the filter options list currently apply //
         public string Keyword { get; set; }                 // get the keyword that user search for //
@@ -34,6 +36,7 @@ namespace InteriorCoffee.Application.DTOs.Product
         public string Status { get; set; }                  
         public string CategoryId { get; set; }
         public string MerchantId { get; set; }
+        public bool? IsAvailability { get; set; }
     }
 
     public class ProductResponseItemDTO                     // Below are what will show in product list (not show all, just some items) //

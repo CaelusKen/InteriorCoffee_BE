@@ -33,7 +33,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _roleRepository = roleRepository;
         }
 
-        #region Service Filtering
+        #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
             { "username", "UserName" },
@@ -42,6 +42,7 @@ namespace InteriorCoffee.Application.Services.Implements
             { "updatedate", "UpdatedDate" },
             { "status", "Status" }
         };
+        #endregion
 
         #region "Sorting"
         private List<Account> ApplySorting(List<Account> accounts, OrderBy orderBy)
@@ -99,7 +100,6 @@ namespace InteriorCoffee.Application.Services.Implements
                 return (new List<Account>(), pagination.PageNo, pagination.PageSize, 0, 0);
             }
         }
-        #endregion
 
         public async Task<Account> GetAccountByIdAsync(string id)
         {

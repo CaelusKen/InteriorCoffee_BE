@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InteriorCoffee.Application.DTOs.Transaction;
+using InteriorCoffee.Application.Enums.Transaction;
 using InteriorCoffee.Application.Helpers;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -89,9 +90,24 @@ namespace InteriorCoffee.Application.Services.Implements
 
             #region Update Transaction
             InteriorCoffee.Domain.Models.Transaction transaction = await _transactionRepository.GetTransaction(
-                predicate: tr => tr.OrderId.Equals(vnp_orderId));
+               predicate: tr => tr.OrderId.Equals(vnp_orderId));
 
-            transaction.Status = "COMPLETED";
+            switch(vnp_ResponseCode)
+            {
+                case "00":
+                    //Success
+                    transaction.Status = TransactionStatusEnum.COMPLETED.ToString();
+                    break;
+                case "24":
+                    //Cancel
+                    transaction.Status = TransactionStatusEnum.CANCELLED.ToString();
+                    break;
+                default:
+                    //Fail
+                    transaction.Status = TransactionStatusEnum.FAILED.ToString();
+                    break;
+            }
+          
             await _transactionRepository.UpdateTransaction(transaction);
             #endregion
 
@@ -128,7 +144,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 InteriorCoffee.Domain.Models.Transaction transaction = await _transactionRepository.GetTransaction(
                 predicate: tr => tr.OrderId.Equals(purchaseUnit.reference_id));
 
-                transaction.Status = "COMPLETED";
+                transaction.Status = TransactionStatusEnum.COMPLETED.ToString();
                 await _transactionRepository.UpdateTransaction(transaction);
             }
             #endregion

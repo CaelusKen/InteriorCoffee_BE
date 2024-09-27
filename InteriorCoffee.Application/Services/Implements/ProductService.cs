@@ -113,7 +113,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     OrderBy = new ProductOrderByDTO
                     {
                         SortBy = orderBy?.SortBy,
-                        isAscending = orderBy?.Ascending ?? true
+                        IsAscending = orderBy?.Ascending ?? true
                     },
                     Filter = new ProductFilterDTO
                     {

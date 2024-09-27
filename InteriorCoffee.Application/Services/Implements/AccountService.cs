@@ -138,7 +138,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     OrderBy = new AccountOrderByDTO
                     {
                         SortBy = orderBy?.SortBy,
-                        isAscending = orderBy?.Ascending ?? true
+                        IsAscending = orderBy?.Ascending ?? true
                     },
                     Filter = new AccountFilterDTO
                     {

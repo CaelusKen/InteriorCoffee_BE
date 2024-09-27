@@ -34,6 +34,23 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
+        #region "Schema Swagger"
+        /// <summary>
+        /// Get all products with pagination, price range, and sorting.
+        /// </summary>
+        /// <param name="pageNo">Page number.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="minPrice">Minimum price filter.</param>
+        /// <param name="maxPrice">Maximum price filter.</param>
+        /// <param name="sortBy">Sort by field.</param>
+        /// <param name="isAscending">Sort order.</param>
+        /// <param name="status">Status filter.</param>
+        /// <param name="categoryId">Category ID filter.</param>
+        /// <param name="merchantId">Merchant ID filter.</param>
+        /// <param name="keyword">Search keyword.</param>
+        /// <param name="isAvailability">Availability filter.</param>
+        /// <returns>Paginated list of products.</returns>
+        #endregion
         [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(ProductResponseDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all products with pagination, price range, and sorting. " +

@@ -28,6 +28,20 @@ namespace InteriorCoffeeAPIs.Controllers
             _validationServices = validationServices;
         }
 
+        #region "Schema Swagger"
+        /// <summary>
+        /// Get all accounts with pagination, sorting, and filtering.
+        /// </summary>
+        /// <param name="pageNo">Page number.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="sortBy">Sort by field.</param>
+        /// <param name="ascending">Sort order.</param>
+        /// <param name="roleId">Role ID filter.</param>
+        /// <param name="status">Status filter.</param>
+        /// <param name="keyword">Search keyword.</param>
+        /// <returns>Paginated list of accounts.</returns>
+        #endregion
+
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(AccountResponseDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all accounts with pagination, sorting, and filtering. " +
@@ -51,7 +65,6 @@ namespace InteriorCoffeeAPIs.Controllers
 
             return Ok(response);
         }
-
 
 
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]

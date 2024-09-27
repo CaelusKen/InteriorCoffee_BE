@@ -95,7 +95,6 @@ namespace InteriorCoffee.Application.Services.Implements
         }
         #endregion
 
-
         public async Task<Merchant> GetMerchantByIdAsync(string id)
         {
             var merchant = await _merchantRepository.GetMerchantById(id);

@@ -54,10 +54,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> GetOrderById(string id)
         {
             var result = await _orderService.GetOrderByIdAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
             return Ok(result);
         }
 
@@ -76,10 +72,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> UpdateOrderStatus(string id, [FromBody] UpdateOrderStatusDTO updateOrderStatus)
         {
             var existingOrder = await _orderService.GetOrderByIdAsync(id);
-            if (existingOrder == null)
-            {
-                return NotFound();
-            }
 
             await _orderService.UpdateOrderAsync(id, updateOrderStatus);
             return Ok("Action success");
@@ -91,10 +83,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> DeleteOrder(string id)
         {
             var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
 
             await _orderService.DeleteOrderAsync(id);
             return Ok("Action success");

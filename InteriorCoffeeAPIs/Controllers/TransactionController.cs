@@ -54,7 +54,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Create transaction")]
+        [SwaggerOperation(Summary = "Create transaction (Maybe not use)")]
         public async Task<IActionResult> CreateTransaction(CreateTransactionDTO transaction)
         {
             await _transactionService.CreateTransaction(transaction);
@@ -63,7 +63,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpPatch(ApiEndPointConstant.Transaction.TransactionEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Update a transaction's data")]
+        [SwaggerOperation(Summary = "Update a transaction's data (Maybe not use)")]
         public async Task<IActionResult> UpdateTransactions(string id, [FromBody] UpdateTransacrtionDTO updateTransaction)
         {
             await _transactionService.UpdateTransaction(id, updateTransaction);
@@ -72,14 +72,16 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpDelete(ApiEndPointConstant.Transaction.TransactionEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Delete a transaction")]
+        [SwaggerOperation(Summary = "Delete a transaction (Maybe not use)")]
         public async Task<IActionResult> DeleteTransactions(string id)
         {
             await _transactionService.DeleteTransaction(id);
             return Ok("Action success");
         }
 
-        //Third-Party Payment
+        #region Third-Party Payment
+        //VnPay Api Controllers
+        #region VnPay
         [HttpGet(ApiEndPointConstant.Transaction.TransactionsVNPaymentReturnEndpoint)]
         [SwaggerOperation(Summary = "VnPay data return")]
         public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
@@ -96,8 +98,10 @@ namespace InteriorCoffeeAPIs.Controllers
             await _transactionService.CreateTransaction(model);
             return Ok(result);
         }
+        #endregion
 
-
+        //Paypal Api Controllers
+        #region Paypal
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalCaptureEndpoint)]
         [SwaggerOperation(Summary = "Paypal Data Capture")]
         public async Task<IActionResult> PaypalPaymentCapture(string paypalOrderId)
@@ -114,5 +118,7 @@ namespace InteriorCoffeeAPIs.Controllers
             await _transactionService.CreateTransaction(model);
             return Ok(result);
         }
+        #endregion
+        #endregion
     }
 }

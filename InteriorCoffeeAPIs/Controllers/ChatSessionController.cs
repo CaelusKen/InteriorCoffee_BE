@@ -35,10 +35,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> GetChatSessionById(string id)
         {
             var result = await _chatSessionService.GetChatSessionByIdAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
             return Ok(result);
         }
 
@@ -57,10 +53,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> UpdateChatSession(string id, [FromBody] UpdateChatSessionDTO updateChatSession)
         {
             var existingChatSession = await _chatSessionService.GetChatSessionByIdAsync(id);
-            if (existingChatSession == null)
-            {
-                return NotFound();
-            }
 
             await _chatSessionService.UpdateChatSessionAsync(id, updateChatSession);
             return Ok("Action success");
@@ -72,10 +64,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> DeleteChatSession(string id)
         {
             var chatSession = await _chatSessionService.GetChatSessionByIdAsync(id);
-            if (chatSession == null)
-            {
-                return NotFound();
-            }
 
             await _chatSessionService.DeleteChatSessionAsync(id);
             return Ok("Action success");

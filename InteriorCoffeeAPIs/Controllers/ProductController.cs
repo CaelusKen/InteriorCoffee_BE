@@ -15,6 +15,7 @@ using System.Text.Json;
 using static InteriorCoffee.Application.Constants.ApiEndPointConstant;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using AutoMapper;
+using InteriorCoffee.Application.Utils;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -93,16 +94,12 @@ namespace InteriorCoffeeAPIs.Controllers
             var validationService = _validationServices[schemaFilePath];
 
             var existingProduct = await _productService.GetProductByIdAsync(id);
-            if (existingProduct == null)
-            {
-                return NotFound(new { Message = "Product not found" });
-            }
 
             // Merge existing product data with the incoming update data
             var existingProductJson = JsonSerializer.Serialize(existingProduct, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
             var existingProductElement = JsonDocument.Parse(existingProductJson).RootElement;
 
-            var mergedProduct = MergeJsonElements(existingProductElement, updateProduct);
+            var mergedProduct = JsonUtil.MergeJsonElements(existingProductElement, updateProduct);
 
             var jsonString = JsonSerializer.Serialize(mergedProduct, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
             var (isValid, errors) = validationService.ValidateJson(jsonString, isUpdate: true);
@@ -120,60 +117,55 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(new { Message = "Product updated successfully" });
         }
 
-        #region "Patch update"
-        private JsonElement MergeJsonElements(JsonElement original, JsonElement update)
-        {
-            using (var stream = new MemoryStream())
-            {
-                using (var writer = new Utf8JsonWriter(stream))
-                {
-                    writer.WriteStartObject();
+        #region "Patch update" (Clean, use Util instead)
+        //public static JsonElement MergeJsonElements(JsonElement original, JsonElement update)
+        // {
+        //     using (var stream = new MemoryStream())
+        //     {
+        //         using (var writer = new Utf8JsonWriter(stream))
+        //         {
+        //             writer.WriteStartObject();
 
-                    foreach (var property in original.EnumerateObject())
-                    {
-                        if (update.TryGetProperty(property.Name, out var updatedProperty))
-                        {
-                            writer.WritePropertyName(property.Name);
-                            updatedProperty.WriteTo(writer);
-                        }
-                        else
-                        {
-                            property.WriteTo(writer);
-                        }
-                    }
+        //             foreach (var property in original.EnumerateObject())
+        //             {
+        //                 if (update.TryGetProperty(property.Name, out var updatedProperty))
+        //                 {
+        //                     writer.WritePropertyName(property.Name);
+        //                     updatedProperty.WriteTo(writer);
+        //                 }
+        //                 else
+        //                 {
+        //                     property.WriteTo(writer);
+        //                 }
+        //             }
 
-                    foreach (var property in update.EnumerateObject())
-                    {
-                        if (!original.TryGetProperty(property.Name, out _))
-                        {
-                            writer.WritePropertyName(property.Name);
-                            property.Value.WriteTo(writer);
-                        }
-                    }
+        //             foreach (var property in update.EnumerateObject())
+        //             {
+        //                 if (!original.TryGetProperty(property.Name, out _))
+        //                 {
+        //                     writer.WritePropertyName(property.Name);
+        //                     property.Value.WriteTo(writer);
+        //                 }
+        //             }
 
-                    writer.WriteEndObject();
-                }
+        //             writer.WriteEndObject();
+        //         }
 
-                stream.Position = 0;
-                using (var document = JsonDocument.Parse(stream))
-                {
-                    return document.RootElement.Clone();
-                }
-            }
-        }
+        //         stream.Position = 0;
+        //         using (var document = JsonDocument.Parse(stream))
+        //         {
+        //             return document.RootElement.Clone();
+        //         }
+        //     }
+        // }
         #endregion
 
-
-        [HttpPut(ApiEndPointConstant.Product.SoftDeleteProductEndpoint)]
+        [HttpPatch(ApiEndPointConstant.Product.SoftDeleteProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Soft delete a product")]
         public async Task<IActionResult> SoftDeleteProduct(string id)
         {
             var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
 
             await _productService.SoftDeleteProductAsync(id);
             return Ok("Product successfully soft deleted");
@@ -185,10 +177,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> DeleteProduct(string id)
         {
             var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
 
             await _productService.DeleteProductAsync(id);
             return Ok("Action success");

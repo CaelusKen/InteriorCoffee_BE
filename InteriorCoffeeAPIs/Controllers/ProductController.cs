@@ -79,9 +79,6 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
-
-
-
         [HttpPost(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create product")]

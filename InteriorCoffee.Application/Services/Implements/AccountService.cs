@@ -4,6 +4,7 @@ using InteriorCoffee.Application.DTOs.Account;
 using InteriorCoffee.Application.DTOs.Authentication;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
+using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -68,7 +69,25 @@ namespace InteriorCoffee.Application.Services.Implements
         }
         #endregion
 
-        public async Task<(List<Account>, int, int, int, int)> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy)
+        #region "Filtering"
+        private List<Account> ApplyFilters(List<Account> accounts, string roleId, string status)
+        {
+            if (!string.IsNullOrEmpty(roleId))
+            {
+                accounts = accounts.Where(a => a.RoleId == roleId).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                accounts = accounts.Where(a => a.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return accounts;
+        }
+        #endregion
+
+
+        public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy, AccountFilterDTO filter, string keyword)
         {
             var pagination = new Pagination
             {
@@ -85,20 +104,71 @@ namespace InteriorCoffee.Application.Services.Implements
                 if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
                 if (pagination.PageNo < 1) pagination.PageNo = 1;
 
-                var accounts = allAccounts.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                // Apply filters
+                allAccounts = ApplyFilters(allAccounts, filter.RoleId, filter.Status);
+
+                // Apply keyword search
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    allAccounts = allAccounts.Where(a => a.UserName.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                         a.Email.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                         a.PhoneNumber.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                         a.Address.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                             .ToList();
+                }
+
+                // Apply sorting logic only if orderBy is not null
+                allAccounts = ApplySorting(allAccounts, orderBy);
+
+                var paginatedAccounts = allAccounts.Skip((pagination.PageNo - 1) * pagination.PageSize)
                                           .Take(pagination.PageSize)
                                           .ToList();
 
-                // Apply sorting logic only if orderBy is not null
-                accounts = ApplySorting(accounts, orderBy);
+                var accountResponseItems = _mapper.Map<List<AccountResponseItemDTO>>(paginatedAccounts);
 
-                return (accounts, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+                #region "Mapping"
+                return new AccountResponseDTO
+                {
+                    PageNo = pagination.PageNo,
+                    PageSize = pagination.PageSize,
+                    ListSize = totalItems,
+                    CurrentPageSize = accountResponseItems.Count,
+                    ListSizeAfter = allAccounts.Count,
+                    TotalPage = totalPages,
+                    OrderBy = new AccountOrderByDTO
+                    {
+                        SortBy = orderBy?.SortBy,
+                        isAscending = orderBy?.Ascending ?? true
+                    },
+                    Filter = new AccountFilterDTO
+                    {
+                        Status = filter.Status,
+                        RoleId = filter.RoleId
+                    },
+                    Keyword = keyword,
+                    Accounts = accountResponseItems
+                };
+                #endregion
             }
+            #region "Catch error"
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while getting paginated accounts.");
-                return (new List<Account>(), pagination.PageNo, pagination.PageSize, 0, 0);
+                return new AccountResponseDTO
+                {
+                    PageNo = pagination.PageNo,
+                    PageSize = pagination.PageSize,
+                    ListSize = 0,
+                    CurrentPageSize = 0,
+                    ListSizeAfter = 0,
+                    TotalPage = 0,
+                    OrderBy = new AccountOrderByDTO(),
+                    Filter = new AccountFilterDTO(),
+                    Keyword = keyword,
+                    Accounts = new List<AccountResponseItemDTO>()
+                };
             }
+            #endregion
         }
 
         public async Task<Account> GetAccountByIdAsync(string id)

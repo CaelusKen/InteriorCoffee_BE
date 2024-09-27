@@ -19,19 +19,19 @@ namespace InteriorCoffee.Application.DTOs.Product
         public decimal MaxPrice { get; set; }               // maximum price of the product in the list (get truePrice) //
         public int InStock { get; set; }                    // in stock counting //
         public int OutOfStock { get; set; }                 // out of stock counting //
-        public OrderByDTO OrderBy { get; set; }             // get the sorting options list currently apply //
-        public FilterDTO Filter { get; set; }               // get the filter options list currently apply //
+        public ProductOrderByDTO OrderBy { get; set; }             // get the sorting options list currently apply //
+        public ProductFilterDTO Filter { get; set; }               // get the filter options list currently apply //
         public string Keyword { get; set; }                 // get the keyword that user search for //
         public List<ProductResponseItemDTO> Products { get; set; }  // list of product response item //
     }
 
-    public class OrderByDTO
+    public class ProductOrderByDTO
     {
         public string SortBy { get; set; }                  // Element that list will be sorted by //
         public bool isAscending { get; set; }               // Check ascending or not //
     }
 
-    public class FilterDTO                                  // Below are elements that will use by filters //
+    public class ProductFilterDTO                                  // Below are elements that will use by filters //
     {
         public string Status { get; set; }                  
         public string CategoryId { get; set; }

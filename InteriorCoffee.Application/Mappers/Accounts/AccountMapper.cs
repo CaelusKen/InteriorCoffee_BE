@@ -33,6 +33,9 @@ namespace InteriorCoffee.Application.Mappers.Accounts
 
             CreateMap<UpdateAccountDTO, Account>()
                 .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now));
+
+            // Add mapping for Account to AccountResponseItemDTO
+            CreateMap<Account, AccountResponseItemDTO>();
         }
     }
 }

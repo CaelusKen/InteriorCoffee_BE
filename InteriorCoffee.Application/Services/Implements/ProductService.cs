@@ -44,7 +44,7 @@ namespace InteriorCoffee.Application.Services.Implements
         #endregion
 
         public async Task<ProductResponseDTO> GetProductsAsync(
-            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, FilterDTO filter, string keyword = null)
+            int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilterDTO filter, string keyword = null)
         {
             var pagination = new Pagination
             {
@@ -52,84 +52,108 @@ namespace InteriorCoffee.Application.Services.Implements
                 PageSize = pageSize ?? PaginationConfig.DefaultPageSize
             };
 
-            // Fetch all products from the repository
-            var (products, totalItems) = await _productRepository.GetProductsAsync();
-
-            // Apply keyword search
-            if (!string.IsNullOrEmpty(keyword))
+            try
             {
-                products = products.Where(p => p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                                               p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                                   .ToList();
+                var (products, totalItems) = await _productRepository.GetProductsAsync();
+
+                // Apply keyword search
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    products = products.Where(p => p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                   p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                       .ToList();
+                }
+
+                // Apply filters
+                products = ApplyFilters(products, filter, minPrice, maxPrice);
+
+                // Determine the min and max prices from the filtered product list
+                var actualMinPrice = products.Any() ? products.Min(p => (decimal)p.TruePrice) : 0;
+                var actualMaxPrice = products.Any() ? products.Max(p => (decimal)p.TruePrice) : 0;
+
+                // Set default price range if not provided
+                minPrice = minPrice ?? actualMinPrice;
+                maxPrice = maxPrice ?? actualMaxPrice;
+
+                // Apply sorting
+                products = ApplySorting(products, orderBy);
+
+                // Calculate the total items and pages based on the filtered list
+                var listAfter = products.Count;
+                var filteredTotalPages = (int)Math.Ceiling((double)listAfter / pagination.PageSize);
+
+                // Handle page boundaries
+                if (pagination.PageNo > filteredTotalPages) pagination.PageNo = filteredTotalPages;
+                if (pagination.PageNo < 1) pagination.PageNo = 1;
+
+                // Paginate the filtered products
+                var paginatedProducts = products.Skip((pagination.PageNo - 1) * pagination.PageSize)
+                                                .Take(pagination.PageSize)
+                                                .ToList();
+
+                var inStockCount = products.Count(p => p.Quantity > 0);
+                var outOfStockCount = products.Count(p => p.Quantity == 0);
+
+                #region "Mapping"
+                var productResponseItems = _mapper.Map<List<ProductResponseItemDTO>>(paginatedProducts);
+
+                // Create and return the response DTO
+                return new ProductResponseDTO
+                {
+                    PageNo = pagination.PageNo,
+                    PageSize = pagination.PageSize,
+                    ListSize = totalItems,
+                    CurrentPageSize = productResponseItems.Count,
+                    ListSizeAfter = listAfter,
+                    TotalPage = filteredTotalPages,
+                    MinPrice = minPrice.Value,
+                    MaxPrice = maxPrice.Value,
+                    InStock = inStockCount,
+                    OutOfStock = outOfStockCount,
+                    OrderBy = new ProductOrderByDTO
+                    {
+                        SortBy = orderBy?.SortBy,
+                        isAscending = orderBy?.Ascending ?? true
+                    },
+                    Filter = new ProductFilterDTO
+                    {
+                        Status = filter.Status,
+                        CategoryId = filter.CategoryId,
+                        MerchantId = filter.MerchantId,
+                        IsAvailability = filter.IsAvailability
+                    },
+                    Keyword = keyword,
+                    Products = productResponseItems
+                };
+                #endregion
             }
-
-            // Apply filters
-            products = ApplyFilters(products, filter, minPrice, maxPrice);
-
-            // Determine the min and max prices from the filtered product list
-            var actualMinPrice = products.Any() ? products.Min(p => (decimal)p.TruePrice) : 0;
-            var actualMaxPrice = products.Any() ? products.Max(p => (decimal)p.TruePrice) : 0;
-
-            // Set default price range if not provided
-            minPrice = minPrice ?? actualMinPrice;
-            maxPrice = maxPrice ?? actualMaxPrice;
-
-            // Apply sorting
-            products = ApplySorting(products, orderBy);
-
-            // Calculate the total items and pages based on the filtered list
-            var listAfter = products.Count;
-            var filteredTotalPages = (int)Math.Ceiling((double)listAfter / pagination.PageSize);
-
-            // Handle page boundaries
-            if (pagination.PageNo > filteredTotalPages) pagination.PageNo = filteredTotalPages;
-            if (pagination.PageNo < 1) pagination.PageNo = 1;
-
-            // Paginate the filtered products
-            var paginatedProducts = products.Skip((pagination.PageNo - 1) * pagination.PageSize)
-                                            .Take(pagination.PageSize)
-                                            .ToList();
-
-            var inStockCount = products.Count(p => p.Quantity > 0);
-            var outOfStockCount = products.Count(p => p.Quantity == 0);
-
-            #region "Mapping"
-            var productResponseItems = _mapper.Map<List<ProductResponseItemDTO>>(paginatedProducts);
-
-            // Create and return the response DTO
-            return new ProductResponseDTO
+            #region "Catch error"
+            catch (Exception ex)
             {
-                PageNo = pagination.PageNo,
-                PageSize = pagination.PageSize,
-                ListSize = totalItems,
-                CurrentPageSize = productResponseItems.Count,
-                ListSizeAfter = listAfter,
-                TotalPage = filteredTotalPages,
-                MinPrice = minPrice.Value,
-                MaxPrice = maxPrice.Value,
-                InStock = inStockCount,
-                OutOfStock = outOfStockCount,
-                OrderBy = new OrderByDTO
+                _logger.LogError(ex, "Error occurred while getting paginated products.");
+                return new ProductResponseDTO
                 {
-                    SortBy = orderBy?.SortBy,
-                    isAscending = orderBy?.Ascending ?? true
-                },
-                Filter = new FilterDTO
-                {
-                    Status = filter.Status,
-                    CategoryId = filter.CategoryId,
-                    MerchantId = filter.MerchantId,
-                    IsAvailability = filter.IsAvailability
-                },
-                Keyword = keyword,
-                Products = productResponseItems
-            };
+                    PageNo = pagination.PageNo,
+                    PageSize = pagination.PageSize,
+                    ListSize = 0,
+                    CurrentPageSize = 0,
+                    ListSizeAfter = 0,
+                    TotalPage = 0,
+                    MinPrice = 0,
+                    MaxPrice = 0,
+                    InStock = 0,
+                    OutOfStock = 0,
+                    OrderBy = new ProductOrderByDTO(),
+                    Filter = new ProductFilterDTO(),
+                    Keyword = keyword,
+                    Products = new List<ProductResponseItemDTO>()
+                };
+            }
             #endregion
         }
 
-
         #region "Filtering"
-        private List<Product> ApplyFilters(List<Product> products, FilterDTO filter, decimal? minPrice, decimal? maxPrice)
+        private List<Product> ApplyFilters(List<Product> products, ProductFilterDTO filter, decimal? minPrice, decimal? maxPrice)
         {
             if (!string.IsNullOrEmpty(filter.Status))
             {

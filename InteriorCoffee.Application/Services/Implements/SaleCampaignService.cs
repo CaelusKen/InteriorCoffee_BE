@@ -58,8 +58,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
-
         public async Task<SaleCampaign> GetCampaignById(string id)
         {
             var result = await _saleCampaignRepository.GetSaleCampaign(

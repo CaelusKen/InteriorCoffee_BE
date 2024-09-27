@@ -46,10 +46,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> GetProductCategoryById(string id)
         {
             var result = await _productCategoryService.GetProductCategoryByIdAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
             return Ok(result);
         }
 
@@ -68,10 +64,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> UpdateProductCategory(string id, [FromBody] UpdateProductCategoryDTO updateProductCategory)
         {
             var existingProductCategory = await _productCategoryService.GetProductCategoryByIdAsync(id);
-            if (existingProductCategory == null)
-            {
-                return NotFound();
-            }
 
             await _productCategoryService.UpdateProductCategoryAsync(id, updateProductCategory);
             return Ok("Action success");
@@ -83,10 +75,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> DeleteProductCategory(string id)
         {
             var productCategory = await _productCategoryService.GetProductCategoryByIdAsync(id);
-            if (productCategory == null)
-            {
-                return NotFound();
-            }
 
             await _productCategoryService.DeleteProductCategoryAsync(id);
             return Ok("Action success");

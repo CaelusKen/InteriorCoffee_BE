@@ -56,8 +56,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
-
         public async Task<Voucher> GetVoucherById(string id)
         {
             var result =  await _voucherRepository.GetVoucher(

@@ -56,7 +56,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
         public async Task<Design> GetDesignByIdAsync(string id)
         {
             var design = await _designRepository.GetDesignById(id);

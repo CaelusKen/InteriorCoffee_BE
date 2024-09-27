@@ -153,8 +153,6 @@ namespace InteriorCoffee.Application.Services.Implements
 
         }
 
-
-
         public async Task SoftDeleteAccountAsync(string id)
         {
             var account = await _accountRepository.GetAccountById(id);

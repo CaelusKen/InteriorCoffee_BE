@@ -56,8 +56,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
-
         public async Task<Template> GetTemplateById(string id)
         {
             var result = await _templateRepository.GetTemplate(

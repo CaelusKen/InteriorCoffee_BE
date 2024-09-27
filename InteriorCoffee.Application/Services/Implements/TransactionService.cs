@@ -38,7 +38,6 @@ namespace InteriorCoffee.Application.Services.Implements
             return (transactions, pagination.PageNo, currentPageSize, totalItems, totalPages);
         }
 
-
         public async Task<Transaction> GetTransactionById(string id)
         {
             var result =  await _transactionRepository.GetTransaction(

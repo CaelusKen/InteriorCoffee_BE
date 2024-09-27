@@ -48,17 +48,12 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
-
         [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a merchant by id")]
         public async Task<IActionResult> GetMerchantById(string id)
         {
             var result = await _merchantService.GetMerchantByIdAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
             return Ok(result);
         }
 
@@ -77,10 +72,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> UpdateMerchant(string id, [FromBody] UpdateMerchantDTO updateMerchant)
         {
             var existingMerchant = await _merchantService.GetMerchantByIdAsync(id);
-            if (existingMerchant == null)
-            {
-                return NotFound();
-            }
 
             await _merchantService.UpdateMerchantAsync(id, updateMerchant);
             return Ok("Action success");
@@ -92,10 +83,6 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> DeleteMerchant(string id)
         {
             var merchant = await _merchantService.GetMerchantByIdAsync(id);
-            if (merchant == null)
-            {
-                return NotFound();
-            }
 
             await _merchantService.DeleteMerchantAsync(id);
             return Ok("Action success");

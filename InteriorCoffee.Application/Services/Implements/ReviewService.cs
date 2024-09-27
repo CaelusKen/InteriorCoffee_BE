@@ -57,7 +57,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
         public async Task<Review> GetReviewById(string id)
         {
             var result = await _reviewRepository.GetReview(

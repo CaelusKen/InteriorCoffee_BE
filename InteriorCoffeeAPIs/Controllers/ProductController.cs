@@ -48,7 +48,7 @@ namespace InteriorCoffeeAPIs.Controllers
                 orderBy = new OrderBy(sortBy, isAscending ?? true);
             }
 
-            var filter = new FilterDTO
+            var filter = new ProductFilterDTO
             {
                 Status = status,
                 CategoryId = categoryId,

@@ -29,10 +29,11 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<Account>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all accounts with pagination and sorting. " +
-            "Ex url: GET /api/accounts?pageNo=1&pageSize=10&sortBy=username&ascending=true\r\n")]
-        public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
+        [ProducesResponseType(typeof(AccountResponseDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all accounts with pagination, sorting, and filtering. " +
+            "Ex url: GET /api/accounts?pageNo=1&pageSize=10&sortBy=username&ascending=true&roleId=123&status=active&keyword=john\r\n")]
+        public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
+                                                     [FromQuery] string roleId = null, [FromQuery] string status = null, [FromQuery] string keyword = null)
         {
             OrderBy orderBy = null;
             if (!string.IsNullOrEmpty(sortBy))
@@ -40,19 +41,17 @@ namespace InteriorCoffeeAPIs.Controllers
                 orderBy = new OrderBy(sortBy, ascending ?? true);
             }
 
-            var (accounts, currentPage, currentPageSize, totalItems, totalPages) = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy);
-
-            var response = new Paginate<Account>
+            var filter = new AccountFilterDTO
             {
-                Items = accounts,
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                TotalItems = totalItems,
-                TotalPages = totalPages,
+                Status = status,
+                RoleId = roleId
             };
+
+            var response = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy, filter, keyword);
 
             return Ok(response);
         }
+
 
 
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]

@@ -99,7 +99,7 @@ namespace InteriorCoffee.Application.DTOs.Account
         /// <summary>
         /// Account ID.
         /// </summary>
-        public string Id { get; set; }
+        public string _id { get; set; }
 
         /// <summary>
         /// Username.

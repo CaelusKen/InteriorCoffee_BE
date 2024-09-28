@@ -8,11 +8,13 @@
     "user-name": {
       "type": "string",
       "minLength": 1,
+      "maxLength": 20,
       "description": "The user's name"
     },
     "password": {
       "type": "string",
       "minLength": 8,
+      "pattern": "^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$",
       "description": "The user's password"
     },
     "email": {
@@ -32,6 +34,7 @@
     },
     "avatar": {
       "type": "string",
+      "format": "uri",
       "description": "The user's avatar URL"
     },
     "merchant-id": {

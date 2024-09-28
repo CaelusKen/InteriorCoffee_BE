@@ -23,7 +23,8 @@ namespace InteriorCoffee.Application.Mappers.Products
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
 
             // Mapping for ProductResponseItemDTO to Product
-            CreateMap<Product, ProductResponseItemDTO>();
+            CreateMap<Product, ProductResponseItemDTO>()
+                .ForMember(des => des.Id, src => src.MapFrom(src => src._id));
         }
     }
 }

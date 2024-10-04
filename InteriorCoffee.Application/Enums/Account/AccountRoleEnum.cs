@@ -11,5 +11,7 @@ namespace InteriorCoffee.Application.Enums.Account
         MANAGER,
         MERCHANT,
         CUSTOMER
+        // Add CONSULTANT ROLE, 1 MERCHANT CANT HAVE MULTIPLE CONSULTANTS //
     }
 }
+

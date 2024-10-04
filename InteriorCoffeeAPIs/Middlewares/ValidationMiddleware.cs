@@ -1,5 +1,7 @@
-﻿using InteriorCoffeeAPIs.Validate;
+﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System.Text;
 
 namespace InteriorCoffeeAPIs.Middlewares
@@ -10,6 +12,12 @@ namespace InteriorCoffeeAPIs.Middlewares
         private readonly ILogger<ValidationMiddleware> _logger;
         private readonly IDictionary<string, JsonValidationService> _validationServices;
         private readonly IDictionary<string, string> _schemaPathMappings;
+        private readonly List<string> _softDeleteEndpoints = new List<string>
+        {
+            ApiEndPointConstant.Account.SoftDeleteAccountEndpoint,
+            ApiEndPointConstant.Product.SoftDeleteProductEndpoint,
+            // Add other soft delete endpoints here
+        };
 
         public ValidationMiddleware(RequestDelegate next, ILogger<ValidationMiddleware> logger, IDictionary<string, JsonValidationService> validationServices)
         {
@@ -28,24 +36,30 @@ namespace InteriorCoffeeAPIs.Middlewares
             if (context.Request.Method == HttpMethods.Post || context.Request.Method == HttpMethods.Patch)
             {
                 context.Request.EnableBuffering();
-                using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true))
+                var body = await ReadRequestBodyAsync(context);
+
+                var schemaFilePath = GetSchemaFilePath(context.Request.Path);
+                if (schemaFilePath != null && _validationServices.TryGetValue(schemaFilePath, out var jsonValidationService))
                 {
-                    var body = await reader.ReadToEndAsync();
-                    context.Request.Body.Position = 0;
+                    bool isUpdate = context.Request.Method == HttpMethods.Patch;
 
-                    var schemaFilePath = GetSchemaFilePath(context.Request.Path);
-                    if (schemaFilePath != null && _validationServices.TryGetValue(schemaFilePath, out var jsonValidationService))
+                    if (ShouldSkipValidation(context, body))
                     {
-                        bool isUpdate = context.Request.Method == HttpMethods.Patch;
-                        var (isValid, errors) = jsonValidationService.ValidateJson(body, isUpdate);
+                        await _next(context);
+                        return;
+                    }
 
-                        if (!isValid)
+                    if (!string.IsNullOrWhiteSpace(body))
+                    {
+                        if (!await ValidateRequestBodyAsync(context, body, jsonValidationService, isUpdate))
                         {
-                            _logger.LogError("Validation failed for path {Path}: {Errors}", context.Request.Path, string.Join(", ", errors));
-                            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                            await context.Response.WriteAsJsonAsync(new { Errors = errors });
                             return;
                         }
+                    }
+                    else
+                    {
+                        await HandleEmptyBodyAsync(context);
+                        return;
                     }
                 }
             }
@@ -53,7 +67,62 @@ namespace InteriorCoffeeAPIs.Middlewares
             await _next(context);
         }
 
-        private string GetSchemaFilePath(string requestPath)
+        private async Task<string> ReadRequestBodyAsync(HttpContext context)
+        {
+            using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true))
+            {
+                var body = await reader.ReadToEndAsync();
+                context.Request.Body.Position = 0;
+                return body;
+            }
+        }
+
+        private bool ShouldSkipValidation(HttpContext context, string body)
+        {
+            return string.IsNullOrWhiteSpace(body) && _softDeleteEndpoints.Any(endpoint => context.Request.Path.Equals(endpoint, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private async Task<bool> ValidateRequestBodyAsync(HttpContext context, string body, JsonValidationService jsonValidationService, bool isUpdate)
+        {
+            try
+            {
+                var (isValid, errors) = jsonValidationService.ValidateJson(body, isUpdate);
+
+                if (!isValid)
+                {
+                    _logger.LogError("Validation failed for path {Path}: {Errors}", context.Request.Path, string.Join(", ", errors));
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsJsonAsync(new { Errors = errors });
+                    return false;
+                }
+            }
+            catch (JsonReaderException ex)
+            {
+                _logger.LogError(ex, "Invalid JSON format");
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(new { Errors = new[] { "Invalid JSON format" } });
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task HandleEmptyBodyAsync(HttpContext context)
+        {
+            if (_softDeleteEndpoints.Any(endpoint => context.Request.Path.Equals(endpoint, StringComparison.OrdinalIgnoreCase)))
+            {
+                await _next(context);
+            }
+            else
+            {
+                _logger.LogError("Request body is empty for path {Path}", context.Request.Path);
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(new { Errors = new[] { "Request body cannot be empty" } });
+            }
+        }
+
+
+    private string GetSchemaFilePath(string requestPath)
         {
             foreach (var mapping in _schemaPathMappings)
             {

@@ -34,6 +34,8 @@ namespace InteriorCoffee.Application.Services.Implements
             _roleRepository = roleRepository;
         }
 
+        // NOTE: CREATE CONSULTANT FUNCTIONS TO CREATE CONSULTANT ROLE //
+
         #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
@@ -230,10 +232,11 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 throw new NotFoundException($"Account with id {id} not found.");
             }
-
             account.Status = AccountStatusEnum.INACTIVE.ToString();
+            account.UpdatedDate = DateTime.Now;
             await _accountRepository.UpdateAccount(account);
         }
+
 
         public async Task DeleteAccountAsync(string id)
         {

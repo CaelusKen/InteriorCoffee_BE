@@ -189,12 +189,12 @@ namespace InteriorCoffee.Application.Services.Implements
             if (existingAccount != null) throw new ConflictException("Email has already existed");
 
             // Get the role for the new account
-            Role customerRole = await _roleRepository.GetRole(
-                predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
+            Role accountRole = await _roleRepository.GetRole(
+                predicate: r => r.Name.Equals(createAccountDTO.RoleName.ToUpper()));
 
             // Setup new account information
             Account newAccount = _mapper.Map<Account>(createAccountDTO);
-            newAccount.RoleId = customerRole._id;
+            newAccount.RoleId = accountRole._id;
 
             // Create new account
             await _accountRepository.CreateAccount(newAccount);

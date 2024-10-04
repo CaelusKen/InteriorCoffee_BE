@@ -10,6 +10,7 @@ namespace InteriorCoffee.Application.Enums.Account
     {
         MANAGER,
         MERCHANT,
+        CONSULTANT,
         CUSTOMER
     }
 }

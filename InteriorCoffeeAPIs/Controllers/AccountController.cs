@@ -14,6 +14,8 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 using System.Threading.Tasks;
 using System.Text.Json;
 using InteriorCoffee.Application.Utils;
+using InteriorCoffee.Domain.ErrorModel;
+using InteriorCoffee.Application.Enums.Account;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -28,20 +30,6 @@ namespace InteriorCoffeeAPIs.Controllers
             _accountService = accountService;
             _validationServices = validationServices;
         }
-
-        #region "Schema Swagger"
-        /// <summary>
-        /// Get all accounts with pagination, sorting, and filtering.
-        /// </summary>
-        /// <param name="pageNo">Page number.</param>
-        /// <param name="pageSize">Page size.</param>
-        /// <param name="sortBy">Sort by field.</param>
-        /// <param name="ascending">Sort order.</param>
-        /// <param name="roleId">Role ID filter.</param>
-        /// <param name="status">Status filter.</param>
-        /// <param name="keyword">Search keyword.</param>
-        /// <returns>Paginated list of accounts.</returns>
-        #endregion
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(AccountResponseDTO), StatusCodes.Status200OK)]
@@ -177,21 +165,53 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpPatch(ApiEndPointConstant.Account.SoftDeleteAccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Soft delete an account")]
-        public async Task<IActionResult> SoftDeleteAccount(string id)
+        [Consumes("application/json")]
+        public async Task<IActionResult> SoftDeleteAccount(string id, [FromBody] JsonElement? requestBody = null)
         {
-            await _accountService.SoftDeleteAccountAsync(id);
-            return Ok("Account successfully soft deleted");
+            if (requestBody == null || !requestBody.HasValue || requestBody.Value.ValueKind == JsonValueKind.Undefined)
+            {
+                using (var doc = JsonDocument.Parse("{}"))
+                {
+                    requestBody = doc.RootElement.Clone();
+                }
+            }
+
+            try
+            {
+                await _accountService.SoftDeleteAccountAsync(id);
+                return Ok("Account successfully soft deleted");
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while soft deleting account");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
+
 
         [HttpDelete(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete an account")]
         public async Task<IActionResult> DeleteAccount(string id)
         {
-            var account = await _accountService.GetAccountByIdAsync(id);
-
-            await _accountService.DeleteAccountAsync(id);
-            return Ok("Action success");
+            try
+            {
+                await _accountService.DeleteAccountAsync(id);
+                return Ok("Account successfully deleted");
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while deleting account");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
     }
 }

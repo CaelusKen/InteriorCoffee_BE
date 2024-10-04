@@ -7,6 +7,7 @@ using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using InteriorCoffeeAPIs.Extensions;
 using InteriorCoffeeAPIs.Middlewares;
 using InteriorCoffeeAPIs.Validate;
+using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Text.Json;
 
@@ -34,7 +35,10 @@ builder.Services.AddJwtValidation(builder.Configuration);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddConfigSwagger();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.MapType<JsonElement>(() => new OpenApiSchema { Type = "object" });
+});
 builder.Services.AddJsonSchemaValidation("Validate"); // Add JSON Schema validation from the directory (from root to Validate folder)
 
 var app = builder.Build();

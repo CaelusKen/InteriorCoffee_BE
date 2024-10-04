@@ -24,7 +24,6 @@ namespace InteriorCoffee.Application.Mappers.Accounts
                 .ForMember(des => des.Status, src => src.MapFrom(src => AccountStatusEnum.ACTIVE.ToString()))
                 .ForMember(des => des._id, src => src.MapFrom(src => ObjectId.GenerateNewId().ToString()));
 
-            // Add mappings for CreateAccountDTO and UpdateAccountDTO
             CreateMap<CreateAccountDTO, Account>()
                 .ForMember(des => des.CreatedDate, src => src.MapFrom(src => DateTime.Now))
                 .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now))
@@ -34,8 +33,14 @@ namespace InteriorCoffee.Application.Mappers.Accounts
             CreateMap<UpdateAccountDTO, Account>()
                 .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now));
 
-            // Add mapping for Account to AccountResponseItemDTO
             CreateMap<Account, AccountResponseItemDTO>();
+
+            // Add mapping for soft delete to update UpdatedDate
+            CreateMap<SoftDeleteResponseDto, Account>()
+                .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now))
+                .ForMember(des => des.Status, src => src.MapFrom(src => AccountStatusEnum.INACTIVE.ToString()));
+
+            // Add mapping for create new account with CONSULTANT enum role 
         }
     }
 }

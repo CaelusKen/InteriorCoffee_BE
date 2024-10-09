@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InteriorCoffee.Application.Enums.Account;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,6 @@ namespace InteriorCoffee.Application.DTOs.Account
         public string Avatar { get; set; }
         //public DateTime CreatedDate { get; set; }
         public string MerchantId { get; set; }
-        public string RoleId { get; set; }
+        public string RoleName { get; set; }
     }
 }

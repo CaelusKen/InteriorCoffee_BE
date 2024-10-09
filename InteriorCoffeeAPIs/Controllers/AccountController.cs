@@ -67,7 +67,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpPost(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Create account")]
+        [SwaggerOperation(Summary = "Create account for manager and consultant")]
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDTO account)
         {
             var schemaFilePath = "AccountValidate"; // Use the correct key

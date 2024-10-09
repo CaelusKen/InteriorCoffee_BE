@@ -14,7 +14,7 @@ namespace InteriorCoffee.Application.Mappers.Orders
             // Mapping for CreateOrderDTO to Order
             CreateMap<CreateOrderDTO, Order>()
                 .ForMember(dest => dest._id, opt => opt.MapFrom(src => ObjectId.GenerateNewId().ToString()))
-                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => OrderStatusEnum.PENDING.ToString()));
 

@@ -86,7 +86,7 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "VnPay data return")]
         public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
         {
-            var result = _paymentService.PaymentExecute(model);
+            var result = await _paymentService.PaymentExecute(model);
             return Ok(result);
         }
 

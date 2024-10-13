@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.ChatMessage;
 using InteriorCoffee.Application.DTOs.ChatSession;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
@@ -20,6 +21,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _chatSessionService = chatSessionService;
         }
 
+        #region Chat Session
         [HttpGet(ApiEndPointConstant.ChatSession.ChatSessionsEndpoint)]
         [ProducesResponseType(typeof(List<ChatSession>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all chat sessions")]
@@ -68,5 +70,35 @@ namespace InteriorCoffeeAPIs.Controllers
             await _chatSessionService.DeleteChatSessionAsync(id);
             return Ok("Action success");
         }
+        #endregion
+
+        #region Chat message
+        [HttpPost(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create chat session")]
+        public async Task<IActionResult> SendChatMessage(string id, [FromBody]AddChatMessageDTO message)
+        {
+            await _chatSessionService.AddSentMessage(id, message);
+            return Ok("Action success");
+        }
+
+        [HttpPatch(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create chat session")]
+        public async Task<IActionResult> UpdateChatMessage(string id, [FromBody] UpdateChatMessageDTO message)
+        {
+            await _chatSessionService.UpdateSentMessage(id, message);
+            return Ok("Action success");
+        }
+
+        [HttpDelete(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create chat session")]
+        public async Task<IActionResult> DeleteChatMessage(string id, [FromBody] string messageId)
+        {
+            await _chatSessionService.DeleteSentMessage(id, messageId);
+            return Ok("Action success");
+        }
+        #endregion
     }
 }

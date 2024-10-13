@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InteriorCoffee.Application.DTOs.ChatSession
+namespace InteriorCoffee.Application.DTOs.ChatMessage
 {
-    public class ChatMessageDTO
+    public class AddChatMessageDTO
     {
         public string SenderId { get; set; }
         public string Message { get; set; }

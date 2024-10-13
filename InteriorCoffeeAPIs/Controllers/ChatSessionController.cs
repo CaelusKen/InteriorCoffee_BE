@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.ChatMessage;
 using InteriorCoffee.Application.DTOs.ChatSession;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
@@ -75,9 +76,27 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpPost(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create chat session")]
-        public async Task<IActionResult> SendChatMessage(string id, [FromBody]ChatMessageDTO message)
+        public async Task<IActionResult> SendChatMessage(string id, [FromBody]AddChatMessageDTO message)
         {
             await _chatSessionService.AddSentMessage(id, message);
+            return Ok("Action success");
+        }
+
+        [HttpPatch(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create chat session")]
+        public async Task<IActionResult> UpdateChatMessage(string id, [FromBody] UpdateChatMessageDTO message)
+        {
+            await _chatSessionService.UpdateSentMessage(id, message);
+            return Ok("Action success");
+        }
+
+        [HttpDelete(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create chat session")]
+        public async Task<IActionResult> DeleteChatMessage(string id, [FromBody] string messageId)
+        {
+            await _chatSessionService.DeleteSentMessage(id, messageId);
             return Ok("Action success");
         }
         #endregion

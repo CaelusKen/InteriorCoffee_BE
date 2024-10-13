@@ -12,5 +12,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task CreateChatSessionAsync(CreateChatSessionDTO chatSession);
         Task UpdateChatSessionAsync(string id, UpdateChatSessionDTO chatSession);
         Task DeleteChatSessionAsync(string id);
+
+        Task AddSentMessage(string chattSessionId, ChatMessageDTO message);
     }
 }

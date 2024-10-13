@@ -4,6 +4,7 @@ using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Models.Documents;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _chatSessionRepository = chatSessionRepository;
         }
 
+        #region Chat Session
         public async Task<List<ChatSession>> GetChatSessionListAsync()
         {
             var chatSessions = await _chatSessionRepository.GetChatSessionList();
@@ -65,5 +67,24 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             await _chatSessionRepository.DeleteChatSession(id);
         }
+        #endregion
+
+        #region Chat Message
+        public async Task AddSentMessage(string chattSessionId, ChatMessageDTO message)
+        {
+            var chatSession = await _chatSessionRepository.GetChatSessionById(chattSessionId);
+            if (chatSession == null)
+            {
+                throw new NotFoundException($"Chat session with id {chattSessionId} not found.");
+            }
+
+            //Add new message to chat session
+            ChatMessage newMessage = _mapper.Map<ChatMessage>(message);
+            chatSession.Messages.Add(newMessage);
+
+            //Update chat session data
+            await _chatSessionRepository.UpdateChatSession(chatSession);
+        }
+        #endregion
     }
 }

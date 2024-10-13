@@ -74,5 +74,14 @@ namespace InteriorCoffeeAPIs.Controllers
             await _saleCampaignService.DeleteCampagin(id);
             return Ok("Action success");
         }
+
+        [HttpPost(ApiEndPointConstant.SaleCampaign.SaleCampaignProductsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Add products to sale campaign")]
+        public async Task<IActionResult> AddProductsToSaleCampaign(CreateSaleCampaignDTO saleCampaign)
+        {
+            await _saleCampaignService.CreateCampaign(saleCampaign);
+            return Ok("Action success");
+        }
     }
 }

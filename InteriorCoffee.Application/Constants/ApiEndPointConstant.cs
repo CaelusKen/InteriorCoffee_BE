@@ -37,6 +37,8 @@ namespace InteriorCoffee.Application.Constants
         {
             public const string SaleCampaignsEndpoint = ApiEndpoint + "/sale-campaigns";
             public const string SaleCampaignEndpoint = SaleCampaignsEndpoint + "/{id}";
+
+            public const string SaleCampaignProductsEndpoint = SaleCampaignEndpoint + "/products";
         }
 
         public static class Style

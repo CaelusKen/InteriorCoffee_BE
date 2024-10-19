@@ -31,7 +31,7 @@ namespace InteriorCoffee.Application.Services.Implements
             { "orderdate", "OrderDate" },
             { "status", "Status" },
             { "totalamount", "TotalAmount" },
-            { "createddate", "CreatedDate" }
+            { "orderdate", "OrderDate" }
         };
 
         public async Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy)

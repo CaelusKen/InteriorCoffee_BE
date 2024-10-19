@@ -75,7 +75,7 @@ namespace InteriorCoffeeAPIs.Controllers
         #region Chat message
         [HttpPost(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Create chat session")]
+        [SwaggerOperation(Summary = "Save sent chat message")]
         public async Task<IActionResult> SendChatMessage(string id, [FromBody]AddChatMessageDTO message)
         {
             await _chatSessionService.AddSentMessage(id, message);
@@ -84,7 +84,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpPatch(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Create chat session")]
+        [SwaggerOperation(Summary = "Update chat message")]
         public async Task<IActionResult> UpdateChatMessage(string id, [FromBody] UpdateChatMessageDTO message)
         {
             await _chatSessionService.UpdateSentMessage(id, message);
@@ -93,7 +93,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpDelete(ApiEndPointConstant.ChatSession.ChatMessageEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Create chat session")]
+        [SwaggerOperation(Summary = "Delete chat message")]
         public async Task<IActionResult> DeleteChatMessage(string id, [FromBody] string messageId)
         {
             await _chatSessionService.DeleteSentMessage(id, messageId);

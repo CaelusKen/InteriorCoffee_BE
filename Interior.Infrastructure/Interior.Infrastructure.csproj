@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InteriorCoffee.Domain\InteriorCoffee.Domain.csproj" />
+    <Compile Remove="Event\**" />
+    <EmbeddedResource Remove="Event\**" />
+    <None Remove="Event\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Event\" />
+    <ProjectReference Include="..\InteriorCoffee.Domain\InteriorCoffee.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

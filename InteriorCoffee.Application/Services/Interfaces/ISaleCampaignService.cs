@@ -15,5 +15,8 @@ namespace InteriorCoffee.Application.Services.Interfaces
         public Task CreateCampaign(CreateSaleCampaignDTO createdSaleCampaign);
         public Task UpdateCampaign(string id, UpdateSaleCampaignDTO updatedCampaign);
         public Task DeleteCampagin(string id);
+
+        public Task AddProductsToCampaign(string campaignId, List<string> productIds);
+        public Task RemoveAllProductsInCampaign(string campaignId);
     }
 }

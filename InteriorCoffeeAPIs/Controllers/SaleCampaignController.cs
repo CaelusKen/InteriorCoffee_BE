@@ -87,7 +87,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpDelete(ApiEndPointConstant.SaleCampaign.SaleCampaignProductsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Add products to sale campaign")]
+        [SwaggerOperation(Summary = "Remove all products in sale campaign")]
         public async Task<IActionResult> RemoveAllProductsInCampaign(string id)
         {
             await _saleCampaignService.RemoveAllProductsInCampaign(id);

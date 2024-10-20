@@ -13,7 +13,5 @@ namespace InteriorCoffee.Application.Enums.Transaction
         FAILED = 3,
         CANCELLED = 4,
         REFUNDED = 5,
-        EXPIRED = 6,
-        DECLINED = 7
     }
 }

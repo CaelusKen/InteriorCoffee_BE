@@ -91,7 +91,7 @@ namespace InteriorCoffee.Application.Services.Implements
             voucher.MaxUse = updatedVoucher.MaxUse;
             voucher.MinOrderValue = updatedVoucher.MinOrderValue;
             //voucher.UsedAccountIds = new List<string>();
-            voucher.TypeId = String.IsNullOrEmpty(updatedVoucher.TypeId) ? voucher.TypeId : updatedVoucher.TypeId;
+            voucher.Type = String.IsNullOrEmpty(updatedVoucher.Type) ? voucher.Type : updatedVoucher.Type;
 
             await _voucherRepository.UpdateVoucher(voucher);
         }

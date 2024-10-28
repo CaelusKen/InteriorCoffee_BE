@@ -14,13 +14,13 @@ namespace InteriorCoffee.Application.Mappers.Merchants
             // Mapping for CreateMerchantDTO to Merchant
             CreateMap<CreateMerchantDTO, Merchant>()
                 .ForMember(dest => dest._id, opt => opt.MapFrom(src => ObjectId.GenerateNewId().ToString()))
-                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
+                //.ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
+                //.ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => MerchantStatusEnum.ACTIVE.ToString()));
 
             // Mapping for UpdateMerchantDTO to Merchant
-            CreateMap<UpdateMerchantDTO, Merchant>()
-                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
+            //CreateMap<UpdateMerchantDTO, Merchant>()
+            //    .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
         }
     }
 }

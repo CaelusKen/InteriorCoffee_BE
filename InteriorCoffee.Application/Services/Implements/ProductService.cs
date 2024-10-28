@@ -163,7 +163,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
             if (!string.IsNullOrEmpty(filter.CategoryId))
             {
-                products = products.Where(p => p.CategoryId != null && p.CategoryId.Contains(filter.CategoryId)).ToList();
+                products = products.Where(p => p.CategoryIds != null && p.CategoryIds.Contains(filter.CategoryId)).ToList();
             }
 
             if (!string.IsNullOrEmpty(filter.MerchantId))

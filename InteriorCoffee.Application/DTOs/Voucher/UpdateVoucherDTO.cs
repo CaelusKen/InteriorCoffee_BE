@@ -18,6 +18,6 @@ namespace InteriorCoffee.Application.DTOs.Voucher
         public int MaxUse { get; set; }
         public double MinOrderValue { get; set; }
 
-        public string TypeId { get; set; }
+        public string Type { get; set; }
     }
 }

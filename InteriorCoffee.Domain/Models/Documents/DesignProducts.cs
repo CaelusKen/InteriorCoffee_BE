@@ -8,17 +8,10 @@ namespace InteriorCoffee.Domain.Models.Documents
 {
     public class DesignProducts
     {
-        public string _id { get; set; }
-        public string Name { get; set; }
-        public double Price { get; set; }
-        public List<string> Category { get; set; }
-        public string Dimensions { get; set; }
-        public List<string> Materials { get; set; }
-        public string TextureModel { get; set; }
-        public string Thumbnail { get; set; }
+        public string _id { get; set; } = null!;
 
-        public Position Position { get; set; }
-        public Scale Scale { get; set; }
-        public Rotation Rotation { get; set; }
+        public Position Position { get; set; } = null!;
+        public Scale Scale { get; set; } = null!;
+        public Rotation Rotation { get; set; } = null!;
     }
 }

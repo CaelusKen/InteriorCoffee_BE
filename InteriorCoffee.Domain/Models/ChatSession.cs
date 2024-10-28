@@ -18,7 +18,7 @@ namespace InteriorCoffee.Domain.Models
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
 
-        public string CustomerId { get; set; }
-        public string AdvisorId { get; set; }
+        public string CustomerId { get; set; } = null!;
+        public string AdvisorId { get; set; } = null!;
     }
 }

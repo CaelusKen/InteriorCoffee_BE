@@ -13,11 +13,11 @@ namespace InteriorCoffee.Domain.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id {  get; set; } = null!;
-        public string Code {  get; set; }
-        public string Name { get; set; }
+        public string Code {  get; set; } = null!;
+        public string Name { get; set; } = null!;
         public string Description { get; set; }
         public int DiscountPercentage { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = null!;
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public DateTime StartDate { get; set; }
@@ -26,6 +26,6 @@ namespace InteriorCoffee.Domain.Models
         public double MinOrderValue { get; set; }
         public List<string> UsedAccountIds { get; set; }
 
-        public string TypeId { get; set; }
+        public string Type { get; set; } = null!;
     }
 }

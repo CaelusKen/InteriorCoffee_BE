@@ -8,7 +8,7 @@ namespace InteriorCoffee.Domain.Models
 {
     public class CampaignProducts
     {
-        public string ProductId { get; set; }
-        public string CampaignId { get; set; }
+        public string ProductId { get; set; } = null!;
+        public string CampaignId { get; set; } = null!;
     }
 }

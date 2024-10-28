@@ -13,7 +13,7 @@ namespace InteriorCoffee.Domain.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = null!;
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string Description { get; set; }
     }
 }

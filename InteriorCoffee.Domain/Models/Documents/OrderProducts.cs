@@ -12,8 +12,6 @@ namespace InteriorCoffee.Domain.Models.Documents
         public string Name { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }
-        public List<string> Category { get; set; }
-        public string Dimensions { get; set; }
-        public List<string> Materials { get; set; }
+        public string MerchantId { get; set; } = null!;
     }
 }

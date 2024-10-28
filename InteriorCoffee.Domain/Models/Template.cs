@@ -14,16 +14,17 @@ namespace InteriorCoffee.Domain.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; } = null!;
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string Description { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = null!;
         public string Type { get; set; }
         public List<Floor> Floors { get; set; }
+        public List<string> Categories { get; set; }
 
-        public string AccountId { get; set; }
-        public string MerchantId { get; set; }
-        public string StyleId { get; set; }
+        public string AccountId { get; set; } = null!;
+        public string MerchantId { get; set; } = null!;
+        public string StyleId { get; set; } = null!;
     }
 }

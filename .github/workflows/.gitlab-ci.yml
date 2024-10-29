@@ -37,5 +37,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEPAPP_NAME }}
-          # publish-profile (currently not setup)
+          publish-profile: ${{secrets.INTERICOFFEE_API_SECRET}}
           package: ./publish

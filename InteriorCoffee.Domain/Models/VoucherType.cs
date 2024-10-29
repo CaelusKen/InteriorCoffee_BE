@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace InteriorCoffee.Domain.Models
 {
-    public class VoucherType 
+    public class VoucherType //Test
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

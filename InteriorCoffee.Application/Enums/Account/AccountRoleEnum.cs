@@ -8,11 +8,10 @@ namespace InteriorCoffee.Application.Enums.Account
 {
     public enum AccountRoleEnum
     {
-        MANAGER,
-        MERCHANT,
-        CONSULTANT,
-        CUSTOMER
-        // Add CONSULTANT ROLE, 1 MERCHANT CANT HAVE MULTIPLE CONSULTANTS //
+        MANAGER = 0,
+        MERCHANT = 1,
+        CONSULTANT = 2,
+        CUSTOMER = 3
     }
 }
 

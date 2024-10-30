@@ -118,7 +118,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     Filter = new ProductFilterDTO
                     {
                         Status = filter.Status,
-                        Category = filter.Category,
+                        CategoryId = filter.CategoryId,
                         MerchantId = filter.MerchantId,
                         IsAvailability = filter.IsAvailability
                     },
@@ -161,9 +161,9 @@ namespace InteriorCoffee.Application.Services.Implements
                 products = products.Where(p => p.Status.ToUpper() == normalizedStatus).ToList();
             }
 
-            if (!string.IsNullOrEmpty(filter.Category))
+            if (!string.IsNullOrEmpty(filter.CategoryId))
             {
-                products = products.Where(p => p.Categories != null && p.Categories.Contains(filter.Category)).ToList();
+                products = products.Where(p => p.CategoryIds != null && p.CategoryIds.Contains(filter.CategoryId)).ToList();
             }
 
             if (!string.IsNullOrEmpty(filter.MerchantId))

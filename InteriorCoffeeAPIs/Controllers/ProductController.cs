@@ -69,7 +69,7 @@ namespace InteriorCoffeeAPIs.Controllers
             var filter = new ProductFilterDTO
             {
                 Status = status,
-                Category = categoryId,
+                CategoryId = categoryId,
                 MerchantId = merchantId,
                 IsAvailability = isAvailability
             };

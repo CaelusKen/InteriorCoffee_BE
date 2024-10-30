@@ -8,5 +8,7 @@ namespace InteriorCoffee.Domain.Models.Documents
 {
     public class OrderIncome
     {
+        public string OrderId { get; set; }
+        public double Income { get; set; }
     }
 }

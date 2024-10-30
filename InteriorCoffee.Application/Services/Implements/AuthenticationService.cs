@@ -34,8 +34,10 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO)
         {
+            var hashPass = HashUtil.ToSHA256Hash(loginDTO.Password);
+
             Account account = await _accountRepository.GetAccount(
-                predicate: a => a.Email.Equals(loginDTO.Email) && a.Password.Equals(loginDTO.Password));
+                predicate: a => a.Email.Equals(loginDTO.Email) && a.Password.Equals(hashPass));
             if (account == null) throw new UnauthorizedAccessException("Incorrect email or password");
 
             var token = JwtUtil.GenerateJwtToken(account, account.Role);
@@ -53,7 +55,7 @@ namespace InteriorCoffee.Application.Services.Implements
             //Setup new account information
             Account newAccount = _mapper.Map<Account>(registeredDTO);
             newAccount.Role = AccountRoleEnum.CUSTOMER.ToString();
-
+            newAccount.Password = HashUtil.ToSHA256Hash(newAccount.Password);
             //Create new account
             await _accountRepository.CreateAccount(newAccount);
 
@@ -77,6 +79,7 @@ namespace InteriorCoffee.Application.Services.Implements
             Account newAccount = _mapper.Map<Account>(merchantRegisteredDTO);
             newAccount.Role = AccountRoleEnum.MERCHANT.ToString();
             newAccount.MerchantId = merchant._id;
+            newAccount.Password = HashUtil.ToSHA256Hash(newAccount.Password);
 
             //Create new account
             await _accountRepository.CreateAccount(newAccount);

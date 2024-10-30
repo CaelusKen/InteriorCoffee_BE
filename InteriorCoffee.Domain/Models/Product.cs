@@ -14,7 +14,7 @@ namespace InteriorCoffee.Domain.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id {  get; set; } = null!;
-        public List<string> Categories { get; set; } = null!;
+        public List<string> CategoryIds { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string Description { get; set; }
         public ProductImages Images { get; set; } = null!;

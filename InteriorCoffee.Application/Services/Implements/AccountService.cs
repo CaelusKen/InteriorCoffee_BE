@@ -190,7 +190,8 @@ namespace InteriorCoffee.Application.Services.Implements
 
             // Setup new account information
             Account newAccount = _mapper.Map<Account>(createAccountDTO);
-            newAccount.Role = createAccountDTO.RoleName;
+            newAccount.Password = HashUtil.ToSHA256Hash(newAccount.Password, string.Empty);
+            newAccount.Role = createAccountDTO.Role;
 
             // Create new account
             await _accountRepository.CreateAccount(newAccount);
@@ -220,7 +221,6 @@ namespace InteriorCoffee.Application.Services.Implements
             account.UpdatedDate = DateTime.Now;
             await _accountRepository.UpdateAccount(account);
         }
-
 
         public async Task DeleteAccountAsync(string id)
         {

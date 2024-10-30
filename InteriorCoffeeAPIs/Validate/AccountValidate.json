@@ -45,7 +45,7 @@
       "oneOf": [
         {
           "type": "string",
-          "enum": [ "MANAGER", "MERCHANT", "CUSTOMER" ]
+          "enum": [ "MANAGER", "MERCHANT", "CUSTOMER", "CONSULTANT" ]
         },
         {
           "type": "string",

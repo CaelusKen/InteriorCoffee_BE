@@ -10,7 +10,7 @@ namespace InteriorCoffee.Application.Utils
     public static class HashUtil
     {
         #region [Hashing Extension]
-        public static string ToSHA256Hash(this string password, string? saltKey)
+        public static string ToSHA256Hash(this string password, string? saltKey = null)
         {
             var sha256 = SHA256.Create();
             byte[] encryptedSHA256 = sha256.ComputeHash(Encoding.UTF8.GetBytes(string.Concat(password, saltKey)));

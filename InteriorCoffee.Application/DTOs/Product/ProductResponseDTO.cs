@@ -34,7 +34,7 @@ namespace InteriorCoffee.Application.DTOs.Product
     public class ProductFilterDTO                                  // Below are elements that will use by filters //
     {
         public string Status { get; set; }
-        public string Category { get; set; }
+        public string CategoryId { get; set; }
         public string MerchantId { get; set; }
         public bool? IsAvailability { get; set; }
     }

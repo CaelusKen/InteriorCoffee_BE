@@ -25,13 +25,11 @@ namespace InteriorCoffee.Application.Services.Implements
     public class AccountService : BaseService<AccountService>, IAccountService
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly IRoleRepository _roleRepository;
 
-        public AccountService(ILogger<AccountService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IAccountRepository accountRepository, IRoleRepository roleRepository)
+        public AccountService(ILogger<AccountService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IAccountRepository accountRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _accountRepository = accountRepository;
-            _roleRepository = roleRepository;
         }
 
         // NOTE: CREATE CONSULTANT FUNCTIONS TO CREATE CONSULTANT ROLE //
@@ -72,11 +70,11 @@ namespace InteriorCoffee.Application.Services.Implements
         #endregion
 
         #region "Filtering"
-        private List<Account> ApplyFilters(List<Account> accounts, string roleId, string status)
+        private List<Account> ApplyFilters(List<Account> accounts, string role, string status)
         {
-            if (!string.IsNullOrEmpty(roleId))
+            if (!string.IsNullOrEmpty(role))
             {
-                accounts = accounts.Where(a => a.RoleId == roleId).ToList();
+                accounts = accounts.Where(a => a.Role.Equals(role)).ToList();
             }
 
             if (!string.IsNullOrEmpty(status))
@@ -190,13 +188,9 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(createAccountDTO.Email));
             if (existingAccount != null) throw new ConflictException("Email has already existed");
 
-            // Get the role for the new account
-            Role accountRole = await _roleRepository.GetRole(
-                predicate: r => r.Name.Equals(createAccountDTO.RoleName.ToUpper()));
-
             // Setup new account information
             Account newAccount = _mapper.Map<Account>(createAccountDTO);
-            newAccount.RoleId = accountRole._id;
+            newAccount.Role = createAccountDTO.RoleName;
 
             // Create new account
             await _accountRepository.CreateAccount(newAccount);
@@ -208,16 +202,6 @@ namespace InteriorCoffee.Application.Services.Implements
             if (existingAccount == null)
             {
                 throw new NotFoundException($"Account with id {id} not found.");
-            }
-
-            // Validate role-id if provided
-            if (updateAccountDTO.RoleId != null)
-            {
-                var role = await _roleRepository.GetRoleById(updateAccountDTO.RoleId);
-                if (role == null)
-                {
-                    throw new NotFoundException($"Role with id {updateAccountDTO.RoleId} not found.");
-                }
             }
 
             _mapper.Map(updateAccountDTO, existingAccount);

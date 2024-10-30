@@ -22,15 +22,13 @@ namespace InteriorCoffee.Application.Services.Implements
     public class AuthenticationService : BaseService<AuthenticationService>, IAuthenticationService
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly IRoleRepository _roleRepository;
         private readonly IMerchantRepository _merchantRepository;
 
         public AuthenticationService(ILogger<AuthenticationService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IAccountRepository accountRepository,
-            IRoleRepository roleRepository, IMerchantRepository merchantRepository)
+            IMerchantRepository merchantRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _accountRepository = accountRepository;
-            _roleRepository = roleRepository;
             _merchantRepository = merchantRepository;
         }
 
@@ -40,10 +38,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(loginDTO.Email) && a.Password.Equals(loginDTO.Password));
             if (account == null) throw new UnauthorizedAccessException("Incorrect email or password");
 
-            Role accountRole = await _roleRepository.GetRole(
-                predicate: r => r._id.Equals(account.RoleId));
-
-            var token = JwtUtil.GenerateJwtToken(account, accountRole.Name);
+            var token = JwtUtil.GenerateJwtToken(account, account.Role);
             AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, account.UserName, account.Email, account.Status);
 
             return authenticationResponse;
@@ -55,17 +50,14 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(registeredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRole(
-                predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
-
             //Setup new account information
             Account newAccount = _mapper.Map<Account>(registeredDTO);
-            newAccount.RoleId = customerRole._id;
+            newAccount.Role = AccountRoleEnum.CUSTOMER.ToString();
 
             //Create new account
             await _accountRepository.CreateAccount(newAccount);
 
-            var token = JwtUtil.GenerateJwtToken(newAccount, customerRole.Name);
+            var token = JwtUtil.GenerateJwtToken(newAccount, AccountRoleEnum.CUSTOMER.ToString());
             AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, newAccount.UserName, newAccount.Email, newAccount.Status);
 
             return authenticationResponse;
@@ -81,18 +73,15 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(merchantRegisteredDTO.Email));
             if (account != null) throw new ConflictException("Email has already existed");
 
-            Role customerRole = await _roleRepository.GetRole(
-                predicate: r => r.Name.Equals(AccountRoleEnum.CUSTOMER.ToString()));
-
             //Setup new account information
             Account newAccount = _mapper.Map<Account>(merchantRegisteredDTO);
-            newAccount.RoleId = customerRole._id;
+            newAccount.Role = AccountRoleEnum.MERCHANT.ToString();
             newAccount.MerchantId = merchant._id;
 
             //Create new account
             await _accountRepository.CreateAccount(newAccount);
 
-            var token = JwtUtil.GenerateJwtToken(newAccount, customerRole.Name);
+            var token = JwtUtil.GenerateJwtToken(newAccount, AccountRoleEnum.MERCHANT.ToString());
             AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, newAccount.UserName, newAccount.Email, newAccount.Status);
 
             return authenticationResponse;

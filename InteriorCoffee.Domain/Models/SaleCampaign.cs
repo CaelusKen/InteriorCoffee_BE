@@ -21,5 +21,7 @@ namespace InteriorCoffee.Domain.Models
         public string Status { get; set; } = null!;
 
         public string MerchantId { get; set; } = null!;
+
+        public List<string> CampaignProductIds { get; set; }
     }
 }

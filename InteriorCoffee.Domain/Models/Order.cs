@@ -21,6 +21,7 @@ namespace InteriorCoffee.Domain.Models
         public double TotalAmount { get; set; }
         public string ShippingAddress { get; set; } = null!;
         public List<OrderProducts> OrderProducts { get; set; } = null!;
+        public double SystemIncome { get; set; }
 
         public string VoucherId { get; set; }
         public string AccountId { get; set; } = null!;

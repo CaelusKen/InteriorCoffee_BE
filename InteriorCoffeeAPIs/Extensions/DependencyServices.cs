@@ -62,7 +62,6 @@ namespace InteriorCoffeeAPIs.Extensions
             #region Service Scope
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<ICampaignProductsService, CampaignProductsService>();
             services.AddScoped<IChatSessionService, ChatSessionService>();
             services.AddScoped<IDesignService, DesignService>();
             services.AddScoped<IMerchantService, MerchantService>();
@@ -70,18 +69,15 @@ namespace InteriorCoffeeAPIs.Extensions
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IReviewService, ReviewService>();
-            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ISaleCampaignService, SaleCampaignService>();
             services.AddScoped<IStyleService, StyleService>();
             services.AddScoped<ITemplateService, TemplateService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IVoucherService, VoucherService>();
-            services.AddScoped<IVoucherTypeService, VoucherTypeService>();
             #endregion
 
             #region Repository Scope
             services.AddScoped<IAccountRepository, AccountRepository>();
-            services.AddScoped<ICampaignProductsRepository, CampaignProductsRepository>();
             services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
             services.AddScoped<IDesignRepository, DesignRepository>();
             services.AddScoped<IMerchantRepository, MerchantRepository>();
@@ -89,13 +85,11 @@ namespace InteriorCoffeeAPIs.Extensions
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ISaleCampaignRepository, SaleCampaignRepository>();
             services.AddScoped<IStyleRepository, StyleRepository>();
             services.AddScoped<ITemplateRepository, TemplateRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IVoucherRepository, VoucherRepository>();
-            services.AddScoped<IVoucherTypeRepository, VoucherTypeRepository>();
             #endregion
 
             return services;

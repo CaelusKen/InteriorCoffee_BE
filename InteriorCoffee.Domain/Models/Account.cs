@@ -24,6 +24,6 @@ namespace InteriorCoffee.Domain.Models
         public DateTime UpdatedDate { get; set; }
 
         public string MerchantId { get; set; }
-        public string RoleId { get; set; } = null!;
+        public string Role { get; set; } = null!;
     }
 }

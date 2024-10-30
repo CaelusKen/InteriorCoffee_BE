@@ -17,6 +17,6 @@ namespace InteriorCoffee.Application.DTOs.Account
         public string Avatar { get; set; }
         public DateTime UpdatedDate { get; set; }
         public string MerchantId { get; set; }
-        public string RoleId { get; set; }
+        public string Role { get; set; }
     }
 }

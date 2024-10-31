@@ -21,7 +21,7 @@ namespace InteriorCoffee.Application.Mappers.Accounts
             CreateMap<MerchantRegisteredDTO, Account>()
                 .ForMember(des => des.CreatedDate, src => src.MapFrom(src => DateTime.Now))
                 .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now))
-                .ForMember(des => des.Status, src => src.MapFrom(src => AccountStatusEnum.ACTIVE.ToString()))
+                .ForMember(des => des.Status, src => src.MapFrom(src => AccountStatusEnum.UNVERIFIED.ToString()))
                 .ForMember(des => des._id, src => src.MapFrom(src => ObjectId.GenerateNewId().ToString()));
 
             CreateMap<CreateAccountDTO, Account>()

@@ -13,5 +13,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task CreateMerchantAsync(CreateMerchantDTO merchant);
         Task UpdateMerchantAsync(string id, UpdateMerchantDTO merchant);
         Task DeleteMerchantAsync(string id);
+
+        Task VerifyMerchantAsync(string id);
     }
 }

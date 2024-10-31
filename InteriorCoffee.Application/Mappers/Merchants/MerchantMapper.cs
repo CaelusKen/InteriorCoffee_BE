@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using InteriorCoffee.Application.DTOs.Authentication;
 using InteriorCoffee.Application.DTOs.Merchant;
 using InteriorCoffee.Application.Enums.Merchant;
 using InteriorCoffee.Domain.Models;
@@ -21,6 +22,11 @@ namespace InteriorCoffee.Application.Mappers.Merchants
             // Mapping for UpdateMerchantDTO to Merchant
             //CreateMap<UpdateMerchantDTO, Merchant>()
             //    .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
+
+            CreateMap<MerchantRegisteredDTO, Merchant>()
+                .ForMember(des => des.Name, opt => opt.MapFrom(src => src.MerchantName))
+                .ForMember(dest => dest._id, opt => opt.MapFrom(src => ObjectId.GenerateNewId().ToString()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => MerchantStatusEnum.UNVERIFIED.ToString())); ;
         }
     }
 }

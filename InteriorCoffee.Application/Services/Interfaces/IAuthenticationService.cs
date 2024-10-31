@@ -11,7 +11,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
     {
         public Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO);
         public Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO);
-        public Task<AuthenticationResponseDTO> MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO);
+        public Task MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO);
 
         public Task SendForgetPasswordEmail(string customerEmail);
     }

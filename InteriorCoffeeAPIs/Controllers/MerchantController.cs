@@ -87,5 +87,16 @@ namespace InteriorCoffeeAPIs.Controllers
             await _merchantService.DeleteMerchantAsync(id);
             return Ok("Action success");
         }
+
+        [HttpPatch(ApiEndPointConstant.Merchant.MerchantVerificationEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update a merchant's data")]
+        public async Task<IActionResult> VerifyMerchant(string id)
+        {
+            var existingMerchant = await _merchantService.GetMerchantByIdAsync(id);
+
+            await _merchantService.VerifyMerchantAsync(id);
+            return Ok("Action success");
+        }
     }
 }

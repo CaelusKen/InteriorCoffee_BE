@@ -8,8 +8,9 @@ namespace InteriorCoffee.Application.Enums.Merchant
 {
     public enum MerchantStatusEnum
     {
-        ACTIVE,
-        INACTIVE,
-        SUSPENDED
+        ACTIVE = 0,
+        INACTIVE = 1,
+        SUSPENDED = 2,
+        UNVERIFIED = 3
     }
 }

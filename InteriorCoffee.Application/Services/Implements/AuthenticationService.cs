@@ -40,6 +40,8 @@ namespace InteriorCoffee.Application.Services.Implements
                 predicate: a => a.Email.Equals(loginDTO.Email) && a.Password.Equals(hashPass));
             if (account == null) throw new UnauthorizedAccessException("Incorrect email or password");
 
+            if (!account.Status.Equals(AccountStatusEnum.ACTIVE.ToString())) throw new UnauthorizedAccessException("Your account is currently not active");
+
             var token = JwtUtil.GenerateJwtToken(account, account.Role);
             AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, account.UserName, account.Email, account.Status);
 
@@ -65,11 +67,12 @@ namespace InteriorCoffee.Application.Services.Implements
             return authenticationResponse;
         }
 
-        public async Task<AuthenticationResponseDTO> MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO)
+        public async Task MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO)
         {
-            Merchant merchant = await _merchantRepository.GetMerchant(
-                predicate:m => m.MerchantCode.Equals(merchantRegisteredDTO.MerchantCode));
-            if (merchant == null) throw new NotFoundException("Merchant is not found");
+            //Create Merchant
+
+            Merchant merchant = _mapper.Map<Merchant>(merchantRegisteredDTO);
+            await _merchantRepository.CreateMerchant(merchant);
 
             Account account = await _accountRepository.GetAccount(
                 predicate: a => a.Email.Equals(merchantRegisteredDTO.Email));
@@ -86,8 +89,6 @@ namespace InteriorCoffee.Application.Services.Implements
 
             var token = JwtUtil.GenerateJwtToken(newAccount, AccountRoleEnum.MERCHANT.ToString());
             AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, newAccount.UserName, newAccount.Email, newAccount.Status);
-
-            return authenticationResponse;
         }
 
         public async Task SendForgetPasswordEmail(string customerEmail)

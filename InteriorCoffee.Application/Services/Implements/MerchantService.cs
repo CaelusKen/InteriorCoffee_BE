@@ -3,6 +3,8 @@ using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Merchant;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
+using InteriorCoffee.Application.Enums.Account;
+using InteriorCoffee.Application.Enums.Merchant;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
@@ -19,11 +21,13 @@ namespace InteriorCoffee.Application.Services.Implements
     public class MerchantService : BaseService<MerchantService>, IMerchantService
     {
         private readonly IMerchantRepository _merchantRepository;
+        private readonly IAccountRepository _accountRepository;
 
-        public MerchantService(ILogger<MerchantService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IMerchantRepository merchantRepository)
+        public MerchantService(ILogger<MerchantService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IMerchantRepository merchantRepository, IAccountRepository accountRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _merchantRepository = merchantRepository;
+            _accountRepository = accountRepository;
         }
 
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
@@ -130,6 +134,22 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Merchant with id {id} not found.");
             }
             await _merchantRepository.DeleteMerchant(id);
+        }
+
+        public async Task VerifyMerchantAsync(string id)
+        {
+            var existingMerchant = await _merchantRepository.GetMerchantById(id);
+            if (existingMerchant == null)
+            {
+                throw new NotFoundException($"Merchant with id {id} not found.");
+            }
+            existingMerchant.Status = MerchantStatusEnum.ACTIVE.ToString();
+            await _merchantRepository.UpdateMerchant(existingMerchant);
+
+            Account merchantAccount = await _accountRepository.GetAccount(
+                predicate: acc => acc.MerchantId.Equals(id));
+            merchantAccount.Status = AccountStatusEnum.ACTIVE.ToString();
+            await _accountRepository.UpdateAccount(merchantAccount);
         }
     }
 }

@@ -40,8 +40,8 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Register for merchant")]
         public async Task<IActionResult> MerchantRegister([FromBody] MerchantRegisteredDTO merchantRegisteredDTO)
         {
-            var result = await _authenticationService.MerchantRegister(merchantRegisteredDTO);
-            return Ok(result);
+            await _authenticationService.MerchantRegister(merchantRegisteredDTO);
+            return Ok("Registered successfully");
         }
 
         [HttpPost(ApiEndPointConstant.Authentication.ForgetPasswordEndpoint)]

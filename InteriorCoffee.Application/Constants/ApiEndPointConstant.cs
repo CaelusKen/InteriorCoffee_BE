@@ -108,6 +108,7 @@ namespace InteriorCoffee.Application.Constants
         {
             public const string MerchantsEndpoint = ApiEndpoint + "/merchants";
             public const string MerchantEndpoint = MerchantsEndpoint + "/{id}";
+            public const string MerchantVerificationEndpoint = MerchantEndpoint + "/verification";
         }
 
         public static class Design

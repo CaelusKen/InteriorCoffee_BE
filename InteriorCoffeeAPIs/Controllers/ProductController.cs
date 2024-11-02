@@ -16,6 +16,7 @@ using static InteriorCoffee.Application.Constants.ApiEndPointConstant;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using AutoMapper;
 using InteriorCoffee.Application.Utils;
+using InteriorCoffee.Application.Services.Implements;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -77,6 +78,15 @@ namespace InteriorCoffeeAPIs.Controllers
             var response = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter, keyword);
 
             return Ok(response);
+        }
+
+        [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
+        [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a product by id")]
+        public async Task<IActionResult> GetAccountById(string id)
+        {
+            var result = await _productService.GetProductByIdAsync(id);
+            return Ok(result);
         }
 
         [HttpPost(ApiEndPointConstant.Product.ProductsEndpoint)]

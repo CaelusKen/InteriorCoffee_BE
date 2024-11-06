@@ -7,6 +7,7 @@ using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using InteriorCoffeeAPIs.Extensions;
 using InteriorCoffeeAPIs.Middlewares;
 using InteriorCoffeeAPIs.Validate;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Text.Json;
@@ -22,7 +23,11 @@ builder.Services.AddCors(options =>
         policy => { policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod(); });
 });
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(options =>
+{
+    options.OutputFormatters.RemoveType<StringOutputFormatter>();
+})
+    .AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower;
     options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.KebabCaseLower;

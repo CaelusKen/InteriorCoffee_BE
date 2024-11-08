@@ -18,8 +18,6 @@ namespace InteriorCoffee.Application.DTOs.Merchant
         public string MerchantCode { get; set; }
         public string PolicyDocument { get; set; }
         public string Website { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
     }
 }
 

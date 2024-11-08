@@ -20,8 +20,7 @@ namespace InteriorCoffee.Application.Mappers.Merchants
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => MerchantStatusEnum.ACTIVE.ToString()));
 
             // Mapping for UpdateMerchantDTO to Merchant
-            //CreateMap<UpdateMerchantDTO, Merchant>()
-            //    .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
+            CreateMap<UpdateMerchantDTO, Merchant>();
 
             CreateMap<MerchantRegisteredDTO, Merchant>()
                 .ForMember(des => des.Name, opt => opt.MapFrom(src => src.MerchantName))

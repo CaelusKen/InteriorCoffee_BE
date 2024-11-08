@@ -15,6 +15,6 @@ namespace InteriorCoffee.Application.DTOs.Order
         public List<OrderProducts> OrderProducts { get; set; }
         public string VoucherId { get; set; }
         public string AccountId { get; set; }
-        public DateTime CreatedDate { get; set; }
+        //public DateTime CreatedDate { get; set; }
     }
 }

@@ -89,6 +89,7 @@ namespace InteriorCoffee.Application.Services.Implements
             campaign.Value = updatedCampaign.Value;
             campaign.StartDate = updatedCampaign.StartDate;
             campaign.EndDate = updatedCampaign.EndDate;
+            campaign.CampaignProductIds = updatedCampaign.CampaignProductIds == null ? campaign.CampaignProductIds : updatedCampaign.CampaignProductIds;
 
             await _saleCampaignRepository.UpdateSaleCampaign(campaign);
         }

@@ -13,8 +13,12 @@ namespace InteriorCoffee.Application.DTOs.Template
         public string Description { get; set; }
         public string Type { get; set; }
 
+        public List<Floor> Floors { get; set; }
+
         public string AccountId { get; set; }
         public string MerchantId { get; set; }
         public string StyleId { get; set; }
+
+        public List<string> Categories { get; set; }
     }
 }

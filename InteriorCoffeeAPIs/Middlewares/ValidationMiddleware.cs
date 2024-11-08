@@ -126,7 +126,7 @@ namespace InteriorCoffeeAPIs.Middlewares
         {
             foreach (var mapping in _schemaPathMappings)
             {
-                if (requestPath.Contains(mapping.Key, StringComparison.OrdinalIgnoreCase))
+                if (requestPath.Contains(mapping.Key, StringComparison.OrdinalIgnoreCase) && !requestPath.Contains("categories"))
                 {
                     return mapping.Value;
                 }

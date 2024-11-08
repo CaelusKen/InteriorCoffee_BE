@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InteriorCoffee.Domain.Models.Documents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,10 @@ namespace InteriorCoffee.Application.DTOs.Template
         public string Status { get; set; }
         public string Type { get; set; }
 
+        public List<Floor> Floors { get; set; }
+
         public string StyleId { get; set; }
+
+        public List<string> Categories { get; set; }
     }
 }

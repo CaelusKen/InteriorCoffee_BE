@@ -21,7 +21,8 @@ namespace InteriorCoffee.Application.Mappers.Templates
                 .ForMember(des => des.CreatedDate, src => src.MapFrom(src => DateTime.Now))
                 .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now))
                 .ForMember(des => des.Status, src => src.MapFrom(src => TemplateStatusEnum.ACTIVE.ToString()))
-                .ForMember(des => des.Floors, src => src.MapFrom(src => new List<Floor>()));
+                .ForMember(des => des.Floors, src => src.MapFrom(src => src.Floors == null ? new List<Floor>() : src.Floors))
+                .ForMember(des => des.Categories, src => src.MapFrom(src => src.Categories == null ? new List<string>() : src.Categories));
         }
     }
 }

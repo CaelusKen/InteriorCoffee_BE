@@ -15,5 +15,7 @@ namespace InteriorCoffee.Application.DTOs.SaleCampaign
         public DateTime EndDate { get; set; }
 
         public string MerchantId { get; set; }
+
+        public List<string> CampaignProductIds { get; set; }
     }
 }

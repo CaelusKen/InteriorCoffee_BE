@@ -21,6 +21,7 @@ namespace InteriorCoffee.Domain.Models
         public string Status { get; set; } = null!;
         public string Type { get; set; }
         public List<Floor> Floors { get; set; }
+        public List<string> Categories { get; set; }
 
         public string AccountId { get; set; } = null!;
         public string TemplateId { get; set; }

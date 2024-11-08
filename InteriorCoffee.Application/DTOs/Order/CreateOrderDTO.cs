@@ -6,8 +6,8 @@ namespace InteriorCoffee.Application.DTOs.Order
 {
     public class CreateOrderDTO
     {
-        public DateTime OrderDate { get; set; }
-        public string Status { get; set; }
+        //public DateTime OrderDate { get; set; }
+        //public string Status { get; set; }
         public double VAT { get; set; }
         public double FeeAmount { get; set; }
         public double TotalAmount { get; set; }

@@ -36,7 +36,7 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Get all accounts with pagination, sorting, and filtering. " +
             "Ex url: GET /api/accounts?pageNo=1&pageSize=10&sortBy=username&ascending=true&roleId=123&status=active&keyword=john\r\n")]
         public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
-                                                     [FromQuery] string roleId = null, [FromQuery] string status = null, [FromQuery] string keyword = null)
+                                                     [FromQuery] string role = null, [FromQuery] string status = null, [FromQuery] string keyword = null)
         {
             OrderBy orderBy = null;
             if (!string.IsNullOrEmpty(sortBy))
@@ -47,7 +47,7 @@ namespace InteriorCoffeeAPIs.Controllers
             var filter = new AccountFilterDTO
             {
                 Status = status,
-                RoleId = roleId
+                Role = role
             };
 
             var response = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy, filter, keyword);

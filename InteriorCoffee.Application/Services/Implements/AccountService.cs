@@ -105,7 +105,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 if (pagination.PageNo < 1) pagination.PageNo = 1;
 
                 // Apply filters
-                allAccounts = ApplyFilters(allAccounts, filter.RoleId, filter.Status);
+                allAccounts = ApplyFilters(allAccounts, filter.Role, filter.Status);
 
                 // Apply keyword search
                 if (!string.IsNullOrEmpty(keyword))
@@ -143,7 +143,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     Filter = new AccountFilterDTO
                     {
                         Status = filter.Status,
-                        RoleId = filter.RoleId
+                        Role = filter.Role
                     },
                     Keyword = keyword,
                     Accounts = accountResponseItems

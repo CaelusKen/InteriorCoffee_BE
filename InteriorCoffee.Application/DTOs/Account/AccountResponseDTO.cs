@@ -30,7 +30,7 @@ namespace InteriorCoffee.Application.DTOs.Account
     public class AccountFilterDTO                                  // Elements used by filters //
     {
         public string Status { get; set; }
-        public string RoleId { get; set; }
+        public string Role { get; set; }
     }
 
     public class AccountResponseItemDTO                     // Elements to show in account list (not all, just some items) //
@@ -45,6 +45,6 @@ namespace InteriorCoffee.Application.DTOs.Account
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public string MerchantId { get; set; }
-        public string RoleId { get; set; }
+        public string Role { get; set; }
     }
 }

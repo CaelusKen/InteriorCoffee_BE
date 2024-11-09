@@ -179,5 +179,16 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             FilterDefinition<Merchant> filterDefinition = Builders<Merchant>.Filter.Eq("_id", id);
             await _merchants.DeleteOneAsync(filterDefinition);
         }
+
+        public async Task<Merchant> GetMerchantByIdAsync(string id)
+        {
+            return await _merchants.Find(m => m._id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task UpdateMerchantAsync(Merchant merchant)
+        {
+            await _merchants.ReplaceOneAsync(m => m._id == merchant._id, merchant);
+        }
+
     }
 }

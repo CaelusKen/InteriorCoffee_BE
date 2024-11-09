@@ -14,6 +14,10 @@ using InteriorCoffee.Application.Helpers;
 using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Schema;
 using InteriorCoffeeAPIs.Validate;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies.Backup;
+using Hangfire.Mongo.Migration.Strategies;
 
 namespace InteriorCoffeeAPIs.Extensions
 {
@@ -184,6 +188,34 @@ namespace InteriorCoffeeAPIs.Extensions
             return services;
         }
 
+        public static IServiceCollection AddHangfire(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseMongoStorage(config.GetSection("MongoDbSection:ConnectionURI").Value, config.GetSection("MongoDbSection:DatabaseName").Value)
+            );
 
+            return services;
+        }
+
+        public static IServiceCollection AddHangfireServices(this IServiceCollection services, IConfiguration config)
+        {
+            var mongoConnectionString = config.GetSection("MongoDbSection:ConnectionURI").Value;
+            var mongoDatabaseName = config.GetSection("MongoDbSection:DatabaseName").Value;
+            services.AddHangfire(config => config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer().UseRecommendedSerializerSettings()
+            .UseMongoStorage(mongoConnectionString, mongoDatabaseName, new MongoStorageOptions
+            {
+                MigrationOptions = new MongoMigrationOptions
+                {
+                    MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                    BackupStrategy = new CollectionMongoBackupStrategy()
+                }
+            }));
+            services.AddHangfireServer();
+            return services;
+        }
     }
 }

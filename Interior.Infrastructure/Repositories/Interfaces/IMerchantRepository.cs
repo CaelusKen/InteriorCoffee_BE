@@ -16,6 +16,8 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task CreateMerchant(Merchant merchant);
         Task UpdateMerchant(Merchant merchant);
         Task DeleteMerchant(string id);
+        Task<Merchant> GetMerchantByIdAsync(string id);
+        Task UpdateMerchantAsync(Merchant merchant);
 
         #region Get Function
         Task<Merchant> GetMerchant(Expression<Func<Merchant, bool>> predicate = null,

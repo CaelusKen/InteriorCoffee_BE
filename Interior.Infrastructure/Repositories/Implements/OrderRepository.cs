@@ -178,5 +178,13 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             FilterDefinition<Order> filterDefinition = Builders<Order>.Filter.Eq("_id", id);
             await _orders.DeleteOneAsync(filterDefinition);
         }
+
+        public async Task<Order> GetLatestOrderAsync()
+        {
+            return await _orders.Find(new BsonDocument())
+                                .SortByDescending(o => o.OrderDate)
+                                .FirstOrDefaultAsync();
+        }
+
     }
 }

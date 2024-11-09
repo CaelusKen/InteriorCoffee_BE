@@ -20,6 +20,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using Hangfire;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
@@ -92,23 +93,26 @@ namespace InteriorCoffee.Application.Services.Implements
             InteriorCoffee.Domain.Models.Transaction transaction = await _transactionRepository.GetTransaction(
                predicate: tr => tr.OrderId.Equals(vnp_orderId));
 
-            switch(vnp_ResponseCode)
+            switch (vnp_ResponseCode)
             {
                 case "00":
                     //Success
                     transaction.Status = TransactionStatusEnum.COMPLETED.ToString();
+                    await _transactionRepository.UpdateTransaction(transaction);
+                    // Trigger background job
+                    BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(vnp_orderId));
                     break;
                 case "24":
                     //Cancel
                     transaction.Status = TransactionStatusEnum.CANCELLED.ToString();
+                    await _transactionRepository.UpdateTransaction(transaction);
                     break;
                 default:
                     //Fail
                     transaction.Status = TransactionStatusEnum.FAILED.ToString();
+                    await _transactionRepository.UpdateTransaction(transaction);
                     break;
             }
-          
-            await _transactionRepository.UpdateTransaction(transaction);
             #endregion
 
             return new VnPaymentResponseModel
@@ -148,6 +152,10 @@ namespace InteriorCoffee.Application.Services.Implements
                 await _transactionRepository.UpdateTransaction(transaction);
             }
             #endregion
+
+            // Trigger background job
+            BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(orderId));
+
             return response;
         }
         #endregion

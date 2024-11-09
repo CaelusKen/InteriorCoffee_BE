@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Text.Json;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -28,16 +29,17 @@ builder.Services.AddControllers(options =>
     options.OutputFormatters.RemoveType<StringOutputFormatter>();
 })
     .AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower;
-    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.KebabCaseLower;
-});
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower;
+        options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.KebabCaseLower;
+    });
 builder.Services.Configure<MongoDBContext>(builder.Configuration.GetSection("MongoDbSection"));
 
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddJwtValidation(builder.Configuration);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddHangfireServices(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -61,5 +63,8 @@ app.UseCors(CorsConstant.PolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Use Hangfire dashboard
+app.UseHangfireDashboard();
 
 app.Run();

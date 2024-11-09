@@ -16,6 +16,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task CreateOrder(Order order);
         Task UpdateOrder(Order order);
         Task DeleteOrder(string id);
+        Task<Order> GetLatestOrderAsync();
 
         #region Get Function
         Task<Order> GetOrder(Expression<Func<Order, bool>> predicate = null,

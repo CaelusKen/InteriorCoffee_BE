@@ -17,7 +17,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateMerchant(Merchant merchant);
         Task DeleteMerchant(string id);
         Task<Merchant> GetMerchantByIdAsync(string id);
-        Task UpdateMerchantAsync(Merchant merchant);
 
         #region Get Function
         Task<Merchant> GetMerchant(Expression<Func<Merchant, bool>> predicate = null,
@@ -38,5 +37,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
                                                                Expression<Func<Merchant, object>> orderBy = null, bool isAscend = true,
                                                                int page = 1, int size = 10);
         #endregion
+        Task UpdateMerchantAsync(string id, Merchant updatedMerchant);
     }
 }

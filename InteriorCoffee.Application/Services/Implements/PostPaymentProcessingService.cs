@@ -59,6 +59,15 @@ namespace InteriorCoffee.Application.Services.Implements
                         .ToList();
                     _logger.LogInformation($"Calculate merchantIncome successfully for orderId {orderId}.");
 
+                    // Update order in the repository to include the calculated system income
+                    var updateOrderStatusDTO = new UpdateOrderStatusDTO
+                    {
+                        Status = order.Status, // Keep the current status
+                        UpdatedDate = DateTime.UtcNow,
+                        SystemIncome = systemIncome
+                    };
+                    await orderService.UpdateOrderAsync(orderId, updateOrderStatusDTO);
+
                     foreach (var merchantIncome in merchantIncomes)
                     {
                         var merchant = await merchantRepository.GetMerchantByIdAsync(merchantIncome.MerchantId);
@@ -69,16 +78,17 @@ namespace InteriorCoffee.Application.Services.Implements
                                 OrderId = order._id,
                                 Income = merchantIncome.Income
                             });
-                            await merchantRepository.UpdateMerchantAsync(merchant);
+                            await merchantRepository.UpdateMerchantAsync(merchantIncome.MerchantId, merchant);
                             _logger.LogInformation($"Transfer money to merchant {merchantIncome.MerchantId} wallet successfully for orderId {orderId}.");
                         }
                     }
 
-                    // Update order status to PENDING
-                    var updateOrderStatusDTO = new UpdateOrderStatusDTO
+                    // Update order status to PENDING after all merchant incomes are updated
+                    updateOrderStatusDTO = new UpdateOrderStatusDTO
                     {
                         Status = OrderStatusEnum.PENDING.ToString(),
-                        UpdatedDate = DateTime.UtcNow
+                        UpdatedDate = DateTime.UtcNow,
+                        SystemIncome = systemIncome
                     };
                     await orderService.UpdateOrderAsync(orderId, updateOrderStatusDTO);
                     _logger.LogInformation($"Order status changed to PENDING successfully for orderId {orderId}.");

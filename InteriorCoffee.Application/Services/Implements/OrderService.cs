@@ -117,6 +117,7 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 throw new NotFoundException($"Order with id {id} not found.");
             }
+            existingOrder.SystemIncome = updateOrderStatusDTO.SystemIncome; // Update system income
             _mapper.Map(updateOrderStatusDTO, existingOrder);
             await _orderRepository.UpdateOrder(existingOrder);
         }

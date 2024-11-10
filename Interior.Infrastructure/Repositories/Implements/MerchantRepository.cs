@@ -185,10 +185,17 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _merchants.Find(m => m._id == id).FirstOrDefaultAsync();
         }
 
-        public async Task UpdateMerchantAsync(Merchant merchant)
+        //public async Task UpdateMerchantAsync(Merchant merchant)
+        //{
+        //    await _merchants.ReplaceOneAsync(m => m._id == merchant._id, merchant);
+        //}
+
+        public async Task UpdateMerchantAsync(string id, Merchant updatedMerchant)
         {
-            await _merchants.ReplaceOneAsync(m => m._id == merchant._id, merchant);
+            var filter = Builders<Merchant>.Filter.Eq(m => m._id, id);
+            await _merchants.ReplaceOneAsync(filter, updatedMerchant);
         }
+
 
     }
 }

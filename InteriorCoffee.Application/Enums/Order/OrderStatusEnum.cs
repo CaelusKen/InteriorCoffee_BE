@@ -16,4 +16,9 @@ namespace InteriorCoffee.Application.Enums.Order
         CANCELLED,
         RETURNED
     }
+
+    public enum CommissionRateEnum
+    {
+        FivePercent = 5
+    }
 }

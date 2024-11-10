@@ -100,7 +100,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     transaction.Status = TransactionStatusEnum.COMPLETED.ToString();
                     await _transactionRepository.UpdateTransaction(transaction);
                     // Trigger background job
-                    BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(vnp_orderId));
+                    BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(transaction.OrderId)); 
                     break;
                 case "24":
                     //Cancel
@@ -154,7 +154,8 @@ namespace InteriorCoffee.Application.Services.Implements
             #endregion
 
             // Trigger background job
-            BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(orderId));
+            var paypal_transaction = await _transactionRepository.GetTransaction(predicate: tr => tr.OrderId.Equals(orderId)); 
+            BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(paypal_transaction.OrderId));
 
             return response;
         }

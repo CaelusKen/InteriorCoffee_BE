@@ -131,13 +131,13 @@ namespace InteriorCoffee.Application.Services.Implements
         #region Paypal
         public async Task<CreateOrderResponse> CreatePaypalOrder(CreateTransactionDTO model)
         {
-            var response = await _paypalClient.CreateOrder(model.TotalAmount.ToString(), model.Currency, model.OrderId);
+            var response = await _paypalClient.CreateOrder(CurrencyExchangeUtil.VNDtoUSD(model.TotalAmount).ToString(), model.Currency, model.OrderId);
             return response;
         }
 
-        public async Task<CaptureOrderResponse> CapturePaypalOrder(string orderId)
+        public async Task<CaptureOrderResponse> CapturePaypalOrder(string paypalOrderId)
         {
-            var response = await _paypalClient.CaptureOrder(orderId);
+            var response = await _paypalClient.CaptureOrder(paypalOrderId);
 
             var purchaseUnits = response.purchase_units;
 
@@ -150,12 +150,15 @@ namespace InteriorCoffee.Application.Services.Implements
 
                 transaction.Status = TransactionStatusEnum.COMPLETED.ToString();
                 await _transactionRepository.UpdateTransaction(transaction);
+
+                // Trigger background job
+                BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(transaction.OrderId));
             }
             #endregion
 
-            // Trigger background job
-            var paypal_transaction = await _transactionRepository.GetTransaction(predicate: tr => tr.OrderId.Equals(orderId)); 
-            BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(paypal_transaction.OrderId));
+            //// Trigger background job
+            //var paypal_transaction = await _transactionRepository.GetTransaction(predicate: tr => tr.OrderId.Equals(paypalOrderId)); 
+            //BackgroundJob.Enqueue<PostPaymentProcessingService>(service => service.ProcessOrderAsync(paypal_transaction.OrderId));
 
             return response;
         }

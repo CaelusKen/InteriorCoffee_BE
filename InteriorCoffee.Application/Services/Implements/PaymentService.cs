@@ -40,7 +40,7 @@ namespace InteriorCoffee.Application.Services.Implements
         #region VNPay
         public async Task<string> CreatePaymentUrl(HttpContext context, CreateTransactionDTO model)
         {
-            var tick = DateTime.Now.Ticks.ToString();
+            var tick = DateTime.UtcNow.Ticks.ToString();
 
             var vnpay = new VNPayLibrary();
 
@@ -49,11 +49,12 @@ namespace InteriorCoffee.Application.Services.Implements
             vnpay.AddRequestData("vnp_TmnCode", _configuration["VnPay:TmnCode"]);
             vnpay.AddRequestData("vnp_Amount", (model.TotalAmount * 100).ToString());
             vnpay.AddRequestData("vnp_CreateDate", model.CreatedDate.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_ExpireDate", model.CreatedDate.AddMinutes(15).ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", _configuration["VnPay:CurrencyCode"]);
             vnpay.AddRequestData("vnp_IpAddr", IPAddressUtil.GetIpAddress(context));
             vnpay.AddRequestData("vnp_Locale", _configuration["VnPay:Locale"]);
             vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + model.OrderId);
-            vnpay.AddRequestData("vnp_OrderType", "other");
+            vnpay.AddRequestData("vnp_OrderType", "topup");
             vnpay.AddRequestData("vnp_ReturnUrl", _configuration["VnPay:ReturnUrl"]);
             vnpay.AddRequestData("vnp_TxnRef", model.OrderId);
 

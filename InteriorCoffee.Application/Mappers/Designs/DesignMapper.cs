@@ -13,12 +13,12 @@ namespace InteriorCoffee.Application.Mappers.Designs
             // Mapping for CreateDesignDTO to Design
             CreateMap<CreateDesignDTO, Design>()
                 .ForMember(dest => dest._id, opt => opt.MapFrom(src => ObjectId.GenerateNewId().ToString()))
-                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // Mapping for UpdateDesignDTO to Design
             CreateMap<UpdateDesignDTO, Design>()
-                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }

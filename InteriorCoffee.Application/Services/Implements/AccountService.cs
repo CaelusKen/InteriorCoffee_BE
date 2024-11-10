@@ -218,7 +218,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Account with id {id} not found.");
             }
             account.Status = AccountStatusEnum.INACTIVE.ToString();
-            account.UpdatedDate = DateTime.Now;
+            account.UpdatedDate = DateTime.UtcNow;
             await _accountRepository.UpdateAccount(account);
         }
 

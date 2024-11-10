@@ -131,7 +131,7 @@ namespace InteriorCoffee.Application.Services.Implements
         #region Paypal
         public async Task<CreateOrderResponse> CreatePaypalOrder(CreateTransactionDTO model)
         {
-            var response = await _paypalClient.CreateOrder(CurrencyExchangeUtil.VNDtoUSD(model.TotalAmount).ToString(), model.Currency, model.OrderId);
+            var response = await _paypalClient.CreateOrder(CurrencyExchangeUtil.VNDtoUSD(model.TotalAmount).ToString(), "USD", model.OrderId);
             return response;
         }
 

@@ -78,7 +78,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     var updateOrderStatusDTO = new UpdateOrderStatusDTO
                     {
                         Status = OrderStatusEnum.PENDING.ToString(),
-                        UpdatedDate = DateTime.Now
+                        UpdatedDate = DateTime.UtcNow
                     };
                     await orderService.UpdateOrderAsync(orderId, updateOrderStatusDTO);
                     _logger.LogInformation($"Order status changed to PENDING successfully for orderId {orderId}.");

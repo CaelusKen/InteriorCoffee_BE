@@ -59,15 +59,6 @@ namespace InteriorCoffee.Application.Services.Implements
                         .ToList();
                     _logger.LogInformation($"Calculate merchantIncome successfully for orderId {orderId}.");
 
-                    // Update order in the repository to include the calculated system income
-                    var updateOrderStatusDTO = new UpdateOrderStatusDTO
-                    {
-                        Status = order.Status, // Keep the current status
-                        UpdatedDate = DateTime.UtcNow,
-                        SystemIncome = systemIncome
-                    };
-                    await orderService.UpdateOrderAsync(orderId, updateOrderStatusDTO);
-
                     foreach (var merchantIncome in merchantIncomes)
                     {
                         var merchant = await merchantRepository.GetMerchantByIdAsync(merchantIncome.MerchantId);
@@ -84,7 +75,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     }
 
                     // Update order status to PENDING after all merchant incomes are updated
-                    updateOrderStatusDTO = new UpdateOrderStatusDTO
+                    var updateOrderStatusDTO = new UpdateOrderStatusDTO
                     {
                         Status = OrderStatusEnum.PENDING.ToString(),
                         UpdatedDate = DateTime.UtcNow,

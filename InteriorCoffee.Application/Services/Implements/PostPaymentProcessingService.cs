@@ -17,6 +17,7 @@ namespace InteriorCoffee.Application.Services.Implements
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<PostPaymentProcessingService> _logger;
+        private const double CommissionRate = (double)CommissionRateEnum.FivePercent / 100; // Commission rate as a constant
 
         public PostPaymentProcessingService(IServiceProvider serviceProvider, ILogger<PostPaymentProcessingService> logger)
         {
@@ -36,27 +37,27 @@ namespace InteriorCoffee.Application.Services.Implements
                 try
                 {
                     var order = await orderRepository.GetOrderById(orderId);
-                    if (order == null) return;
-
-                    // Update order status to PENDING
-                    var updateOrderStatusDTO = new UpdateOrderStatusDTO
+                    if (order == null)
                     {
-                        Status = OrderStatusEnum.PENDING.ToString(),
-                        UpdatedDate = DateTime.Now
-                    };
-                    await orderService.UpdateOrderAsync(orderId, updateOrderStatusDTO);
+                        _logger.LogError($"Order with ID {orderId} not found.");
+                        return;
+                    }
 
-                    var systemIncome = order.TotalAmount * 0.05;
+                    _logger.LogInformation($"Get the orderId {orderId} successfully.");
+
+                    var systemIncome = order.TotalAmount * CommissionRate;
                     order.SystemIncome = systemIncome;
+                    _logger.LogInformation($"Calculate systemIncome successfully for orderId {orderId}.");
 
                     var merchantIncomes = order.OrderProducts
                         .GroupBy(op => op.MerchantId)
                         .Select(g => new
                         {
                             MerchantId = g.Key,
-                            Income = g.Sum(op => op.Price * op.Quantity) * 0.95
+                            Income = g.Sum(op => op.Price * op.Quantity) * (1 - CommissionRate)
                         })
                         .ToList();
+                    _logger.LogInformation($"Calculate merchantIncome successfully for orderId {orderId}.");
 
                     foreach (var merchantIncome in merchantIncomes)
                     {
@@ -69,16 +70,18 @@ namespace InteriorCoffee.Application.Services.Implements
                                 Income = merchantIncome.Income
                             });
                             await merchantRepository.UpdateMerchantAsync(merchant);
+                            _logger.LogInformation($"Transfer money to merchant {merchantIncome.MerchantId} wallet successfully for orderId {orderId}.");
                         }
                     }
 
-                    // Update order status to PROCESSING
-                    updateOrderStatusDTO = new UpdateOrderStatusDTO
+                    // Update order status to PENDING
+                    var updateOrderStatusDTO = new UpdateOrderStatusDTO
                     {
-                        Status = OrderStatusEnum.PROCESSING.ToString(),
+                        Status = OrderStatusEnum.PENDING.ToString(),
                         UpdatedDate = DateTime.Now
                     };
                     await orderService.UpdateOrderAsync(orderId, updateOrderStatusDTO);
+                    _logger.LogInformation($"Order status changed to PENDING successfully for orderId {orderId}.");
                 }
                 catch (Exception ex)
                 {

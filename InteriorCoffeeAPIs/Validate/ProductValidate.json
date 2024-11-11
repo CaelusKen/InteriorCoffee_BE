@@ -41,7 +41,8 @@
     },
     "discount": {
       "type": "number",
-      "minimum": 0
+      "minimum": 0,
+      "maximum": 100
     },
     "true-price": {
       "type": "number",

@@ -75,7 +75,7 @@
       "type": "string"
     }
   },
-  "required": [ "category-id", "name", "selling-price", "true-price", "discount", "status" ],
+  "required": [ "category-id", "name", "true-price", "discount"],
   "additionalProperties": true,
   "if": {
     "properties": {
@@ -86,10 +86,10 @@
       "discount": { "type": "number" },
       "status": { "type": "string" }
     },
-    "required": [ "category-id", "name", "selling-price", "true-price", "discount", "status" ]
+    "required": [ "category-id", "name", "true-price", "discount" ]
   },
   "then": {
-    "required": [ "category-id", "name", "selling-price", "true-price", "discount", "status" ]
+    "required": [ "category-id", "name", "true-price", "discount" ]
   },
   "else": {
     "required": []

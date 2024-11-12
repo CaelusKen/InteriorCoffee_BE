@@ -6,7 +6,7 @@ namespace InteriorCoffee.Application.DTOs.Product
 {
     public class UpdateProductDTO
     {
-        public List<string> CategoryId { get; set; }
+        public List<string> CategoryIds { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public ProductImages Images { get; set; }

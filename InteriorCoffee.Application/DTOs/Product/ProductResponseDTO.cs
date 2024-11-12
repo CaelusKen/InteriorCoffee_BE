@@ -43,7 +43,7 @@ namespace InteriorCoffee.Application.DTOs.Product
     {
         // test response object
         public string _id { get; set; } = null!;
-        public List<string> CategoryId { get; set; }
+        public List<string> CategoryIds { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public ProductImages Images { get; set; }

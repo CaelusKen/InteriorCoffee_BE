@@ -5,7 +5,7 @@
   "description": "A product in the inventory",
   "type": "object",
   "properties": {
-    "category-id": {
+    "category-ids": {
       "type": "array",
       "items": {
         "type": "string"
@@ -76,7 +76,7 @@
       "type": "string"
     }
   },
-  "required": [ "category-id", "name", "true-price", "discount"],
+  "required": [ "category-ids", "name", "true-price", "discount"],
   "additionalProperties": true,
   "if": {
     "properties": {
@@ -87,10 +87,10 @@
       "discount": { "type": "number" },
       "status": { "type": "string" }
     },
-    "required": [ "category-id", "name", "true-price", "discount" ]
+    "required": [ "category-ids", "name", "true-price", "discount" ]
   },
   "then": {
-    "required": [ "category-id", "name", "true-price", "discount" ]
+    "required": [ "category-ids", "name", "true-price", "discount" ]
   },
   "else": {
     "required": []

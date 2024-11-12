@@ -231,7 +231,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task CreateProductAsync(CreateProductDTO createProductDTO)
         {
-            foreach (var categoryId in createProductDTO.CategoryId)
+            foreach (var categoryId in createProductDTO.CategoryIds)
             {
                 if (!await _productCategoryRepository.CategoryExistsAsync(categoryId))
                 {
@@ -251,7 +251,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Product with id {id} not found.");
             }
 
-            foreach (var categoryId in updateProductDTO.CategoryId)
+            foreach (var categoryId in updateProductDTO.CategoryIds)
             {
                 if (!await _productCategoryRepository.CategoryExistsAsync(categoryId))
                 {

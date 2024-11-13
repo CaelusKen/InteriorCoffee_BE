@@ -18,6 +18,7 @@ using Hangfire;
 using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies.Backup;
 using Hangfire.Mongo.Migration.Strategies;
+using System.Text.Json;
 
 namespace InteriorCoffeeAPIs.Extensions
 {
@@ -155,6 +156,8 @@ namespace InteriorCoffeeAPIs.Extensions
                     Example = OpenApiAnyFactory.CreateFromJson("\"13:45:42.0000000\"")
                 });
                 options.EnableAnnotations();
+
+                options.MapType<JsonElement>(() => new OpenApiSchema { Type = "object" });
             });
             return services;
         }

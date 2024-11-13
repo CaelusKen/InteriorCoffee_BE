@@ -42,10 +42,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddHangfireServices(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.MapType<JsonElement>(() => new OpenApiSchema { Type = "object" });
-});
+builder.Services.AddConfigSwagger();
+
 builder.Services.AddJsonSchemaValidation("Validate"); // Add JSON Schema validation from the directory (from root to Validate folder)
 
 var app = builder.Build();

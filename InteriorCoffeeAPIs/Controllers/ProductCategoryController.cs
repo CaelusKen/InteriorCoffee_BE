@@ -1,8 +1,10 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.ProductCategory;
+using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -49,6 +51,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpPost(ApiEndPointConstant.ProductCategory.ProductCategoriesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create product category")]
@@ -58,6 +61,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpPatch(ApiEndPointConstant.ProductCategory.ProductCategoryEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a product category's data")]
@@ -69,6 +73,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpDelete(ApiEndPointConstant.ProductCategory.ProductCategoryEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a product category")]

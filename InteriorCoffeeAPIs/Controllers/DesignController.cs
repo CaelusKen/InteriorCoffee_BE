@@ -1,8 +1,10 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Design;
+using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

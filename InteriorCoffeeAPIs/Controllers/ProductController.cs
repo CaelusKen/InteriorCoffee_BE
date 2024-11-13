@@ -17,6 +17,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 using AutoMapper;
 using InteriorCoffee.Application.Utils;
 using InteriorCoffee.Application.Services.Implements;
+using InteriorCoffee.Application.Enums.Account;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -54,6 +55,8 @@ namespace InteriorCoffeeAPIs.Controllers
         #endregion
         [HttpGet(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(ProductResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Summary = "Get all products with pagination, price range, and sorting. " +
             "Ex url: GET /api/products?pageNo=1&pageSize=10&minPrice=30&maxPrice=60&sortBy=name&isAscending=true&...(more)\r\n")]
         public async Task<IActionResult> GetProducts([FromQuery] int? pageNo, [FromQuery] int? pageSize,
@@ -61,24 +64,38 @@ namespace InteriorCoffeeAPIs.Controllers
             [FromQuery] string status = null, [FromQuery] string categoryId = null, [FromQuery] string merchantId = null, [FromQuery] string keyword = null,
             [FromQuery] bool? isAvailability = null)
         {
-            OrderBy orderBy = null;
-            if (!string.IsNullOrEmpty(sortBy))
+            try
             {
-                orderBy = new OrderBy(sortBy, isAscending ?? true);
+                OrderBy orderBy = null;
+                if (!string.IsNullOrEmpty(sortBy))
+                {
+                    orderBy = new OrderBy(sortBy, isAscending ?? true);
+                }
+
+                var filter = new ProductFilterDTO
+                {
+                    Status = status,
+                    CategoryId = categoryId,
+                    MerchantId = merchantId,
+                    IsAvailability = isAvailability
+                };
+
+                var response = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter, keyword);
+
+                return Ok(response);
             }
-
-            var filter = new ProductFilterDTO
+            catch (ArgumentException ex)
             {
-                Status = status,
-                CategoryId = categoryId,
-                MerchantId = merchantId,
-                IsAvailability = isAvailability
-            };
-
-            var response = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter, keyword);
-
-            return Ok(response);
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
+
 
         [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
@@ -89,6 +106,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPost(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create product")]
@@ -109,6 +127,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(new { Message = "Product created successfully" });
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a product's data")]
@@ -184,6 +203,7 @@ namespace InteriorCoffeeAPIs.Controllers
         // }
         #endregion
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Product.SoftDeleteProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Soft delete a product")]
@@ -195,6 +215,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Product successfully soft deleted");
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpDelete(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a product")]

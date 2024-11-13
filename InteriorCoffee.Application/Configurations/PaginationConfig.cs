@@ -10,6 +10,7 @@ namespace InteriorCoffee.Application.Configurations
     {
         public const int DefaultPageNo = 1;
         public const int DefaultPageSize = 12;
+        public static bool UseDynamicPageSize { get; set; } = true;
     }
 }
 

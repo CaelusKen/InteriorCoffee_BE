@@ -46,12 +46,6 @@ namespace InteriorCoffee.Application.Services.Implements
         public async Task<ProductResponseDTO> GetProductsAsync(
             int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, OrderBy orderBy, ProductFilterDTO filter, string keyword = null)
         {
-            var pagination = new Pagination
-            {
-                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
-                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
-            };
-
             try
             {
                 var (products, totalItems) = await _productRepository.GetProductsAsync();
@@ -60,7 +54,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 if (!string.IsNullOrEmpty(keyword))
                 {
                     products = products.Where(p => p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                                                   p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                                    p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
                                        .ToList();
                 }
 
@@ -78,34 +72,39 @@ namespace InteriorCoffee.Application.Services.Implements
                 // Apply sorting
                 products = ApplySorting(products, orderBy);
 
-                // Calculate the total items and pages based on the filtered list
-                var listAfter = products.Count;
-                var filteredTotalPages = (int)Math.Ceiling((double)listAfter / pagination.PageSize);
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? products.Count;
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)products.Count / finalPageSize);
 
                 // Handle page boundaries
-                if (pagination.PageNo > filteredTotalPages) pagination.PageNo = filteredTotalPages;
-                if (pagination.PageNo < 1) pagination.PageNo = 1;
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
 
                 // Paginate the filtered products
-                var paginatedProducts = products.Skip((pagination.PageNo - 1) * pagination.PageSize)
-                                                .Take(pagination.PageSize)
+                var paginatedProducts = products.Skip((paginationPageNo - 1) * finalPageSize)
+                                                .Take(finalPageSize)
                                                 .ToList();
+
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedProducts.Count;
 
                 var inStockCount = products.Count(p => p.Quantity > 0);
                 var outOfStockCount = products.Count(p => p.Quantity == 0);
 
-                #region "Mapping"
                 var productResponseItems = _mapper.Map<List<ProductResponseItemDTO>>(paginatedProducts);
 
-                // Create and return the response DTO
+                #region "Mapping"
                 return new ProductResponseDTO
                 {
-                    PageNo = pagination.PageNo,
-                    PageSize = pagination.PageSize,
+                    PageNo = paginationPageNo,
+                    PageSize = finalPageSize,
                     ListSize = totalItems,
-                    CurrentPageSize = productResponseItems.Count,
+                    CurrentPageSize = listAfter,
                     ListSizeAfter = listAfter,
-                    TotalPage = filteredTotalPages,
+                    TotalPage = totalPages,
                     MinPrice = minPrice.Value,
                     MaxPrice = maxPrice.Value,
                     InStock = inStockCount,
@@ -130,11 +129,11 @@ namespace InteriorCoffee.Application.Services.Implements
             #region "Catch error"
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated products.");
+                _logger.LogError(ex, "Error occurred while getting products.");
                 return new ProductResponseDTO
                 {
-                    PageNo = pagination.PageNo,
-                    PageSize = pagination.PageSize,
+                    PageNo = 1,
+                    PageSize = 0,
                     ListSize = 0,
                     CurrentPageSize = 0,
                     ListSizeAfter = 0,
@@ -151,6 +150,7 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             #endregion
         }
+
 
         #region "Filtering"
         private List<Product> ApplyFilters(List<Product> products, ProductFilterDTO filter, decimal? minPrice, decimal? maxPrice)

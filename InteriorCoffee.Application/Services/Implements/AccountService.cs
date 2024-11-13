@@ -89,20 +89,9 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy, AccountFilterDTO filter, string keyword)
         {
-            var pagination = new Pagination
-            {
-                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
-                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
-            };
-
             try
             {
                 var (allAccounts, totalItems) = await _accountRepository.GetAccountAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
-
-                // Handle page boundaries
-                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
-                if (pagination.PageNo < 1) pagination.PageNo = 1;
 
                 // Apply filters
                 allAccounts = ApplyFilters(allAccounts, filter.Role, filter.Status);
@@ -120,20 +109,35 @@ namespace InteriorCoffee.Application.Services.Implements
                 // Apply sorting logic only if orderBy is not null
                 allAccounts = ApplySorting(allAccounts, orderBy);
 
-                var paginatedAccounts = allAccounts.Skip((pagination.PageNo - 1) * pagination.PageSize)
-                                          .Take(pagination.PageSize)
-                                          .ToList();
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? allAccounts.Count;
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)allAccounts.Count / finalPageSize);
+
+                // Handle page boundaries
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
+
+                // Paginate the filtered accounts
+                var paginatedAccounts = allAccounts.Skip((paginationPageNo - 1) * finalPageSize)
+                                                   .Take(finalPageSize)
+                                                   .ToList();
+
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedAccounts.Count;
 
                 var accountResponseItems = _mapper.Map<List<AccountResponseItemDTO>>(paginatedAccounts);
 
                 #region "Mapping"
                 return new AccountResponseDTO
                 {
-                    PageNo = pagination.PageNo,
-                    PageSize = pagination.PageSize,
+                    PageNo = paginationPageNo,
+                    PageSize = finalPageSize,
                     ListSize = totalItems,
-                    CurrentPageSize = accountResponseItems.Count,
-                    ListSizeAfter = allAccounts.Count,
+                    CurrentPageSize = listAfter,
+                    ListSizeAfter = listAfter,
                     TotalPage = totalPages,
                     OrderBy = new AccountOrderByDTO
                     {
@@ -153,11 +157,11 @@ namespace InteriorCoffee.Application.Services.Implements
             #region "Catch error"
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated accounts.");
+                _logger.LogError(ex, "Error occurred while getting accounts.");
                 return new AccountResponseDTO
                 {
-                    PageNo = pagination.PageNo,
-                    PageSize = pagination.PageSize,
+                    PageNo = 1,
+                    PageSize = 0,
                     ListSize = 0,
                     CurrentPageSize = 0,
                     ListSizeAfter = 0,
@@ -170,6 +174,8 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             #endregion
         }
+
+
 
         public async Task<Account> GetAccountByIdAsync(string id)
         {

@@ -35,27 +35,43 @@ namespace InteriorCoffeeAPIs.Controllers
         [CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(AccountResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Summary = "Get all accounts with pagination, sorting, and filtering. " +
             "Ex url: GET /api/accounts?pageNo=1&pageSize=10&sortBy=username&ascending=true&roleId=123&status=active&keyword=john\r\n")]
         public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
                                                      [FromQuery] string role = null, [FromQuery] string status = null, [FromQuery] string keyword = null)
         {
-            OrderBy orderBy = null;
-            if (!string.IsNullOrEmpty(sortBy))
+            try
             {
-                orderBy = new OrderBy(sortBy, ascending ?? true);
+                OrderBy orderBy = null;
+                if (!string.IsNullOrEmpty(sortBy))
+                {
+                    orderBy = new OrderBy(sortBy, ascending ?? true);
+                }
+
+                var filter = new AccountFilterDTO
+                {
+                    Status = status,
+                    Role = role
+                };
+
+                var response = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy, filter, keyword);
+
+                return Ok(response);
             }
-
-            var filter = new AccountFilterDTO
+            catch (ArgumentException ex)
             {
-                Status = status,
-                Role = role
-            };
-
-            var response = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy, filter, keyword);
-
-            return Ok(response);
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
+
 
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
@@ -68,13 +84,14 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Account.AccountsEmailEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get an account by id")]
+        [SwaggerOperation(Summary = "Get an account by email")]
         public async Task<IActionResult> GetAccountByEmail(string email)
         {
             var result = await _accountService.GetAccountByEmail(email);
             return Ok(result);
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpPost(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create account for manager and consultant")]
@@ -94,6 +111,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpPatch(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update an account's data")]
@@ -202,7 +220,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-
+        [CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpDelete(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete an account")]

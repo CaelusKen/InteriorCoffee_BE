@@ -1,9 +1,11 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Merchant;
 using InteriorCoffee.Application.DTOs.OrderBy;
+using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -48,6 +50,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a merchant by id")]
@@ -66,6 +69,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a merchant's data")]
@@ -77,6 +81,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpDelete(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a merchant")]
@@ -88,6 +93,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Merchant.MerchantVerificationEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a merchant's data")]

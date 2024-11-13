@@ -16,6 +16,7 @@ using System.Text.Json;
 using InteriorCoffee.Application.Utils;
 using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Application.Enums.Account;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -55,13 +56,21 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
-
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get an account by id")]
         public async Task<IActionResult> GetAccountById(string id)
         {
             var result = await _accountService.GetAccountByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpGet(ApiEndPointConstant.Account.AccountsEmailEndpoint)]
+        [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get an account by id")]
+        public async Task<IActionResult> GetAccountByEmail(string email)
+        {
+            var result = await _accountService.GetAccountByEmail(email);
             return Ok(result);
         }
 

@@ -231,5 +231,15 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             await _accountRepository.DeleteAccount(id);
         }
+
+        public async Task<Account> GetAccountByEmail(string email)
+        {
+            var account = await _accountRepository.GetAccount(predicate: acc => acc.Email.Equals(email));
+            if (account == null)
+            {
+                throw new NotFoundException($"Account with email: {email} not found.");
+            }
+            return _mapper.Map<Account>(account);
+        }
     }
 }

@@ -14,5 +14,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task UpdateAccountAsync(string id, UpdateAccountDTO account);
         Task SoftDeleteAccountAsync(string id);
         Task DeleteAccountAsync(string id);
+
+        Task<Account> GetAccountByEmail(string email);
     }
 }

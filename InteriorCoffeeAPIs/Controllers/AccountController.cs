@@ -32,6 +32,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _validationServices = validationServices;
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(AccountResponseDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all accounts with pagination, sorting, and filtering. " +

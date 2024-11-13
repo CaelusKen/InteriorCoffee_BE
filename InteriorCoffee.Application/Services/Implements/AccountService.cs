@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.Services.Implements
@@ -85,7 +86,6 @@ namespace InteriorCoffee.Application.Services.Implements
             return accounts;
         }
         #endregion
-
 
         public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy, AccountFilterDTO filter, string keyword)
         {

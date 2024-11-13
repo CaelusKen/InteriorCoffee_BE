@@ -81,6 +81,7 @@ namespace InteriorCoffee.Application.Constants
         public static class Account
         {
             public const string AccountsEndpoint = ApiEndpoint + "/accounts";
+            public const string AccountsEmailEndpoint = AccountsEndpoint +"/{email}/info";
             public const string AccountEndpoint = AccountsEndpoint + "/{id}";
             public const string SoftDeleteAccountEndpoint = AccountsEndpoint + "/soft-delete/{id}";
         }

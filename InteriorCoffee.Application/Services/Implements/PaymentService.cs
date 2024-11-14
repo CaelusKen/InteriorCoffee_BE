@@ -41,7 +41,7 @@ namespace InteriorCoffee.Application.Services.Implements
         public async Task<string> CreatePaymentUrl(HttpContext context, CreateTransactionDTO model)
         {
             var tick = DateTime.UtcNow.Ticks.ToString();
-            var createDate = DateTime.UtcNow; ;
+            var createDate = DateTime.Now;
 
             var vnpay = new VNPayLibrary();
 

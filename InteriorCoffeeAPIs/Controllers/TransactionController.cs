@@ -1,5 +1,6 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Transaction;
+using InteriorCoffee.Application.Helpers;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
@@ -83,6 +84,7 @@ namespace InteriorCoffeeAPIs.Controllers
         //VnPay Api Controllers
         #region VnPay
         [HttpGet(ApiEndPointConstant.Transaction.TransactionsVNPaymentReturnEndpoint)]
+        [ProducesResponseType(typeof(VnPaymentResponseModel), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "VnPay data return")]
         public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
         {
@@ -91,18 +93,23 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsVNPaymentEndpoint)]
+        [ProducesResponseType(typeof(VnPaymentUrlReponseModel), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create VnPay Url")]
         public async Task<IActionResult> CreateVNPayment([FromBody] CreateTransactionDTO model)
         {
-            var result = _paymentService.CreatePaymentUrl(this.HttpContext, model);
-            await _transactionService.CreateTransaction(model);
-            return Ok(result);
+            var result = await _paymentService.CreatePaymentUrl(this.HttpContext, model);
+            //await _transactionService.CreateTransaction(model);
+            return Ok(new VnPaymentUrlReponseModel
+            {
+                Url = result
+            });
         }
         #endregion
 
         //Paypal Api Controllers
         #region Paypal
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalCaptureEndpoint)]
+        [ProducesResponseType(typeof(CaptureOrderResponse), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Paypal Data Capture")]
         public async Task<IActionResult> PaypalPaymentCapture(string paypalOrderId)
         {
@@ -111,6 +118,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalEndpoint)]
+        [ProducesResponseType(typeof(CreateOrderResponse), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create Paypal Order")]
         public async Task<IActionResult> CreatePaypalPayment([FromBody] CreateTransactionDTO model)
         {

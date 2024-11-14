@@ -36,39 +36,44 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy)
         {
-            var pagination = new Pagination
-            {
-                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
-                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
-            };
-
             try
             {
                 var (allOrders, totalItems) = await _orderRepository.GetOrdersAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
-
-                // Handle page boundaries
-                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
-                if (pagination.PageNo < 1) pagination.PageNo = 1;
-
-                var orders = allOrders.Skip((pagination.PageNo - 1) * pagination.PageSize)
-                                      .Take(pagination.PageSize)
-                                      .ToList();
 
                 // Apply sorting logic only if orderBy is provided
                 if (orderBy != null)
                 {
-                    orders = ApplySorting(orders, orderBy);
+                    allOrders = ApplySorting(allOrders, orderBy);
                 }
 
-                return (orders, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? allOrders.Count : PaginationConfig.DefaultPageSize);
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)allOrders.Count / finalPageSize);
+
+                // Handle page boundaries
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
+
+                // Paginate the filtered orders
+                var paginatedOrders = allOrders.Skip((paginationPageNo - 1) * finalPageSize)
+                                               .Take(finalPageSize)
+                                               .ToList();
+
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedOrders.Count;
+
+                return (paginatedOrders, paginationPageNo, finalPageSize, totalItems, totalPages);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while getting paginated orders.");
-                return (new List<Order>(), pagination.PageNo, pagination.PageSize, 0, 0);
+                return (new List<Order>(), 1, 0, 0, 0);
             }
         }
+
 
         #region "Sorting"
         private List<Order> ApplySorting(List<Order> orders, OrderBy orderBy)
@@ -104,11 +109,13 @@ namespace InteriorCoffee.Application.Services.Implements
             return order;
         }
 
-        public async Task CreateOrderAsync(CreateOrderDTO createOrderDTO)
+        public async Task<string> CreateOrderAsync(CreateOrderDTO createOrderDTO)
         {
             var order = _mapper.Map<Order>(createOrderDTO);
             await _orderRepository.CreateOrder(order);
+            return order._id;
         }
+
 
         public async Task UpdateOrderAsync(string id, UpdateOrderStatusDTO updateOrderStatusDTO)
         {

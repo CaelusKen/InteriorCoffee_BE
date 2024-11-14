@@ -13,7 +13,7 @@ namespace InteriorCoffee.Application.DTOs.Transaction
 
         public string FullName { get; set; }
         public string Description { get; set; }
-        public DateTime CreatedDate { get; set; }
+        //public DateTime CreatedDate { get; set; }
 
         public double TotalAmount { get; set; }
 

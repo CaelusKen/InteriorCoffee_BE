@@ -36,10 +36,10 @@ namespace InteriorCoffee.Application.Utils
             };
 
             //Add expiredTime of token
-            var expires = DateTime.UtcNow.AddDays(1);
+            var expires = DateTime.Now.AddDays(1);
 
             //Create token
-            var token = new JwtSecurityToken(issuer, audience, claims, notBefore: DateTime.UtcNow, expires, credentials);
+            var token = new JwtSecurityToken(issuer, audience, claims, notBefore: DateTime.Now, expires, credentials);
             return jwtHandler.WriteToken(token);
         }
     }

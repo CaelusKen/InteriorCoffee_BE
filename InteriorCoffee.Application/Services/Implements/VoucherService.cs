@@ -87,7 +87,7 @@ namespace InteriorCoffee.Application.Services.Implements
             voucher.Status = String.IsNullOrEmpty(updatedVoucher.Status) ? voucher.Status : updatedVoucher.Status;
             voucher.StartDate = updatedVoucher.StartDate;
             voucher.EndDate = updatedVoucher.EndDate;
-            voucher.UpdatedDate = DateTime.UtcNow;
+            voucher.UpdatedDate = DateTime.Now;
             voucher.MaxUse = updatedVoucher.MaxUse;
             voucher.MinOrderValue = updatedVoucher.MinOrderValue;
             //voucher.UsedAccountIds = new List<string>();

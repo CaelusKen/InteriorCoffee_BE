@@ -17,9 +17,9 @@ namespace InteriorCoffee.Application.Mappers.Transactions
         {
             CreateMap<CreateTransactionDTO, Transaction>()
                 .ForMember(des => des._id, src => src.MapFrom(src => ObjectId.GenerateNewId().ToString()))
-                .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.UtcNow))
-                .ForMember(des => des.CreatedDate, src => src.MapFrom(src => DateTime.UtcNow))
-                .ForMember(des => des.TransactionDate, src => src.MapFrom(src => DateTime.UtcNow))
+                .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now))
+                .ForMember(des => des.CreatedDate, src => src.MapFrom(src => DateTime.Now))
+                .ForMember(des => des.TransactionDate, src => src.MapFrom(src => DateTime.Now))
                 .ForMember(des => des.Status, src => src.MapFrom(src => TransactionStatusEnum.PENDING.ToString()));
         }
     }

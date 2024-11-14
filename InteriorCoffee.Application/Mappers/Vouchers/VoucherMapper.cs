@@ -18,8 +18,8 @@ namespace InteriorCoffee.Application.Mappers.Vouchers
             CreateMap<CreateVoucherDTO, Voucher>()
                 .ForMember(des => des._id, src => src.MapFrom(src => ObjectId.GenerateNewId().ToString()))
                 .ForMember(des => des.Status, src => src.MapFrom(src => VoucherStatusEnum.ACTIVE.ToString()))
-                .ForMember(des => des.CreatedDate, src => src.MapFrom(src => DateTime.UtcNow))
-                .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.UtcNow))
+                .ForMember(des => des.CreatedDate, src => src.MapFrom(src => DateTime.Now))
+                .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now))
                 .ForMember(des => des.UsedAccountIds, src => src.MapFrom(src => new List<string>()));
         }
     }

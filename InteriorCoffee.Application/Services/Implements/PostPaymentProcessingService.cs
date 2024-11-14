@@ -78,7 +78,7 @@ namespace InteriorCoffee.Application.Services.Implements
                     var updateOrderStatusDTO = new UpdateOrderStatusDTO
                     {
                         Status = OrderStatusEnum.PENDING.ToString(),
-                        UpdatedDate = DateTime.UtcNow,
+                        UpdatedDate = DateTime.Now,
                         SystemIncome = systemIncome
                     };
                     await orderService.UpdateOrderAsync(orderId, updateOrderStatusDTO);

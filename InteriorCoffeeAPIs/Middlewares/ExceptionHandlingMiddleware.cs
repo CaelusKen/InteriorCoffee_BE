@@ -31,7 +31,7 @@ namespace InteriorCoffeeAPIs.Middlewares
             context.Response.ContentType = "application/json";
             var response = context.Response;
 
-            var errorResponse = new ErrorDTO() { TimeStamp = DateTime.UtcNow, Error = exception.Message };
+            var errorResponse = new ErrorDTO() { TimeStamp = DateTime.Now, Error = exception.Message };
             switch (exception)
             {
                 //add more custom exception

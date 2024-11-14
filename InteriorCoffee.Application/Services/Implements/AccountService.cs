@@ -224,7 +224,7 @@ public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSiz
                 throw new NotFoundException($"Account with id {id} not found.");
             }
             account.Status = AccountStatusEnum.INACTIVE.ToString();
-            account.UpdatedDate = DateTime.UtcNow;
+            account.UpdatedDate = DateTime.Now;
             await _accountRepository.UpdateAccount(account);
         }
 

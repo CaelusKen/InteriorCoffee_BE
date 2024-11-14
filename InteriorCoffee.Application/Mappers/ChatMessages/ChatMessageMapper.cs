@@ -16,7 +16,7 @@ namespace InteriorCoffee.Application.Mappers.ChatMessages
         {
             CreateMap<AddChatMessageDTO, ChatMessage>()
                 .ForMember(des => des._id, src => src.MapFrom(src => ObjectId.GenerateNewId().ToString()))
-                .ForMember(des => des.TimeStamp, src => src.MapFrom(src => DateTime.UtcNow));
+                .ForMember(des => des.TimeStamp, src => src.MapFrom(src => DateTime.Now));
         }
     }
 }

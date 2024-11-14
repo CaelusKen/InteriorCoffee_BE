@@ -87,93 +87,93 @@ namespace InteriorCoffee.Application.Services.Implements
         }
         #endregion
 
-        public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy, AccountFilterDTO filter, string keyword)
+public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy, AccountFilterDTO filter, string keyword)
+{
+    try
+    {
+        var (allAccounts, totalItems) = await _accountRepository.GetAccountAsync();
+
+        // Apply filters
+        allAccounts = ApplyFilters(allAccounts, filter.Role, filter.Status);
+
+        // Apply keyword search
+        if (!string.IsNullOrEmpty(keyword))
         {
-            try
-            {
-                var (allAccounts, totalItems) = await _accountRepository.GetAccountAsync();
-
-                // Apply filters
-                allAccounts = ApplyFilters(allAccounts, filter.Role, filter.Status);
-
-                // Apply keyword search
-                if (!string.IsNullOrEmpty(keyword))
-                {
-                    allAccounts = allAccounts.Where(a => a.UserName.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                                                         a.Email.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                                                         a.PhoneNumber.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                                                         a.Address.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                                             .ToList();
-                }
-
-                // Apply sorting logic only if orderBy is not null
-                allAccounts = ApplySorting(allAccounts, orderBy);
-
-                // Determine the page size dynamically if not provided
-                var finalPageSize = pageSize ?? allAccounts.Count;
-
-                // Calculate pagination details based on finalPageSize
-                var totalPages = (int)Math.Ceiling((double)allAccounts.Count / finalPageSize);
-
-                // Handle page boundaries
-                var paginationPageNo = pageNo ?? 1;
-                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
-                if (paginationPageNo < 1) paginationPageNo = 1;
-
-                // Paginate the filtered accounts
-                var paginatedAccounts = allAccounts.Skip((paginationPageNo - 1) * finalPageSize)
-                                                   .Take(finalPageSize)
-                                                   .ToList();
-
-                // Update the listAfter to reflect the current page size
-                var listAfter = paginatedAccounts.Count;
-
-                var accountResponseItems = _mapper.Map<List<AccountResponseItemDTO>>(paginatedAccounts);
-
-                #region "Mapping"
-                return new AccountResponseDTO
-                {
-                    PageNo = paginationPageNo,
-                    PageSize = finalPageSize,
-                    ListSize = totalItems,
-                    CurrentPageSize = listAfter,
-                    ListSizeAfter = listAfter,
-                    TotalPage = totalPages,
-                    OrderBy = new AccountOrderByDTO
-                    {
-                        SortBy = orderBy?.SortBy,
-                        IsAscending = orderBy?.Ascending ?? true
-                    },
-                    Filter = new AccountFilterDTO
-                    {
-                        Status = filter.Status,
-                        Role = filter.Role
-                    },
-                    Keyword = keyword,
-                    Accounts = accountResponseItems
-                };
-                #endregion
-            }
-            #region "Catch error"
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting accounts.");
-                return new AccountResponseDTO
-                {
-                    PageNo = 1,
-                    PageSize = 0,
-                    ListSize = 0,
-                    CurrentPageSize = 0,
-                    ListSizeAfter = 0,
-                    TotalPage = 0,
-                    OrderBy = new AccountOrderByDTO(),
-                    Filter = new AccountFilterDTO(),
-                    Keyword = keyword,
-                    Accounts = new List<AccountResponseItemDTO>()
-                };
-            }
-            #endregion
+            allAccounts = allAccounts.Where(a => a.UserName.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                 a.Email.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                 a.PhoneNumber.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                 a.Address.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                     .ToList();
         }
+
+        // Apply sorting logic only if orderBy is not null
+        allAccounts = ApplySorting(allAccounts, orderBy);
+
+        // Determine the page size dynamically if not provided
+        var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? allAccounts.Count : PaginationConfig.DefaultPageSize);
+
+        // Calculate pagination details based on finalPageSize
+        var totalPages = (int)Math.Ceiling((double)allAccounts.Count / finalPageSize);
+
+        // Handle page boundaries
+        var paginationPageNo = pageNo ?? 1;
+        if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+        if (paginationPageNo < 1) paginationPageNo = 1;
+
+        // Paginate the filtered accounts
+        var paginatedAccounts = allAccounts.Skip((paginationPageNo - 1) * finalPageSize)
+                                           .Take(finalPageSize)
+                                           .ToList();
+
+        // Update the listAfter to reflect the current page size
+        var listAfter = paginatedAccounts.Count;
+
+        var accountResponseItems = _mapper.Map<List<AccountResponseItemDTO>>(paginatedAccounts);
+
+        #region "Mapping"
+        return new AccountResponseDTO
+        {
+            PageNo = paginationPageNo,
+            PageSize = finalPageSize,
+            ListSize = totalItems,
+            CurrentPageSize = listAfter,
+            ListSizeAfter = listAfter,
+            TotalPage = totalPages,
+            OrderBy = new AccountOrderByDTO
+            {
+                SortBy = orderBy?.SortBy,
+                IsAscending = orderBy?.Ascending ?? true
+            },
+            Filter = new AccountFilterDTO
+            {
+                Status = filter.Status,
+                Role = filter.Role
+            },
+            Keyword = keyword,
+            Accounts = accountResponseItems
+        };
+        #endregion
+    }
+    #region "Catch error"
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error occurred while getting accounts.");
+        return new AccountResponseDTO
+        {
+            PageNo = 1,
+            PageSize = 0,
+            ListSize = 0,
+            CurrentPageSize = 0,
+            ListSizeAfter = 0,
+            TotalPage = 0,
+            OrderBy = new AccountOrderByDTO(),
+            Filter = new AccountFilterDTO(),
+            Keyword = keyword,
+            Accounts = new List<AccountResponseItemDTO>()
+        };
+    }
+    #endregion
+}
 
 
 

@@ -73,7 +73,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 products = ApplySorting(products, orderBy);
 
                 // Determine the page size dynamically if not provided
-                var finalPageSize = pageSize ?? products.Count;
+                var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? products.Count : PaginationConfig.DefaultPageSize);
 
                 // Calculate pagination details based on finalPageSize
                 var totalPages = (int)Math.Ceiling((double)products.Count / finalPageSize);

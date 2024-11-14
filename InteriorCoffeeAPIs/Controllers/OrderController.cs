@@ -24,27 +24,42 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Order.OrdersEndpoint)]
         [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Summary = "Get all orders with pagination and sorting")]
         public async Task<IActionResult> GetOrders([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
         {
-            OrderBy orderBy = null;
-            if (!string.IsNullOrEmpty(sortBy))
+            try
             {
-                orderBy = new OrderBy(sortBy, ascending ?? true);
+                OrderBy orderBy = null;
+                if (!string.IsNullOrEmpty(sortBy))
+                {
+                    orderBy = new OrderBy(sortBy, ascending ?? true);
+                }
+
+                var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetOrdersAsync(pageNo, pageSize, orderBy);
+
+                var response = new Paginate<Order>
+                {
+                    Items = orders,
+                    PageNo = currentPage,
+                    PageSize = currentPageSize,
+                    TotalPages = totalPages,
+                    TotalItems = totalItems,
+                };
+
+                return Ok(response);
             }
-
-            var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetOrdersAsync(pageNo, pageSize, orderBy);
-
-            var response = new Paginate<Order>
+            catch (ArgumentException ex)
             {
-                Items = orders,
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                TotalPages = totalPages,
-                TotalItems = orders.Count,
-            };
-
-            return Ok(response);
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
 
 
@@ -57,14 +72,17 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+
         [HttpPost(ApiEndPointConstant.Order.OrdersEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create order")]
         public async Task<IActionResult> CreateOrder(CreateOrderDTO order)
         {
-            await _orderService.CreateOrderAsync(order);
-            return Ok("Action success");
+            var orderId = await _orderService.CreateOrderAsync(order);
+            return Ok(orderId);
         }
+
+
 
         [HttpPatch(ApiEndPointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

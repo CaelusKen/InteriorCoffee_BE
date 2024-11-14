@@ -98,7 +98,7 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> CreateVNPayment([FromBody] CreateTransactionDTO model)
         {
             var result = await _paymentService.CreatePaymentUrl(this.HttpContext, model);
-            //await _transactionService.CreateTransaction(model);
+            await _transactionService.CreateTransaction(model);
             return Ok(new VnPaymentUrlReponseModel
             {
                 Url = result

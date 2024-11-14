@@ -41,7 +41,7 @@ namespace InteriorCoffee.Application.Services.Implements
         public async Task<string> CreatePaymentUrl(HttpContext context, CreateTransactionDTO model)
         {
             var tick = DateTime.UtcNow.Ticks.ToString();
-            var createDate = DateTime.Now;
+            var createDate = DateTime.Now.ToUniversalTime();
 
             var vnpay = new VNPayLibrary();
 
@@ -49,8 +49,8 @@ namespace InteriorCoffee.Application.Services.Implements
             vnpay.AddRequestData("vnp_Command", _configuration["VnPay:Command"]);
             vnpay.AddRequestData("vnp_TmnCode", _configuration["VnPay:TmnCode"]);
             vnpay.AddRequestData("vnp_Amount", (model.TotalAmount * 100).ToString());
-            vnpay.AddRequestData("vnp_CreateDate", createDate.ToString("yyyyMMddHHmmss"));
-            vnpay.AddRequestData("vnp_ExpireDate", createDate.AddMinutes(15).ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_CreateDate", createDate.AddHours(7).ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_ExpireDate", createDate.AddHours(7).AddMinutes(15).ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", _configuration["VnPay:CurrencyCode"]);
             vnpay.AddRequestData("vnp_IpAddr", IPAddressUtil.GetIpAddress(context));
             vnpay.AddRequestData("vnp_Locale", _configuration["VnPay:Locale"]);

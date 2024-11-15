@@ -10,6 +10,7 @@ namespace InteriorCoffee.Application.DTOs.Design
         public string Description { get; set; }
         //public DateTime CreatedDate { get; set; } //Already set in mapper
         public string Status { get; set; }
+        public string Image { get; set; }
         public string Type { get; set; }
         public List<Floor> Floors { get; set; }
         public string AccountId { get; set; }

@@ -86,6 +86,7 @@ namespace InteriorCoffee.Application.Services.Implements
             template.Type = String.IsNullOrEmpty(updateTemplate.Type) ? template.Type : updateTemplate.Type;
             template.Status = String.IsNullOrEmpty(updateTemplate.Status) ? template.Status : updateTemplate.Status;
             template.StyleId = String.IsNullOrEmpty(updateTemplate.StyleId) ? template.StyleId : updateTemplate.StyleId;
+            template.Image = String.IsNullOrEmpty(updateTemplate.Image) ? template.Image : updateTemplate.Image;
 
             template.Floors = updateTemplate.Floors == null ? template.Floors : updateTemplate.Floors;
             template.Categories = updateTemplate.Categories == null ? template.Categories : updateTemplate.Categories;

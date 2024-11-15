@@ -127,7 +127,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(new { Message = "Product created successfully" });
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a product's data")]
@@ -203,7 +203,7 @@ namespace InteriorCoffeeAPIs.Controllers
         // }
         #endregion
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Product.SoftDeleteProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Soft delete a product")]
@@ -215,7 +215,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Product successfully soft deleted");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpDelete(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a product")]

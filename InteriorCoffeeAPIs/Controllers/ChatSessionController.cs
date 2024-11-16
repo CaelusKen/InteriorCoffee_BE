@@ -3,6 +3,8 @@ using InteriorCoffee.Application.DTOs.ChatMessage;
 using InteriorCoffee.Application.DTOs.ChatSession;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffeeAPIs.Validate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 namespace InteriorCoffeeAPIs.Controllers
 {
     [ApiController]
+    [Authorize]
     public class ChatSessionController : BaseController<ChatSessionController>
     {
         private readonly IChatSessionService _chatSessionService;

@@ -82,7 +82,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpGet(ApiEndPointConstant.Account.AccountsEmailEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get an account by email")]

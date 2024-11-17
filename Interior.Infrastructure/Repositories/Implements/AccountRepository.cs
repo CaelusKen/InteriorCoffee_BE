@@ -40,8 +40,6 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             }
         }
 
-
-
         public async Task<Account> GetAccountById(string id)
         {
             return await _accounts.Find(c => c._id == id).FirstOrDefaultAsync();

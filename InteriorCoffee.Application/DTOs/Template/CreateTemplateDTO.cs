@@ -1,4 +1,4 @@
-﻿using InteriorCoffee.Domain.Models.Documents;
+﻿using InteriorCoffee.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace InteriorCoffee.Application.DTOs.Template
         public string Image { get; set; }
         public string Type { get; set; }
 
-        public List<Floor>? Floors { get; set; }
+        public List<string>? Floors { get; set; }
 
         public string AccountId { get; set; }
         public string MerchantId { get; set; }

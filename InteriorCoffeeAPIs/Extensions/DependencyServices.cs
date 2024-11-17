@@ -19,6 +19,8 @@ using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies.Backup;
 using Hangfire.Mongo.Migration.Strategies;
 using System.Text.Json;
+using Interior.Infrastructure.Repositories.Interfaces;
+using Interior.Infrastructure.Repositories.Implements;
 
 namespace InteriorCoffeeAPIs.Extensions
 {
@@ -85,6 +87,7 @@ namespace InteriorCoffeeAPIs.Extensions
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
             services.AddScoped<IDesignRepository, DesignRepository>();
+            services.AddScoped<IFloorRepository, FloorRepository>();
             services.AddScoped<IMerchantRepository, MerchantRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();

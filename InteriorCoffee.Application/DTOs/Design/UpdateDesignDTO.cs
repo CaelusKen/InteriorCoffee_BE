@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using InteriorCoffee.Domain.Models.Documents;
+using InteriorCoffee.Domain.Models;
 
 namespace InteriorCoffee.Application.DTOs.Design
 {

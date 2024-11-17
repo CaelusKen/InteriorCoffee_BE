@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InteriorCoffee.Domain.Models.Documents;
 
-namespace InteriorCoffee.Domain.Models.Documents
+namespace InteriorCoffee.Domain.Models
 {
     public class Floor
     {

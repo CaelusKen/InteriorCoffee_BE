@@ -37,8 +37,10 @@ namespace Interior.Infrastructure.Repositories.Interfaces
         #endregion
         #endregion
 
+        Task AddRange(List<Floor> floors);
         Task CreateFloor(Floor account);
         Task UpdateFloor(Floor account);
         Task DeleteFloor(string id);
+        Task DeleteFloorsByIds(List<string> ids);
     }
 }

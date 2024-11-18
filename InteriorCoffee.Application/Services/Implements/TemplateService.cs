@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Interior.Infrastructure.Repositories.Interfaces;
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Template;
@@ -20,10 +21,13 @@ namespace InteriorCoffee.Application.Services.Implements
     public class TemplateService : BaseService<TemplateService>, ITemplateService
     {
         private readonly ITemplateRepository _templateRepository;
+        private readonly IFloorRepository _floorRepository;
 
-        public TemplateService(ILogger<TemplateService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, ITemplateRepository templateRepository) : base(logger, mapper, httpContextAccessor)
+        public TemplateService(ILogger<TemplateService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, ITemplateRepository templateRepository,
+            IFloorRepository floorRepository) : base(logger, mapper, httpContextAccessor)
         {
             _templateRepository = templateRepository;
+            _floorRepository = floorRepository;
         }
 
         public async Task<(List<Template>, int, int, int, int)> GetTemplatesAsync(int? pageNo, int? pageSize)
@@ -38,6 +42,8 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 var (allTemplates, totalItems) = await _templateRepository.GetTemplatesAsync();
                 var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+                
+                
 
                 // Handle page boundaries
                 if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
@@ -56,20 +62,34 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-        public async Task<Template> GetTemplateById(string id)
+        public async Task<GetTemplateDTO> GetTemplateById(string id)
         {
-            var result = await _templateRepository.GetTemplate(
+            var template = await _templateRepository.GetTemplate(
                 predicate: t => t._id.Equals(id));
 
-            if(result == null) throw new NotFoundException($"Template id {id} cannot be found");
+            if (template == null) throw new NotFoundException($"Template id {id} cannot be found");
+
+            var floors = await _floorRepository.GetFloorsByIdList(template.Floors);
+
+            GetTemplateDTO result = _mapper.Map<GetTemplateDTO>(template);
+            result.Floors = floors;
 
             return result;
         }
 
         public async Task CreateTemplate(CreateTemplateDTO template)
         {
-
             Template newTemplate = _mapper.Map<Template>(template);
+            if (template.Floors == null)
+            {
+                newTemplate.Floors = new List<string>();
+            }
+            else
+            {
+                var floorIds = template.Floors.Select(f => f._id).ToList();
+                newTemplate.Floors = floorIds;
+            }
+
             await _templateRepository.CreateTemplate(newTemplate);
         }
 
@@ -87,9 +107,18 @@ namespace InteriorCoffee.Application.Services.Implements
             template.Status = String.IsNullOrEmpty(updateTemplate.Status) ? template.Status : updateTemplate.Status;
             template.StyleId = String.IsNullOrEmpty(updateTemplate.StyleId) ? template.StyleId : updateTemplate.StyleId;
             template.Image = String.IsNullOrEmpty(updateTemplate.Image) ? template.Image : updateTemplate.Image;
-
-            template.Floors = updateTemplate.Floors == null ? template.Floors : updateTemplate.Floors;
             template.Categories = updateTemplate.Categories == null ? template.Categories : updateTemplate.Categories;
+            template.Products = updateTemplate.Products == null ? template.Products : updateTemplate.Products;
+
+            if(updateTemplate.Floors != null)
+            {
+                var floorIds = updateTemplate.Floors.Select(x => x._id).ToList();
+                template.Floors = floorIds;
+
+                //Update floors entity
+                await _floorRepository.DeleteFloorsByIds(floorIds);
+                await _floorRepository.AddRange(updateTemplate.Floors);
+            }
 
             await _templateRepository.UpdateTemplate(template);
         }

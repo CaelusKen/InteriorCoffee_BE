@@ -42,7 +42,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Template.TemplateEndpoint)]
-        [ProducesResponseType(typeof(Template), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetTemplateDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a template by id")]
         public async Task<IActionResult> GetTemplateById(string id)
         {

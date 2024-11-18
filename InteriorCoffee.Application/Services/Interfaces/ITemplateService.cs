@@ -11,7 +11,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
     public interface ITemplateService
     {
         public Task<(List<Template>, int, int, int, int)> GetTemplatesAsync(int? pageNo, int? pageSize);
-        public Task<Template> GetTemplateById(string id);
+        public Task<GetTemplateDTO> GetTemplateById(string id);
         public Task CreateTemplate(CreateTemplateDTO template);
         public Task UpdateTemplate(string id, UpdateTemplateDTO updateTemplate);
         public Task DeleteTemplate(string id);

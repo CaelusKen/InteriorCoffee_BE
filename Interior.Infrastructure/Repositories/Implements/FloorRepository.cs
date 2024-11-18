@@ -172,9 +172,9 @@ namespace Interior.Infrastructure.Repositories.Implements
         #endregion
         #endregion
 
-        public async Task UpdateFloor(Floor floor)
+        public async Task AddRange(List<Floor> floors)
         {
-            await _floors.ReplaceOneAsync(a => a._id == floor._id, floor);
+            await _floors.InsertManyAsync(floors);
         }
 
         public async Task CreateFloor(Floor floor)
@@ -182,10 +182,21 @@ namespace Interior.Infrastructure.Repositories.Implements
             await _floors.InsertOneAsync(floor);
         }
 
+        public async Task UpdateFloor(Floor floor)
+        {
+            await _floors.ReplaceOneAsync(a => a._id == floor._id, floor);
+        }
+
         public async Task DeleteFloor(string id)
         {
             FilterDefinition<Floor> filterDefinition = Builders<Floor>.Filter.Eq("_id", id);
             await _floors.DeleteOneAsync(filterDefinition);
+        }
+
+        public async Task DeleteFloorsByIds(List<string> ids)
+        {
+            var filter = Builders<Floor>.Filter.In("_id", ids);
+            await _floors.DeleteManyAsync(filter);
         }
     }
 }

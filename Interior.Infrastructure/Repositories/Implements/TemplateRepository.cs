@@ -5,6 +5,7 @@ using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             {
                 var totalItemsLong = await _templates.CountDocumentsAsync(new BsonDocument());
                 var totalItems = (int)totalItemsLong;
+
                 var templates = await _templates.Find(new BsonDocument()).ToListAsync();
                 return (templates, totalItems);
             }

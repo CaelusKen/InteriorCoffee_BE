@@ -88,6 +88,7 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 var floorIds = template.Floors.Select(f => f._id).ToList();
                 newTemplate.Floors = floorIds;
+                await _floorRepository.AddRange(template.Floors);
             }
 
             await _templateRepository.CreateTemplate(newTemplate);
@@ -130,6 +131,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
             if (template == null) throw new NotFoundException($"Template id {id} cannot be found");
 
+            await _floorRepository.DeleteFloorsByIds(template.Floors);
             await _templateRepository.DeleteTemplate(id);
         }
     }

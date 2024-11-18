@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Interior.Infrastructure.Repositories.Interfaces;
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Design;
 using InteriorCoffee.Application.DTOs.OrderBy;
@@ -19,11 +20,14 @@ namespace InteriorCoffee.Application.Services.Implements
     public class DesignService : BaseService<DesignService>, IDesignService
     {
         private readonly IDesignRepository _designRepository;
+        private readonly IFloorRepository _floorRepository;
 
-        public DesignService(ILogger<DesignService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IDesignRepository designRepository)
+        public DesignService(ILogger<DesignService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IDesignRepository designRepository,
+            IFloorRepository floorRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _designRepository = designRepository;
+            _floorRepository = floorRepository;
         }
 
         public async Task<(List<Design>, int, int, int, int)> GetDesignsAsync(int? pageNo, int? pageSize)
@@ -56,19 +60,36 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-        public async Task<Design> GetDesignByIdAsync(string id)
+        public async Task<GetDesignDTO> GetDesignByIdAsync(string id)
         {
             var design = await _designRepository.GetDesignById(id);
             if (design == null)
             {
                 throw new NotFoundException($"Design with id {id} not found.");
             }
-            return design;
+
+            var floors = await _floorRepository.GetFloorsByIdList(design.Floors);
+
+            GetDesignDTO result = _mapper.Map<GetDesignDTO>(design);
+            result.Floors = floors;
+
+            return result;
         }
 
         public async Task CreateDesignAsync(CreateDesignDTO createDesignDTO)
         {
             var design = _mapper.Map<Design>(createDesignDTO);
+            if (createDesignDTO.Floors == null)
+            {
+                design.Floors = new List<string>();
+            }
+            else
+            {
+                var floorIds = createDesignDTO.Floors.Select(f => f._id).ToList();
+                design.Floors = floorIds;
+                await _floorRepository.AddRange(createDesignDTO.Floors);
+            }
+
             await _designRepository.CreateDesign(design);
         }
 
@@ -80,6 +101,17 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Design with id {id} not found.");
             }
             _mapper.Map(updateDesignDTO, existingDesign);
+
+            if (updateDesignDTO.Floors != null)
+            {
+                var floorIds = updateDesignDTO.Floors.Select(x => x._id).ToList();
+                existingDesign.Floors = floorIds;
+
+                //Update floors entity
+                await _floorRepository.DeleteFloorsByIds(floorIds);
+                await _floorRepository.AddRange(updateDesignDTO.Floors);
+            }
+
             await _designRepository.UpdateDesign(existingDesign);
         }
 
@@ -90,6 +122,8 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 throw new NotFoundException($"Design with id {id} not found.");
             }
+
+            await _floorRepository.DeleteFloorsByIds(design.Floors);
             await _designRepository.DeleteDesign(id);
         }
     }

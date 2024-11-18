@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Models.Documents;
 
 namespace InteriorCoffee.Application.DTOs.Design
 {
@@ -13,6 +14,7 @@ namespace InteriorCoffee.Application.DTOs.Design
         public string Image { get; set; }
         public string Type { get; set; }
         public List<Floor> Floors { get; set; }
+        public List<ProductList>? Products { get; set; }
         public string AccountId { get; set; }
         public string TemplateId { get; set; }
         public string StyleId { get; set; }

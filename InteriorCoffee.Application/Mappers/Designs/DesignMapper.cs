@@ -19,6 +19,8 @@ namespace InteriorCoffee.Application.Mappers.Designs
             // Mapping for UpdateDesignDTO to Design
             CreateMap<UpdateDesignDTO, Design>()
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
+
+            CreateMap<Design, GetDesignDTO>();
         }
     }
 }

@@ -14,5 +14,6 @@ namespace InteriorCoffee.Domain.Models.Documents
         public double Height { get; set; }
         public double Length { get; set; }
         public List<Furniture> Furnitures { get; set; }
+        public List<NonFurniture> NonFurnitures { get; set; }
     }
 }

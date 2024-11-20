@@ -69,10 +69,10 @@ namespace InteriorCoffee.Application.Services.Implements
             }
 
             //Get floor from floor repo
-            //var floors = await _floorRepository.GetFloorsByIdList(design.Floors);
+            var floors = await _floorRepository.GetFloorList(predicate: f => f.DesignTemplateId == id);
 
             GetDesignDTO result = _mapper.Map<GetDesignDTO>(design);
-            //result.Floors = floors;
+            result.Floors = floors;
 
             return result;
         }
@@ -80,17 +80,11 @@ namespace InteriorCoffee.Application.Services.Implements
         public async Task CreateDesignAsync(CreateDesignDTO createDesignDTO)
         {
             var design = _mapper.Map<Design>(createDesignDTO);
-            //Add floor if initial design have floors
-            //if (createDesignDTO.Floors == null)
-            //{
-            //    design.Floors = new List<string>();
-            //}
-            //else
-            //{
-            //    var floorIds = createDesignDTO.Floors.Select(f => f._id).ToList();
-            //    design.Floors = floorIds;
-            //    await _floorRepository.AddRange(createDesignDTO.Floors);
-            //}
+            //Add floors if initial design have floors
+            if(createDesignDTO.Floors != null)
+            {
+                await _floorRepository.AddRange(createDesignDTO.Floors);
+            }
 
             await _designRepository.CreateDesign(design);
         }
@@ -104,17 +98,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             _mapper.Map(updateDesignDTO, existingDesign);
 
-            //No need update floor in design here
-            //if (updateDesignDTO.Floors != null)
-            //{
-            //    var floorIds = updateDesignDTO.Floors.Select(x => x._id).ToList();
-            //    existingDesign.Floors = floorIds;
-
-            //    //Update floors entity
-            //    await _floorRepository.DeleteFloorsByIds(floorIds);
-            //    await _floorRepository.AddRange(updateDesignDTO.Floors);
-            //}
-
             await _designRepository.UpdateDesign(existingDesign);
         }
 
@@ -126,8 +109,8 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Design with id {id} not found.");
             }
 
-            //Delete floors of design
-            //await _floorRepository.DeleteFloorsByIds(design.Floors);
+            //Delete all floors of design
+            await _floorRepository.DeleteAllFloorsInDesign(design._id);
             await _designRepository.DeleteDesign(id);
         }
     }

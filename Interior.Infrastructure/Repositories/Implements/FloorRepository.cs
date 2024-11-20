@@ -198,5 +198,11 @@ namespace Interior.Infrastructure.Repositories.Implements
             var filter = Builders<Floor>.Filter.In("_id", ids);
             await _floors.DeleteManyAsync(filter);
         }
+
+        public async Task DeleteAllFloorsInDesign(string designTemplateId)
+        {
+            var filter = Builders<Floor>.Filter.Eq("DesignTemplateId", designTemplateId);
+            await _floors.DeleteManyAsync(filter);
+        }
     }
 }

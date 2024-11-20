@@ -21,7 +21,6 @@ namespace InteriorCoffee.Domain.Models
         public DateTime UpdatedDate { get; set; }
         public string Status { get; set; } = null!;
         public string Type { get; set; }
-        public List<string> Floors { get; set; }
         public List<string> Categories { get; set; }
         public List<ProductList> Products { get; set; }
 

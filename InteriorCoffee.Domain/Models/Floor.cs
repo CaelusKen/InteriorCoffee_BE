@@ -11,6 +11,7 @@ namespace InteriorCoffee.Domain.Models
     {
         public string _id { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public string DesignTemplateId { get; set; } = null!;
         public List<Room> Rooms { get; set; }
     }
 }

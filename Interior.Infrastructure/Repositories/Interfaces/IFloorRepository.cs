@@ -42,5 +42,6 @@ namespace Interior.Infrastructure.Repositories.Interfaces
         Task UpdateFloor(Floor account);
         Task DeleteFloor(string id);
         Task DeleteFloorsByIds(List<string> ids);
+        Task DeleteAllFloorsInDesign(string designTemplateId);
     }
 }

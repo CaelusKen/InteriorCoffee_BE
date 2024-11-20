@@ -70,10 +70,10 @@ namespace InteriorCoffee.Application.Services.Implements
             if (template == null) throw new NotFoundException($"Template id {id} cannot be found");
 
             //Get floor from floor repo
-            //var floors = await _floorRepository.GetFloorsByIdList(template.Floors);
+            var floors = await _floorRepository.GetFloorList(predicate: f => f.DesignTemplateId == id);
 
             GetTemplateDTO result = _mapper.Map<GetTemplateDTO>(template);
-            //result.Floors = floors;
+            result.Floors = floors;
 
             return result;
         }
@@ -82,17 +82,11 @@ namespace InteriorCoffee.Application.Services.Implements
         {
             Template newTemplate = _mapper.Map<Template>(template);
 
-            //Add floor if initial template have floors
-            //if (template.Floors == null)
-            //{
-            //    newTemplate.Floors = new List<string>();
-            //}
-            //else
-            //{
-            //    var floorIds = template.Floors.Select(f => f._id).ToList();
-            //    newTemplate.Floors = floorIds;
-            //    await _floorRepository.AddRange(template.Floors);
-            //}
+            //Add floors if initial template have floors
+            if(template.Floors != null)
+            {
+                await _floorRepository.AddRange(template.Floors);
+            }
 
             await _templateRepository.CreateTemplate(newTemplate);
         }
@@ -114,17 +108,6 @@ namespace InteriorCoffee.Application.Services.Implements
             template.Categories = updateTemplate.Categories == null ? template.Categories : updateTemplate.Categories;
             template.Products = updateTemplate.Products == null ? template.Products : updateTemplate.Products;
 
-            //No need update floor in template here
-            //if(updateTemplate.Floors != null)
-            //{
-            //    var floorIds = updateTemplate.Floors.Select(x => x._id).ToList();
-            //    template.Floors = floorIds;
-
-            //    //Update floors entity
-            //    await _floorRepository.DeleteFloorsByIds(floorIds);
-            //    await _floorRepository.AddRange(updateTemplate.Floors);
-            //}
-
             await _templateRepository.UpdateTemplate(template);
         }
 
@@ -135,8 +118,8 @@ namespace InteriorCoffee.Application.Services.Implements
 
             if (template == null) throw new NotFoundException($"Template id {id} cannot be found");
 
-            //Delete floors of template
-            //await _floorRepository.DeleteFloorsByIds(template.Floors);
+            //Delete all floors of template
+            await _floorRepository.DeleteAllFloorsInDesign(template._id);
             await _templateRepository.DeleteTemplate(id);
         }
     }

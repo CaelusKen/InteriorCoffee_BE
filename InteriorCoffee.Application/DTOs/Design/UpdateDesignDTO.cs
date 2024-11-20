@@ -13,7 +13,7 @@ namespace InteriorCoffee.Application.DTOs.Design
         public string Status { get; set; }
         public string Image { get; set; }
         public string Type { get; set; }
-        public List<Floor> Floors { get; set; }
+        //public List<Floor> Floors { get; set; }
         public List<ProductList>? Products { get; set; }
         public string AccountId { get; set; }
         public string TemplateId { get; set; }

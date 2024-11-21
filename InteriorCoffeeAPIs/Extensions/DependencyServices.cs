@@ -71,6 +71,7 @@ namespace InteriorCoffeeAPIs.Extensions
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IChatSessionService, ChatSessionService>();
             services.AddScoped<IDesignService, DesignService>();
+            services.AddScoped<IFloorService, FloorService>();
             services.AddScoped<IMerchantService, MerchantService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProductService, ProductService>();

@@ -32,7 +32,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _validationServices = validationServices;
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(AccountResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,7 +72,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get an account by id")]
@@ -92,7 +92,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPost(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create account for manager and consultant")]
@@ -112,7 +112,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
         [HttpPatch(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update an account's data")]
@@ -137,7 +137,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
         [HttpPatch(ApiEndPointConstant.Account.SoftDeleteAccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Soft delete an account")]
@@ -168,7 +168,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpDelete(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete an account")]

@@ -125,5 +125,11 @@ namespace InteriorCoffee.Application.Constants
 
             public const string ChatMessageEndpoint = ChatSessionEndpoint + "/messages";
         }
+
+        public static class Floor
+        {
+            public const string FloorsEndpoint = ApiEndpoint + "/floors";
+            public const string FloorEndpoint = FloorsEndpoint + "/{id}";
+        }
     }
 }

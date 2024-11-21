@@ -8,23 +8,24 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Swashbuckle.AspNetCore.Annotations;
 using InteriorCoffee.Application.Utils;
+using InteriorCoffee.Application.Constants;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FloorController : ControllerBase
+    public class FloorController : BaseController<FloorController>
     {
         private readonly IFloorService _floorService;
         private readonly ILogger<FloorController> _logger;
 
-        public FloorController(IFloorService floorService, ILogger<FloorController> logger)
+        public FloorController(IFloorService floorService, ILogger<FloorController> logger) : base(logger)
         {
             _floorService = floorService;
             _logger = logger;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet(ApiEndPointConstant.Floor.FloorEndpoint)]
         [ProducesResponseType(typeof(Floor), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -48,7 +49,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost(ApiEndPointConstant.Floor.FloorsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -72,8 +73,8 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        [HttpPatch("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPatch(ApiEndPointConstant.Floor.FloorEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Summary = "Update an existing floor")]
@@ -111,8 +112,8 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpDelete(ApiEndPointConstant.Floor.FloorEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Summary = "Delete a floor by ID")]

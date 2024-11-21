@@ -8,7 +8,7 @@ namespace InteriorCoffee.Domain.Models.Documents
 {
     public class NonFurniture
     {
-        public string _id { get; set; } = null!;
+        //public string _id { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string Model { get; set; } = null!;
         public List<double> Position { get; set; } = null!;

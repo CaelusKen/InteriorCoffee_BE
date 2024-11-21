@@ -184,7 +184,13 @@ namespace Interior.Infrastructure.Repositories.Implements
 
         public async Task UpdateFloor(Floor floor)
         {
-            await _floors.ReplaceOneAsync(a => a._id == floor._id, floor);
+            var filter = Builders<Floor>.Filter.Eq(f => f._id, floor._id);
+            var result = await _floors.ReplaceOneAsync(filter, floor);
+
+            if (result.ModifiedCount == 0)
+            {
+                throw new Exception($"No document found with id: {floor._id} to update.");
+            }
         }
 
         public async Task DeleteFloor(string id)

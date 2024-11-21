@@ -31,7 +31,8 @@ namespace InteriorCoffee.Application.Mappers.Accounts
                 .ForMember(des => des._id, src => src.MapFrom(src => ObjectId.GenerateNewId().ToString()));
 
             CreateMap<UpdateAccountDTO, Account>()
-                .ForMember(des => des.UpdatedDate, src => src.MapFrom(src => DateTime.Now));
+                .ForMember(dest => dest._id, opt => opt.Ignore()) // Ignore _id since it should not be updated
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
 
             CreateMap<Account, AccountResponseItemDTO>();
 

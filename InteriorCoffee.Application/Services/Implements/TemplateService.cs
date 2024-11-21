@@ -32,35 +32,35 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<(List<Template>, int, int, int, int)> GetTemplatesAsync(int? pageNo, int? pageSize)
         {
-            var pagination = new Pagination
-            {
-                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
-                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
-            };
-
             try
             {
                 var (allTemplates, totalItems) = await _templateRepository.GetTemplatesAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
-                
-                
+
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? allTemplates.Count : PaginationConfig.DefaultPageSize);
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)allTemplates.Count / finalPageSize);
 
                 // Handle page boundaries
-                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
-                if (pagination.PageNo < 1) pagination.PageNo = 1;
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
 
-                var templates = allTemplates.Skip((pagination.PageNo - 1) * pagination.PageSize)
-                                            .Take(pagination.PageSize)
-                                            .ToList();
+                // Paginate the filtered templates
+                var paginatedTemplates = allTemplates.Skip((paginationPageNo - 1) * finalPageSize)
+                                                     .Take(finalPageSize)
+                                                     .ToList();
 
-                return (templates, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+                return (paginatedTemplates, paginationPageNo, finalPageSize, totalItems, totalPages);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while getting paginated templates.");
-                return (new List<Template>(), pagination.PageNo, pagination.PageSize, 0, 0);
+                return (new List<Template>(), 1, 0, 0, 0);
             }
         }
+
 
         public async Task<GetTemplateDTO> GetTemplateById(string id)
         {

@@ -73,8 +73,9 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        [HttpPatch(ApiEndPointConstant.Floor.FloorEndpoint)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Summary = "Update an existing floor")]
@@ -82,22 +83,8 @@ namespace InteriorCoffeeAPIs.Controllers
         {
             try
             {
-                var existingFloor = await _floorService.GetFloorByIdAsync(id);
-                if (existingFloor == null)
-                {
-                    return NotFound(new { Message = "Floor not found" });
-                }
-
-                // Merge existing floor data with the incoming update data
-                var existingFloorJson = JsonSerializer.Serialize(existingFloor);
-                var existingFloorElement = JsonDocument.Parse(existingFloorJson).RootElement;
-
-                var mergedFloor = JsonUtil.MergeJsonElements(existingFloorElement, updateFloor);
-
-                var jsonString = JsonSerializer.Serialize(mergedFloor);
-                var updateFloorDto = JsonSerializer.Deserialize<UpdateFloorDTO>(jsonString);
-
-                await _floorService.UpdateFloorAsync(updateFloorDto);
+                await _floorService.UpdateFloorAsync(id, updateFloor);
+                _logger.LogInformation("Floor updated successfully with id {id}", id);
                 return Ok("Floor updated successfully");
             }
             catch (ArgumentException ex)

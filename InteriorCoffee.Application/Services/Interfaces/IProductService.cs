@@ -3,6 +3,7 @@ using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.Services.Interfaces
@@ -14,7 +15,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
                    OrderBy orderBy, ProductFilterDTO filter, string keyword = null);
         Task<Product> GetProductByIdAsync(string id);
         Task CreateProductAsync(CreateProductDTO product);
-        Task UpdateProductAsync(string id, UpdateProductDTO product);
+        Task UpdateProductAsync(string id, JsonElement updateProduct);
         Task SoftDeleteProductAsync(string id);
         Task DeleteProductAsync(string id);
     }

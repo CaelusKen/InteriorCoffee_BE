@@ -127,38 +127,30 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(new { Message = "Product created successfully" });
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a product's data")]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] JsonElement updateProduct)
         {
-            var schemaFilePath = "ProductValidate"; // Ensure this key is correct
-            var validationService = _validationServices[schemaFilePath];
-
-            var existingProduct = await _productService.GetProductByIdAsync(id);
-
-            // Merge existing product data with the incoming update data
-            var existingProductJson = JsonSerializer.Serialize(existingProduct, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
-            var existingProductElement = JsonDocument.Parse(existingProductJson).RootElement;
-
-            var mergedProduct = JsonUtil.MergeJsonElements(existingProductElement, updateProduct);
-
-            var jsonString = JsonSerializer.Serialize(mergedProduct, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
-            var (isValid, errors) = validationService.ValidateJson(jsonString, isUpdate: true);
-
-            if (!isValid)
+            try
             {
-                _logger.LogError("Validation failed: {Errors}", errors);
-                return BadRequest(new { Errors = errors });
+                await _productService.UpdateProductAsync(id, updateProduct);
+                _logger.LogInformation("Product updated successfully with id {id}", id);
+                return Ok(new { Message = "Product updated successfully" });
             }
-
-            // Map the merged product data to an UpdateProductDTO
-            var updateProductDto = JsonSerializer.Deserialize<UpdateProductDTO>(jsonString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
-
-            await _productService.UpdateProductAsync(id, updateProductDto);
-            return Ok(new { Message = "Product updated successfully" });
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
+
 
         #region "Patch update" (Clean, use Util instead)
         //public static JsonElement MergeJsonElements(JsonElement original, JsonElement update)

@@ -24,22 +24,38 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpGet(ApiEndPointConstant.Template.TemplatesEndpoint)]
         [ProducesResponseType(typeof(IPaginate<Template>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Summary = "Get all templates with pagination")]
         public async Task<IActionResult> GetTemplates([FromQuery] int? pageNo, [FromQuery] int? pageSize)
         {
-            var (templates, currentPage, currentPageSize, totalItems, totalPages) = await _templateService.GetTemplatesAsync(pageNo, pageSize);
-
-            var response = new Paginate<Template>
+            try
             {
-                Items = templates,
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                TotalPages = totalPages,
-                TotalItems = templates.Count,
-            };
+                var (templates, currentPage, currentPageSize, totalItems, totalPages) = await _templateService.GetTemplatesAsync(pageNo, pageSize);
 
-            return Ok(response);
+                var response = new Paginate<Template>
+                {
+                    Items = templates,
+                    PageNo = currentPage,
+                    PageSize = currentPageSize,
+                    TotalPages = totalPages,
+                    TotalItems = totalItems,
+                };
+
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
+
 
         [HttpGet(ApiEndPointConstant.Template.TemplateEndpoint)]
         [ProducesResponseType(typeof(GetTemplateDTO), StatusCodes.Status200OK)]

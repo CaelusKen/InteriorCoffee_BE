@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.Services.Implements
@@ -203,7 +204,7 @@ public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSiz
             await _accountRepository.CreateAccount(newAccount);
         }
 
-        public async Task UpdateAccountAsync(string id, UpdateAccountDTO updateAccountDTO)
+        public async Task UpdateAccountAsync(string id, JsonElement updateAccount)
         {
             var existingAccount = await _accountRepository.GetAccountById(id);
             if (existingAccount == null)
@@ -211,10 +212,38 @@ public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSiz
                 throw new NotFoundException($"Account with id {id} not found.");
             }
 
-            _mapper.Map(updateAccountDTO, existingAccount);
+            // Log existing account details
+            _logger.LogInformation("Existing account before update: {existingAccount}", existingAccount);
+
+            var existingAccountJson = JsonSerializer.Serialize(existingAccount, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var existingAccountElement = JsonDocument.Parse(existingAccountJson).RootElement;
+
+            var mergedAccount = JsonUtil.MergeJsonElements(existingAccountElement, updateAccount);
+
+            var jsonString = JsonSerializer.Serialize(mergedAccount, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            _logger.LogInformation("Merged account JSON: {jsonString}", jsonString);
+
+            var updateAccountDto = JsonSerializer.Deserialize<UpdateAccountDTO>(jsonString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            // Preserve the existing _id before mapping
+            var existingId = existingAccount._id;
+
+            // Map the updated fields to the existing account, excluding _id
+            _mapper.Map(updateAccountDto, existingAccount);
+
+            // Ensure the _id is preserved
+            existingAccount._id = existingId;
+
+            // Log updated account details
+            _logger.LogInformation("Updated account after mapping: {existingAccount}", existingAccount);
+
             await _accountRepository.UpdateAccount(existingAccount);
 
+            // Log updated account from repository
+            var updatedAccount = await _accountRepository.GetAccountById(id);
+            _logger.LogInformation("Account after update from repository: {updatedAccount}", updatedAccount);
         }
+
 
         public async Task SoftDeleteAccountAsync(string id)
         {

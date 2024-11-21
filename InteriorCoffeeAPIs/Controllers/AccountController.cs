@@ -32,7 +32,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _validationServices = validationServices;
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpGet(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(AccountResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,7 +72,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpGet(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get an account by id")]
@@ -92,7 +92,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPost(ApiEndPointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create account for manager and consultant")]
@@ -112,86 +112,32 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
         [HttpPatch(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update an account's data")]
         public async Task<IActionResult> UpdateAccount(string id, [FromBody] JsonElement updateAccount)
         {
-            var existingAccount = await _accountService.GetAccountByIdAsync(id);
-            if (existingAccount == null)
+            try
             {
-                return NotFound(new { Message = "Account not found" });
+                await _accountService.UpdateAccountAsync(id, updateAccount);
+                _logger.LogInformation("Account updated successfully with id {id}", id);
+                return Ok("Action success");
             }
-
-            var schemaFilePath = "AccountValidate"; // Use the correct key
-            var validationService = _validationServices[schemaFilePath];
-
-            // Merge existing account data with the incoming update data
-            var existingAccountJson = JsonSerializer.Serialize(existingAccount, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
-            var existingAccountElement = JsonDocument.Parse(existingAccountJson).RootElement;
-
-            var mergedAccount = JsonUtil.MergeJsonElements(existingAccountElement, updateAccount);
-
-            var jsonString = JsonSerializer.Serialize(mergedAccount, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
-            var (isValid, errors) = validationService.ValidateJson(jsonString);
-
-            if (!isValid)
+            catch (ArgumentException ex)
             {
-                return BadRequest(new { Errors = errors });
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
             }
-
-            // Map the merged account data to an UpdateAccountDTO
-            var updateAccountDto = JsonSerializer.Deserialize<UpdateAccountDTO>(jsonString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
-
-            await _accountService.UpdateAccountAsync(id, updateAccountDto);
-            return Ok("Action success");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
 
-        #region Cleaning, use Util instead
-        //private JsonElement MergeJsonElements(JsonElement original, JsonElement update)
-        //{
-        //    using (var stream = new MemoryStream())
-        //    {
-        //        using (var writer = new Utf8JsonWriter(stream))
-        //        {
-        //            writer.WriteStartObject();
 
-        //            foreach (var property in original.EnumerateObject())
-        //            {
-        //                if (update.TryGetProperty(property.Name, out var updatedProperty))
-        //                {
-        //                    writer.WritePropertyName(property.Name);
-        //                    updatedProperty.WriteTo(writer);
-        //                }
-        //                else
-        //                {
-        //                    property.WriteTo(writer);
-        //                }
-        //            }
-
-        //            foreach (var property in update.EnumerateObject())
-        //            {
-        //                if (!original.TryGetProperty(property.Name, out _))
-        //                {
-        //                    writer.WritePropertyName(property.Name);
-        //                    property.Value.WriteTo(writer);
-        //                }
-        //            }
-
-        //            writer.WriteEndObject();
-        //        }
-
-        //        stream.Position = 0;
-        //        using (var document = JsonDocument.Parse(stream))
-        //        {
-        //            return document.RootElement.Clone();
-        //        }
-        //    }
-        //}
-        #endregion
-
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
         [HttpPatch(ApiEndPointConstant.Account.SoftDeleteAccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Soft delete an account")]
@@ -222,7 +168,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpDelete(ApiEndPointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete an account")]

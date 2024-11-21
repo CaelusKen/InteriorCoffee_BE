@@ -6,6 +6,7 @@ using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Enums.Product;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Application.Utils;
 using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.Services.Implements
@@ -243,7 +245,7 @@ namespace InteriorCoffee.Application.Services.Implements
             await _productRepository.CreateProductAsync(product);
         }
 
-        public async Task UpdateProductAsync(string id, UpdateProductDTO updateProductDTO)
+        public async Task UpdateProductAsync(string id, JsonElement updateProduct)
         {
             var existingProduct = await _productRepository.GetProductByIdAsync(id);
             if (existingProduct == null)
@@ -251,7 +253,21 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Product with id {id} not found.");
             }
 
-            foreach (var categoryId in updateProductDTO.CategoryIds)
+            // Log existing product details
+            _logger.LogInformation("Existing product before update: {existingProduct}", existingProduct);
+
+            var existingProductJson = JsonSerializer.Serialize(existingProduct, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var existingProductElement = JsonDocument.Parse(existingProductJson).RootElement;
+
+            var mergedProduct = JsonUtil.MergeJsonElements(existingProductElement, updateProduct);
+
+            var jsonString = JsonSerializer.Serialize(mergedProduct, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            _logger.LogInformation("Merged product JSON: {jsonString}", jsonString);
+
+            var updateProductDto = JsonSerializer.Deserialize<UpdateProductDTO>(jsonString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            // Validate category IDs
+            foreach (var categoryId in updateProductDto.CategoryIds)
             {
                 if (!await _productCategoryRepository.CategoryExistsAsync(categoryId))
                 {
@@ -259,8 +275,23 @@ namespace InteriorCoffee.Application.Services.Implements
                 }
             }
 
-            _mapper.Map(updateProductDTO, existingProduct);
+            // Preserve the existing _id before mapping
+            var existingId = existingProduct._id;
+
+            // Map the updated fields to the existing product, excluding _id
+            _mapper.Map(updateProductDto, existingProduct);
+
+            // Ensure the _id is preserved
+            existingProduct._id = existingId;
+
+            // Log updated product details
+            _logger.LogInformation("Updated product after mapping: {existingProduct}", existingProduct);
+
             await _productRepository.UpdateProductAsync(id, existingProduct);
+
+            // Log updated product from repository
+            var updatedProduct = await _productRepository.GetProductByIdAsync(id);
+            _logger.LogInformation("Product after update from repository: {updatedProduct}", updatedProduct);
         }
 
         public async Task SoftDeleteProductAsync(string id)
@@ -286,3 +317,5 @@ namespace InteriorCoffee.Application.Services.Implements
         }
     }
 }
+
+

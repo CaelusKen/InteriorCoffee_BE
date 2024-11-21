@@ -19,8 +19,10 @@ namespace InteriorCoffee.Application.Mappers.Products
                 .ForMember(dest => dest.SellingPrice, opt => opt.MapFrom(src => src.TruePrice * (1 - src.Discount/100)))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => ProductStatusEnum.ACTIVE.ToString()));
 
+
             // Mapping for UpdateProductDTO to Product
             CreateMap<UpdateProductDTO, Product>()
+                .ForMember(dest => dest._id, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
 
             // Mapping for ProductResponseItemDTO to Product

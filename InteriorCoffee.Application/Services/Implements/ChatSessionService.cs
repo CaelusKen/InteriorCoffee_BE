@@ -19,17 +19,31 @@ namespace InteriorCoffee.Application.Services.Implements
     public class ChatSessionService : BaseService<ChatSessionService>, IChatSessionService
     {
         private readonly IChatSessionRepository _chatSessionRepository;
+        private readonly IAccountRepository _accountRepository;
 
-        public ChatSessionService(ILogger<ChatSessionService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IChatSessionRepository chatSessionRepository)
+        public ChatSessionService(ILogger<ChatSessionService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor,
+            IChatSessionRepository chatSessionRepository, IAccountRepository accountRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _chatSessionRepository = chatSessionRepository;
+            _accountRepository = accountRepository;
         }
 
         #region Chat Session
         public async Task<List<Domain.Models.ChatSession>> GetChatSessionListAsync()
         {
             var chatSessions = await _chatSessionRepository.GetChatSessionList();
+            return _mapper.Map<List<Domain.Models.ChatSession>>(chatSessions);
+        }
+
+        public async Task<List<Domain.Models.ChatSession>> GetMerhcnatChatSessionListAsync(string id)
+        {
+            var merchantAccountIds = await _accountRepository
+                .GetAccountList(predicate: a => a.MerchantId == id,
+                                selector: a => a._id);
+
+            var chatSessions = await _chatSessionRepository.GetChatSessionsByAdvisorIdList(merchantAccountIds);
+
             return _mapper.Map<List<Domain.Models.ChatSession>>(chatSessions);
         }
 

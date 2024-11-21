@@ -13,6 +13,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
     {
         Task<List<ChatSession>> GetChatSessionList();
         Task<ChatSession> GetChatSessionById(string id);
+        Task<List<ChatSession>> GetChatSessionsByAdvisorIdList(List<string> ids);
         Task CreateChatSession(ChatSession chatSession);
         Task UpdateChatSession(ChatSession chatSession);
         Task DeleteChatSession(string id);

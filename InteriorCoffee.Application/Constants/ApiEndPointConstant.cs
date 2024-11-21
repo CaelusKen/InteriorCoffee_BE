@@ -121,6 +121,7 @@ namespace InteriorCoffee.Application.Constants
         public static class ChatSession
         {
             public const string ChatSessionsEndpoint = ApiEndpoint + "/chat-sessions";
+            public const string MerchantChatSessionsEndpoint = ChatSessionsEndpoint + "/merchant/{id}";
             public const string ChatSessionEndpoint = ChatSessionsEndpoint + "/{id}";
 
             public const string ChatMessageEndpoint = ChatSessionEndpoint + "/messages";

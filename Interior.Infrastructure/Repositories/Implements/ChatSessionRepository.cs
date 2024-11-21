@@ -36,6 +36,12 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
             return await _chatSessions.Find(c => c._id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<List<ChatSession>> GetChatSessionsByAdvisorIdList(List<string> ids)
+        {
+            var filter = Builders<ChatSession>.Filter.In("AdvisorId", ids);
+            return await _chatSessions.Find(filter).ToListAsync();
+        }
+
         #region Get Function
         public async Task<ChatSession> GetChatSession(Expression<Func<ChatSession, bool>> predicate = null, Expression<Func<ChatSession, object>> orderBy = null, bool isAscend = true)
         {

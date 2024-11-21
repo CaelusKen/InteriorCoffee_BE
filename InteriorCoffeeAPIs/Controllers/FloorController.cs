@@ -13,7 +13,6 @@ using InteriorCoffee.Application.Constants;
 namespace InteriorCoffeeAPIs.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class FloorController : BaseController<FloorController>
     {
         private readonly IFloorService _floorService;
@@ -74,7 +73,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-        [HttpPatch("{id}")]
+        [HttpPatch(ApiEndPointConstant.Floor.FloorEndpoint)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

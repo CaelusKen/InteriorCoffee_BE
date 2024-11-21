@@ -8,7 +8,7 @@ namespace InteriorCoffee.Domain.Models.Documents
 {
     public class Room
     {
-        public string _id { get; set; } = null!;
+        //public string _id { get; set; } = null!;
         public string Name { get; set; } = null!;
         public double Width { get; set; }
         public double Height { get; set; }

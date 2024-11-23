@@ -1,5 +1,6 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Design;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
@@ -24,23 +25,44 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Design.DesignsEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<Design>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all designs with pagination")]
-        public async Task<IActionResult> GetDesigns([FromQuery] int? pageNo, [FromQuery] int? pageSize)
+        [ProducesResponseType(typeof(DesignResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(Summary = "Get all designs with pagination, sorting, and filtering.")]
+        public async Task<IActionResult> GetDesigns([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
+                                                    [FromQuery] string status = null, [FromQuery] string type = null, [FromQuery] List<string> categories = null, [FromQuery] string keyword = null)
         {
-            var (designs, currentPage, currentPageSize, totalItems, totalPages) = await _designService.GetDesignsAsync(pageNo, pageSize);
-
-            var response = new Paginate<Design>
+            try
             {
-                Items = designs,
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                TotalPages = totalPages,
-                TotalItems = designs.Count,
-            };
+                OrderBy orderBy = null;
+                if (!string.IsNullOrEmpty(sortBy))
+                {
+                    orderBy = new OrderBy(sortBy, ascending ?? true);
+                }
 
-            return Ok(response);
+                var filter = new DesignFilterDTO
+                {
+                    Status = status,
+                    Type = type,
+                    Categories = categories
+                };
+
+                var response = await _designService.GetDesignsAsync(pageNo, pageSize, orderBy, filter, keyword);
+
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
+
 
         [HttpGet(ApiEndPointConstant.Design.DesignEndpoint)]
         [ProducesResponseType(typeof(GetDesignDTO), StatusCodes.Status200OK)]

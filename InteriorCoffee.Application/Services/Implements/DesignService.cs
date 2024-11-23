@@ -30,35 +30,150 @@ namespace InteriorCoffee.Application.Services.Implements
             _floorRepository = floorRepository;
         }
 
-        public async Task<(List<Design>, int, int, int, int)> GetDesignsAsync(int? pageNo, int? pageSize)
+        #region "Dictionary"
+        private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
-            var pagination = new Pagination
-            {
-                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
-                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
-            };
+            { "name", "Name" },
+            { "createddate", "CreatedDate" },
+            { "updateddate", "UpdatedDate" },
+            { "status", "Status" },
+            { "type", "Type" }
+        };
+        #endregion
 
+        public async Task<DesignResponseDTO> GetDesignsAsync(int? pageNo, int? pageSize, OrderBy orderBy, DesignFilterDTO filter, string keyword)
+        {
             try
             {
                 var (allDesigns, totalItems) = await _designRepository.GetDesignsAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
+
+                // Apply filters
+                allDesigns = ApplyFilters(allDesigns, filter.Status, filter.Type, filter.Categories);
+
+                // Apply keyword search
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    allDesigns = allDesigns.Where(d => d.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                       d.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                           .ToList();
+                }
+
+                // Apply sorting logic only if orderBy is not null
+                allDesigns = ApplySorting(allDesigns, orderBy);
+
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? allDesigns.Count : PaginationConfig.DefaultPageSize);
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)allDesigns.Count / finalPageSize);
 
                 // Handle page boundaries
-                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
-                if (pagination.PageNo < 1) pagination.PageNo = 1;
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
 
-                var designs = allDesigns.Skip((pagination.PageNo - 1) * pagination.PageSize)
-                                        .Take(pagination.PageSize)
-                                        .ToList();
+                // Paginate the filtered designs
+                var paginatedDesigns = allDesigns.Skip((paginationPageNo - 1) * finalPageSize)
+                                                 .Take(finalPageSize)
+                                                 .ToList();
 
-                return (designs, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedDesigns.Count;
+
+                var designResponseItems = _mapper.Map<List<DesignResponseItemDTO>>(paginatedDesigns);
+
+                #region "Mapping"
+                return new DesignResponseDTO
+                {
+                    PageNo = paginationPageNo,
+                    PageSize = finalPageSize,
+                    ListSize = totalItems,
+                    CurrentPageSize = listAfter,
+                    ListSizeAfter = listAfter,
+                    TotalPage = totalPages,
+                    OrderBy = new DesignOrderByDTO
+                    {
+                        SortBy = orderBy?.SortBy,
+                        IsAscending = orderBy?.Ascending ?? true
+                    },
+                    Filter = new DesignFilterDTO
+                    {
+                        Status = filter.Status,
+                        Type = filter.Type,
+                        Categories = filter.Categories
+                    },
+                    Keyword = keyword,
+                    Designs = designResponseItems
+                };
+                #endregion
             }
+            #region "Catch error"
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated designs.");
-                return (new List<Design>(), pagination.PageNo, pagination.PageSize, 0, 0);
+                _logger.LogError(ex, "Error occurred while getting designs.");
+                return new DesignResponseDTO
+                {
+                    PageNo = 1,
+                    PageSize = 0,
+                    ListSize = 0,
+                    CurrentPageSize = 0,
+                    ListSizeAfter = 0,
+                    TotalPage = 0,
+                    OrderBy = new DesignOrderByDTO(),
+                    Filter = new DesignFilterDTO(),
+                    Keyword = keyword,
+                    Designs = new List<DesignResponseItemDTO>()
+                };
             }
+            #endregion
         }
+
+        #region "Sorting"
+        private List<Design> ApplySorting(List<Design> designs, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Design).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        designs = orderBy.Ascending
+                            ? designs.OrderBy(d => propertyInfo.GetValue(d, null)).ToList()
+                            : designs.OrderByDescending(d => propertyInfo.GetValue(d, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Design'.");
+                }
+            }
+            return designs;
+        }
+        #endregion
+
+        #region "Filtering"
+        private List<Design> ApplyFilters(List<Design> designs, string status, string type, List<string> categories)
+        {
+            if (!string.IsNullOrEmpty(status))
+            {
+                designs = designs.Where(d => d.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(type))
+            {
+                designs = designs.Where(d => d.Type.Equals(type, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (categories != null && categories.Any())
+            {
+                designs = designs.Where(d => d.Categories.Any(c => categories.Contains(c))).ToList();
+            }
+
+            return designs;
+        }
+        #endregion
+
 
         public async Task<GetDesignDTO> GetDesignByIdAsync(string id)
         {

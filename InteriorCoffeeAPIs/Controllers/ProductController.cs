@@ -100,7 +100,7 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpGet(ApiEndPointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a product by id")]
-        public async Task<IActionResult> GetAccountById(string id)
+        public async Task<IActionResult> GetProductById(string id)
         {
             var result = await _productService.GetProductByIdAsync(id);
             return Ok(result);

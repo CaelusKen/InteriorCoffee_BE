@@ -124,7 +124,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             await _productService.CreateProductAsync(product);
-            return Ok(new { Message = "Product created successfully" });
+            return Ok("Product created successfully");
         }
 
         //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]

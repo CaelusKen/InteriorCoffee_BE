@@ -25,14 +25,15 @@ namespace InteriorCoffee.UnitTest.Controllers
         private readonly IProductService _productService;
         private readonly ProductController _productController;
         private readonly IMapper _mapper;
-        private readonly IDictionary<string, JsonValidationService> validationServices;
+        private readonly IDictionary<string, JsonValidationService> _validationServicesDict;
 
         public ProductControllerTest()
         {
-            validationServices = new Dictionary<string, JsonValidationService>();
+            _validationServicesDict = A.Fake<IDictionary<string, JsonValidationService>>();
+
             logger = A.Fake<ILogger<ProductController>>();
             _productService = A.Fake<IProductService>();
-            _productController = new ProductController(logger, _productService, validationServices, _mapper);
+            _productController = new ProductController(logger, _productService, _validationServicesDict, _mapper);
         }
 
         private static CreateProductDTO CreateFakeCreateProductDTO() => A.Fake<CreateProductDTO>();
@@ -49,7 +50,7 @@ namespace InteriorCoffee.UnitTest.Controllers
 
             //Assert
             result.StatusCode.Should().Be(200);
-            //result.Value.Should().BeOfType<Paginate<Product>>();
+            result.Value.Should().BeAssignableTo<ProductResponseDTO>();
         }
 
         [Fact]
@@ -62,6 +63,7 @@ namespace InteriorCoffee.UnitTest.Controllers
 
             //Assert
             result.StatusCode.Should().Be(200);
+            result.Value.Should().BeAssignableTo<Product>();
         }
         #endregion
 
@@ -95,10 +97,16 @@ namespace InteriorCoffee.UnitTest.Controllers
 
             var jsonUpdatedProduct = JsonConvert.SerializeObject(updateProductDto);
             var jsonDocument = JsonDocument.Parse(jsonUpdatedProduct);
-            JsonElement jsonElement = jsonDocument.RootElement;
-            
+            JsonElement product = jsonDocument.RootElement;
+
+            //Set validation
+            var schemaFilePath = "ProductValidate"; // Ensure this key is correct
+            var validationService = _validationServicesDict[schemaFilePath];
+            var jsonString = System.Text.Json.JsonSerializer.Serialize(product, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
+            var (isValid, errors) = validationService.ValidateJson(jsonString, isUpdate: false);
+
             //Act
-            var result = (OkObjectResult)await _productController.UpdateProduct("672d61c84e4eeed22aad9f8b", jsonElement);
+            var result = (OkObjectResult)await _productController.UpdateProduct("672d61c84e4eeed22aad9f8b", product);
 
             //Assert
             result.StatusCode.Should().Be(200);

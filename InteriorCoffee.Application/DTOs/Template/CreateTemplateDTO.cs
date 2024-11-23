@@ -1,4 +1,5 @@
-﻿using InteriorCoffee.Domain.Models;
+﻿using InteriorCoffee.Application.DTOs.Floor;
+using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Models.Documents;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace InteriorCoffee.Application.DTOs.Template
         public string Image { get; set; }
         public string Type { get; set; }
 
-        public List<Domain.Models.Floor>? Floors { get; set; }
+        public List<FloorDTO>? Floors { get; set; }
         public List<ProductList>? Products { get; set; }
 
         public string AccountId { get; set; }

@@ -57,6 +57,7 @@ namespace InteriorCoffee.UnitTest.Controllers
 
             //Assert
             result.StatusCode.Should().Be(200);
+            result.Value.Should().BeAssignableTo<Voucher>();
         }
         #endregion
 

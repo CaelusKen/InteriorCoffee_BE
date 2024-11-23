@@ -85,7 +85,8 @@ namespace InteriorCoffee.Application.Services.Implements
             //Add floors if initial template have floors
             if(template.Floors != null)
             {
-                await _floorRepository.AddRange(template.Floors);
+                List<Floor> floors = _mapper.Map<List<Floor>>(template.Floors);
+                await _floorRepository.AddRange(floors);
             }
 
             await _templateRepository.CreateTemplate(newTemplate);

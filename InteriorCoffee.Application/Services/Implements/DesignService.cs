@@ -83,7 +83,8 @@ namespace InteriorCoffee.Application.Services.Implements
             //Add floors if initial design have floors
             if(createDesignDTO.Floors != null)
             {
-                await _floorRepository.AddRange(createDesignDTO.Floors);
+                List<Floor> floors = _mapper.Map<List<Floor>>(createDesignDTO.Floors);
+                await _floorRepository.AddRange(floors);
             }
 
             await _designRepository.CreateDesign(design);

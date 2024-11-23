@@ -43,7 +43,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Design.DesignEndpoint)]
-        [ProducesResponseType(typeof(Design), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetDesignDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a design by id")]
         public async Task<IActionResult> GetDesignById(string id)
         {

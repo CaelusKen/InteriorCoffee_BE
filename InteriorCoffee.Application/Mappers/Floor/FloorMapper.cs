@@ -16,6 +16,9 @@ namespace InteriorCoffee.Application.Mappers.Floors
             // Mapping for UpdateFloorDTO to Floor
             CreateMap<UpdateFloorDTO, Floor>()
                 .ForMember(dest => dest._id, opt => opt.Ignore()); // Ignore _id since it should not be updated
+
+            CreateMap<FloorDTO, Floor>()
+                .ForMember(dest => dest._id, opt => opt.MapFrom(src => ObjectId.GenerateNewId().ToString()));
         }
     }
 }

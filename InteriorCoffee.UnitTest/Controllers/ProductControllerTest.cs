@@ -4,6 +4,7 @@ using FluentAssertions;
 using InteriorCoffee.Application.DTOs.Product;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Models.Documents;
 using InteriorCoffee.Domain.Paginate;
 using InteriorCoffeeAPIs.Controllers;
 using InteriorCoffeeAPIs.Validate;
@@ -22,6 +23,7 @@ namespace InteriorCoffee.UnitTest.Controllers
     public class ProductControllerTest
     {
         private readonly ILogger<ProductController> logger;
+        private readonly ILogger<JsonValidationService> validationLogger;
         private readonly IProductService _productService;
         private readonly ProductController _productController;
         private readonly IMapper _mapper;
@@ -29,11 +31,32 @@ namespace InteriorCoffee.UnitTest.Controllers
 
         public ProductControllerTest()
         {
+            validationLogger = A.Fake<ILogger<JsonValidationService>>();
             _validationServicesDict = new Dictionary<string, JsonValidationService>();
+            SetupJsonValidation();
 
             logger = A.Fake<ILogger<ProductController>>();
             _productService = A.Fake<IProductService>();
             _productController = new ProductController(logger, _productService, _validationServicesDict, _mapper);
+        }
+
+        private void SetupJsonValidation()
+        {
+            var schemaFilePath = GetFilePath();
+
+            var validationService = new JsonValidationService(schemaFilePath, validationLogger);
+            var schemaName = "ProductValidate";
+            _validationServicesDict[schemaName] = validationService;
+        }
+
+        private string GetFilePath()
+        {
+            var schemaFilePath = Path.GetFullPath("ProductValidate.json");
+            var removeIndex = schemaFilePath.IndexOf("bin");
+            var result = schemaFilePath.Substring(0, removeIndex);
+            result = result + @"ValidationFile\ProductValidate.json";
+
+            return result;
         }
 
         private static CreateProductDTO CreateFakeCreateProductDTO() => A.Fake<CreateProductDTO>();
@@ -73,6 +96,18 @@ namespace InteriorCoffee.UnitTest.Controllers
         {
             //Arrange
             var createProductDto = CreateFakeCreateProductDTO();
+            createProductDto.CategoryIds = new List<string> { "1", "2" };
+            createProductDto.Name = "Test";
+            createProductDto.TruePrice = 100000;
+            createProductDto.Discount = 10;
+            createProductDto.Quantity = 100;
+            createProductDto.MerchantId = "Test";
+            createProductDto.Materials = new List<string>();
+            createProductDto.Description = string.Empty;
+            createProductDto.Images = new ProductImages() { NormalImages = new List<string>(), Thumbnail = string.Empty };
+            createProductDto.Dimensions = string.Empty;
+            createProductDto.ModelTextureUrl = string.Empty;
+            createProductDto.CampaignId = string.Empty;
 
             //Act
             var result = (OkObjectResult)await _productController.CreateProduct(createProductDto);

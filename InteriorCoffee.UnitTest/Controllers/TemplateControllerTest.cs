@@ -42,7 +42,7 @@ namespace InteriorCoffee.UnitTest.Controllers
 
             //Assert
             result.StatusCode.Should().Be(200);
-            result.Value.Should().BeOfType<Paginate<Template>>();
+            result.Value.Should().BeAssignableTo<TemplateResponseDTO>();
         }
 
         [Fact]

@@ -30,10 +30,31 @@ namespace InteriorCoffee.UnitTest.Controllers
 
         public AccountControllerTest()
         {
+            validationLogger = A.Fake<ILogger<JsonValidationService>>();
             _validationServicesDict = new Dictionary<string, JsonValidationService>();
+            SetupJsonValidation();
+
             logger = A.Fake<ILogger<AccountController>>();
             _accountService = A.Fake<IAccountService>();
             _accountController = new AccountController(logger, _accountService, _validationServicesDict);
+        }
+
+        private void SetupJsonValidation()
+        {
+            var schemaFilePath = GetFilePath();
+            var validationService = new JsonValidationService(schemaFilePath, validationLogger);
+            var schemaName = "AccountValidate";
+            _validationServicesDict[schemaName] = validationService;
+        }
+
+        private string GetFilePath()
+        {
+            var schemaFilePath = Path.GetFullPath("AccountValidate.json");
+            var removeIndex = schemaFilePath.IndexOf("bin");
+            var result = schemaFilePath.Substring(0, removeIndex);
+            result = result + @"ValidationFile\AccountValidate.json";
+
+            return result;
         }
 
         private static CreateAccountDTO CreateFakeCreateAccountDTO() => A.Fake<CreateAccountDTO>();
@@ -86,6 +107,13 @@ namespace InteriorCoffee.UnitTest.Controllers
         {
             //Arrange
             var createAccountDto = CreateFakeCreateAccountDTO();
+            createAccountDto.UserName = "Test";
+            createAccountDto.Email = "Test@gmail.com";
+            createAccountDto.PhoneNumber = "0987654321";
+            createAccountDto.Password = "ab123Adsc213@Ajd";
+            createAccountDto.Avatar = string.Empty;
+            createAccountDto.Address = string.Empty;
+            createAccountDto.MerchantId = "none";
 
             //Act
             var result = (OkObjectResult)await _accountController.CreateAccount(createAccountDto);

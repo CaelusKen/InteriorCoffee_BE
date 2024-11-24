@@ -199,7 +199,7 @@ namespace InteriorCoffee.Application.Services.Implements
             if(createDesignDTO.Floors != null)
             {
                 List<Floor> floors = _mapper.Map<List<Floor>>(createDesignDTO.Floors);
-                floors.ForEach(x => x.DesignTemplateId = design._id);
+                //floors.ForEach(x => x.DesignTemplateId = design._id);
                 await _floorRepository.AddRange(floors);
             }
 

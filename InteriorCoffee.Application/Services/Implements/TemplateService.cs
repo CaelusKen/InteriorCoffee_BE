@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Interior.Infrastructure.Repositories.Interfaces;
 using InteriorCoffee.Application.Configurations;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Template;
 using InteriorCoffee.Application.Services.Base;
@@ -30,11 +31,83 @@ namespace InteriorCoffee.Application.Services.Implements
             _floorRepository = floorRepository;
         }
 
-        public async Task<(List<Template>, int, int, int, int)> GetTemplatesAsync(int? pageNo, int? pageSize)
+        #region "Dictionary"
+        private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
+        {
+            { "name", "Name" },
+            { "createddate", "CreatedDate" },
+            { "updateddate", "UpdatedDate" },
+            { "status", "Status" },
+            { "type", "Type" }
+        };
+        #endregion
+
+        #region "Sorting"
+        private List<Template> ApplySorting(List<Template> templates, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Template).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        templates = orderBy.Ascending
+                            ? templates.OrderBy(t => propertyInfo.GetValue(t, null)).ToList()
+                            : templates.OrderByDescending(t => propertyInfo.GetValue(t, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Template'.");
+                }
+            }
+            return templates;
+        }
+        #endregion
+
+        #region "Filtering"
+        private List<Template> ApplyFilters(List<Template> templates, string status, string type, List<string> categories)
+        {
+            if (!string.IsNullOrEmpty(status))
+            {
+                templates = templates.Where(t => t.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(type))
+            {
+                templates = templates.Where(t => t.Type.Equals(type, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (categories != null && categories.Any())
+            {
+                templates = templates.Where(t => t.Categories.Any(c => categories.Contains(c))).ToList();
+            }
+
+            return templates;
+        }
+        #endregion
+
+
+        public async Task<TemplateResponseDTO> GetTemplatesAsync(int? pageNo, int? pageSize, OrderBy orderBy, TemplateFilterDTO filter, string keyword)
         {
             try
             {
                 var (allTemplates, totalItems) = await _templateRepository.GetTemplatesAsync();
+
+                // Apply filters
+                allTemplates = ApplyFilters(allTemplates, filter.Status, filter.Type, filter.Categories);
+
+                // Apply keyword search
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    allTemplates = allTemplates.Where(t => t.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                           t.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                               .ToList();
+                }
+
+                // Apply sorting logic only if orderBy is not null
+                allTemplates = ApplySorting(allTemplates, orderBy);
 
                 // Determine the page size dynamically if not provided
                 var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? allTemplates.Count : PaginationConfig.DefaultPageSize);
@@ -52,13 +125,55 @@ namespace InteriorCoffee.Application.Services.Implements
                                                      .Take(finalPageSize)
                                                      .ToList();
 
-                return (paginatedTemplates, paginationPageNo, finalPageSize, totalItems, totalPages);
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedTemplates.Count;
+
+                var templateResponseItems = _mapper.Map<List<TemplateResponseItemDTO>>(paginatedTemplates);
+
+                #region "Mapping"
+                return new TemplateResponseDTO
+                {
+                    PageNo = paginationPageNo,
+                    PageSize = finalPageSize,
+                    ListSize = totalItems,
+                    CurrentPageSize = listAfter,
+                    ListSizeAfter = listAfter,
+                    TotalPage = totalPages,
+                    OrderBy = new TemplateOrderByDTO
+                    {
+                        SortBy = orderBy?.SortBy,
+                        IsAscending = orderBy?.Ascending ?? true
+                    },
+                    Filter = new TemplateFilterDTO
+                    {
+                        Status = filter.Status,
+                        Type = filter.Type,
+                        Categories = filter.Categories
+                    },
+                    Keyword = keyword,
+                    Templates = templateResponseItems
+                };
+                #endregion
             }
+            #region "Catch error"
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting paginated templates.");
-                return (new List<Template>(), 1, 0, 0, 0);
+                _logger.LogError(ex, "Error occurred while getting templates.");
+                return new TemplateResponseDTO
+                {
+                    PageNo = 1,
+                    PageSize = 0,
+                    ListSize = 0,
+                    CurrentPageSize = 0,
+                    ListSizeAfter = 0,
+                    TotalPage = 0,
+                    OrderBy = new TemplateOrderByDTO(),
+                    Filter = new TemplateFilterDTO(),
+                    Keyword = keyword,
+                    Templates = new List<TemplateResponseItemDTO>()
+                };
             }
+            #endregion
         }
 
 

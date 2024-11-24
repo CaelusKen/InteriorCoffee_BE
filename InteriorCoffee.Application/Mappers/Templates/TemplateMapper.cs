@@ -25,6 +25,7 @@ namespace InteriorCoffee.Application.Mappers.Templates
                 .ForMember(des => des.Categories, src => src.MapFrom(src => src.Categories == null ? new List<string>() : src.Categories));
 
             CreateMap<Template, GetTemplateDTO>();
+            CreateMap<Template, TemplateResponseItemDTO>();
         }
     }
 }

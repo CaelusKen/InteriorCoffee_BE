@@ -11,7 +11,7 @@ namespace InteriorCoffee.Application.DTOs
     {
         public int StatusCode { get; set; }
 
-        public string Error { get; set; }
+        public List<string> Error { get; set; }
 
         public DateTime TimeStamp { get; set; }
 

@@ -30,6 +30,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _accountRepository = accountRepository;
         }
 
+        #region Utility Function
         #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
@@ -38,7 +39,6 @@ namespace InteriorCoffee.Application.Services.Implements
             { "status", "Status" }
         };
         #endregion
-
 
         #region "Sorting"
         private List<Merchant> ApplySorting(List<Merchant> merchants, OrderBy orderBy)
@@ -74,6 +74,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
             return merchants;
         }
+        #endregion
         #endregion
 
         public async Task<MerchantResponseDTO> GetMerchantsAsync(int? pageNo, int? pageSize, OrderBy orderBy, MerchantFilterDTO filter, string keyword)

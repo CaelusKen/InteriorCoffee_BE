@@ -31,21 +31,21 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Get a floor by ID")]
         public async Task<IActionResult> GetFloorById(string id)
         {
-            try
-            {
+            //try
+            //{
                 var floor = await _floorService.GetFloorByIdAsync(id);
                 return Ok(floor);
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
 
         [HttpPost(ApiEndPointConstant.Floor.FloorsEndpoint)]
@@ -55,23 +55,22 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Create a new floor")]
         public async Task<IActionResult> CreateFloor([FromBody] CreateFloorDTO createFloorDTO)
         {
-            try
-            {
+            //try
+            //{
                 var floorId = await _floorService.CreateFloorAsync(createFloorDTO);
                 return Ok(floorId);
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
-
 
         [HttpPatch(ApiEndPointConstant.Floor.FloorEndpoint)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -80,22 +79,22 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Update an existing floor")]
         public async Task<IActionResult> UpdateFloor(string id, [FromBody] JsonElement updateFloor)
         {
-            try
-            {
+            //try
+            //{
                 await _floorService.UpdateFloorAsync(id, updateFloor);
                 _logger.LogInformation("Floor updated successfully with id {id}", id);
                 return Ok("Floor updated successfully");
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
 
         [HttpDelete(ApiEndPointConstant.Floor.FloorEndpoint)]
@@ -105,21 +104,21 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Delete a floor by ID")]
         public async Task<IActionResult> DeleteFloor(string id)
         {
-            try
-            {
+            //try
+            //{
                 await _floorService.DeleteFloorAsync(id);
                 return Ok("Floor deleted successfully");
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
     }
 }

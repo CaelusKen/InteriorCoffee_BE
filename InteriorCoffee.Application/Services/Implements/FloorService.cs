@@ -29,35 +29,35 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<Floor> GetFloorByIdAsync(string id)
         {
-            try
-            {
+            //try
+            //{
                 var floor = await _floorRepository.GetFloorById(id);
                 if (floor == null)
                 {
                     throw new NotFoundException($"Floor with id {id} not found.");
                 }
                 return floor;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting the floor by id.");
-                throw;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "Error occurred while getting the floor by id.");
+            //    throw;
+            //}
         }
 
         public async Task<string> CreateFloorAsync(CreateFloorDTO createFloorDTO)
         {
-            try
-            {
+            //try
+            //{
                 var floor = _mapper.Map<Floor>(createFloorDTO);
                 await _floorRepository.CreateFloor(floor);
                 return floor._id;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating the floor.");
-                throw;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "Error occurred while creating the floor.");
+            //    throw;
+            //}
         }
 
         public async Task UpdateFloorAsync(string id, JsonElement updateFloor)
@@ -103,20 +103,20 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task DeleteFloorAsync(string id)
         {
-            try
-            {
+            //try
+            //{
                 var floor = await _floorRepository.GetFloorById(id);
                 if (floor == null)
                 {
                     throw new NotFoundException($"Floor with id {id} not found.");
                 }
                 await _floorRepository.DeleteFloor(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while deleting the floor.");
-                throw;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "Error occurred while deleting the floor.");
+            //    throw;
+            //}
         }
     }
 }

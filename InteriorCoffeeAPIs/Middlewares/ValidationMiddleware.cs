@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs;
 using InteriorCoffeeAPIs.Validate;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -92,7 +93,14 @@ namespace InteriorCoffeeAPIs.Middlewares
                 {
                     _logger.LogError("Validation failed for path {Path}: {Errors}", context.Request.Path, string.Join(", ", errors));
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    await context.Response.WriteAsJsonAsync(new { Errors = errors });
+                    ErrorDTO errorModel = new ErrorDTO()
+                    {
+                        Error = (List<string>)errors,
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        TimeStamp = DateTime.UtcNow
+                    };
+                    await context.Response.WriteAsJsonAsync(errorModel);
+                    //await context.Response.WriteAsJsonAsync(new { Errors = errors });
                     return false;
                 }
             }
@@ -100,7 +108,17 @@ namespace InteriorCoffeeAPIs.Middlewares
             {
                 _logger.LogError(ex, "Invalid JSON format");
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(new { Errors = new[] { "Invalid JSON format" } });
+
+                ErrorDTO errorModel = new ErrorDTO()
+                {
+                    Error = new List<string> { "Invalid JSON format" },
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    TimeStamp = DateTime.UtcNow
+                };
+                await context.Response.WriteAsJsonAsync(errorModel);
+                //await context.Response.WriteAsJsonAsync(new { Errors = new[] { "Invalid JSON format" } });
+
+
                 return false;
             }
 
@@ -117,12 +135,19 @@ namespace InteriorCoffeeAPIs.Middlewares
             {
                 _logger.LogError("Request body is empty for path {Path}", context.Request.Path);
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(new { Errors = new[] { "Request body cannot be empty" } });
+                ErrorDTO errorModel = new ErrorDTO()
+                {
+                    Error = new List<string> { "Request body cannot be empty" },
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    TimeStamp = DateTime.UtcNow
+                };
+                await context.Response.WriteAsJsonAsync(errorModel);
+                //await context.Response.WriteAsJsonAsync(new { Errors = new[] { "Request body cannot be empty" } });
             }
         }
 
 
-    private string GetSchemaFilePath(string requestPath)
+        private string GetSchemaFilePath(string requestPath)
         {
             foreach (var mapping in _schemaPathMappings)
             {

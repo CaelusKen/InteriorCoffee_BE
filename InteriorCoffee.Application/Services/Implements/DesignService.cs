@@ -30,6 +30,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _floorRepository = floorRepository;
         }
 
+        #region Utility Function
         #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
@@ -39,6 +40,53 @@ namespace InteriorCoffee.Application.Services.Implements
             { "status", "Status" },
             { "type", "Type" }
         };
+        #endregion
+
+        #region "Sorting"
+        private List<Design> ApplySorting(List<Design> designs, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Design).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        designs = orderBy.Ascending
+                            ? designs.OrderBy(d => propertyInfo.GetValue(d, null)).ToList()
+                            : designs.OrderByDescending(d => propertyInfo.GetValue(d, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Design'.");
+                }
+            }
+            return designs;
+        }
+        #endregion
+
+        #region "Filtering"
+        private List<Design> ApplyFilters(List<Design> designs, string status, string type, List<string> categories)
+        {
+            if (!string.IsNullOrEmpty(status))
+            {
+                designs = designs.Where(d => d.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(type))
+            {
+                designs = designs.Where(d => d.Type.Equals(type, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (categories != null && categories.Any())
+            {
+                designs = designs.Where(d => d.Categories.Any(c => categories.Contains(c))).ToList();
+            }
+
+            return designs;
+        }
+        #endregion
         #endregion
 
         public async Task<DesignResponseDTO> GetDesignsAsync(int? pageNo, int? pageSize, OrderBy orderBy, DesignFilterDTO filter, string keyword)
@@ -127,53 +175,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             #endregion
         }
-
-        #region "Sorting"
-        private List<Design> ApplySorting(List<Design> designs, OrderBy orderBy)
-        {
-            if (orderBy != null)
-            {
-                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
-                {
-                    var propertyInfo = typeof(Design).GetProperty(propertyName);
-                    if (propertyInfo != null)
-                    {
-                        designs = orderBy.Ascending
-                            ? designs.OrderBy(d => propertyInfo.GetValue(d, null)).ToList()
-                            : designs.OrderByDescending(d => propertyInfo.GetValue(d, null)).ToList();
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Design'.");
-                }
-            }
-            return designs;
-        }
-        #endregion
-
-        #region "Filtering"
-        private List<Design> ApplyFilters(List<Design> designs, string status, string type, List<string> categories)
-        {
-            if (!string.IsNullOrEmpty(status))
-            {
-                designs = designs.Where(d => d.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(type))
-            {
-                designs = designs.Where(d => d.Type.Equals(type, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-            if (categories != null && categories.Any())
-            {
-                designs = designs.Where(d => d.Categories.Any(c => categories.Contains(c))).ToList();
-            }
-
-            return designs;
-        }
-        #endregion
-
 
         public async Task<GetDesignDTO> GetDesignByIdAsync(string id)
         {

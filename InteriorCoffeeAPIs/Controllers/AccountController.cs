@@ -17,6 +17,7 @@ using InteriorCoffee.Application.Utils;
 using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Application.Enums.Account;
 using Microsoft.AspNetCore.Authorization;
+using InteriorCoffee.Application.DTOs;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -42,34 +43,34 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> GetAccounts([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
                                                      [FromQuery] string role = null, [FromQuery] string status = null, [FromQuery] string keyword = null)
         {
-            try
+            //try
+            //{
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
             {
-                OrderBy orderBy = null;
-                if (!string.IsNullOrEmpty(sortBy))
-                {
-                    orderBy = new OrderBy(sortBy, ascending ?? true);
-                }
-
-                var filter = new AccountFilterDTO
-                {
-                    Status = status,
-                    Role = role
-                };
-
-                var response = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy, filter, keyword);
-
-                return Ok(response);
+                orderBy = new OrderBy(sortBy, ascending ?? true);
             }
-            catch (ArgumentException ex)
+
+            var filter = new AccountFilterDTO
             {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+                Status = status,
+                Role = role
+            };
+
+            var response = await _accountService.GetAccountsAsync(pageNo, pageSize, orderBy, filter, keyword);
+
+            return Ok(response);
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
 
         [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
@@ -105,7 +106,12 @@ namespace InteriorCoffeeAPIs.Controllers
 
             if (!isValid)
             {
-                return BadRequest(new { Errors = errors });
+                return BadRequest(new ErrorDTO 
+                { 
+                    Error = (List<string>)errors,  
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    TimeStamp = DateTime.UtcNow
+                });
             }
 
             await _accountService.CreateAccountAsync(account);
@@ -118,22 +124,22 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Update an account's data")]
         public async Task<IActionResult> UpdateAccount(string id, [FromBody] JsonElement updateAccount)
         {
-            try
-            {
+            //try
+            //{
                 await _accountService.UpdateAccountAsync(id, updateAccount);
                 _logger.LogInformation("Account updated successfully with id {id}", id);
                 return Ok("Action success");
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
 
         [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
@@ -151,20 +157,20 @@ namespace InteriorCoffeeAPIs.Controllers
                 }
             }
 
-            try
-            {
+            //try
+            //{
                 await _accountService.SoftDeleteAccountAsync(id);
                 return Ok("Account successfully soft deleted");
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while soft deleting account");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
-            }
+            //}
+            //catch (NotFoundException ex)
+            //{
+            //    return NotFound(new { Message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "Error occurred while soft deleting account");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            //}
         }
 
         [CustomAuthorize(AccountRoleEnum.MANAGER)]
@@ -173,20 +179,20 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Delete an account")]
         public async Task<IActionResult> DeleteAccount(string id)
         {
-            try
-            {
+            //try
+            //{
                 await _accountService.DeleteAccountAsync(id);
                 return Ok("Account successfully deleted");
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while deleting account");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
-            }
+            //}
+            //catch (NotFoundException ex)
+            //{
+            //    return NotFound(new { Message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "Error occurred while deleting account");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            //}
         }
     }
 }

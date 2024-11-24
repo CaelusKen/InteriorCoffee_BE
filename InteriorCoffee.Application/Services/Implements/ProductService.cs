@@ -34,6 +34,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _productCategoryRepository = productCategoryRepository;
         }
 
+        #region Utility Function
         #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
@@ -43,6 +44,74 @@ namespace InteriorCoffee.Application.Services.Implements
             { "updatedate", "UpdatedDate" },
             { "status", "Status" }
         };
+        #endregion
+
+        #region "Filtering"
+        private List<Product> ApplyFilters(List<Product> products, ProductFilterDTO filter, decimal? minPrice, decimal? maxPrice)
+        {
+            if (!string.IsNullOrEmpty(filter.Status))
+            {
+                var normalizedStatus = filter.Status.ToUpper();
+                products = products.Where(p => p.Status.ToUpper() == normalizedStatus).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(filter.CategoryId))
+            {
+                products = products.Where(p => p.CategoryIds != null && p.CategoryIds.Contains(filter.CategoryId)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(filter.MerchantId))
+            {
+                products = products.Where(p => p.MerchantId != null && p.MerchantId == filter.MerchantId).ToList();
+            }
+
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => (decimal)p.TruePrice >= minPrice.Value).ToList();
+            }
+
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => (decimal)p.TruePrice <= maxPrice.Value).ToList();
+            }
+
+            if (filter.IsAvailability == true)
+            {
+                products = products.Where(p => p.Quantity > 0).ToList();
+            }
+            else if (filter.IsAvailability == false)
+            {
+                products = products.Where(p => p.Quantity == 0).ToList();
+            }
+
+            return products;
+        }
+        #endregion
+
+        #region "OrderBy/Sort"
+        private List<Product> ApplySorting(List<Product> products, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Product).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        products = orderBy.Ascending
+                            ? products.OrderBy(p => propertyInfo.GetValue(p, null)).ToList()
+                            : products.OrderByDescending(p => propertyInfo.GetValue(p, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Product'.");
+                }
+            }
+
+            return products;
+        }
+        #endregion
         #endregion
 
         public async Task<ProductResponseDTO> GetProductsAsync(
@@ -152,74 +221,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             #endregion
         }
-
-
-        #region "Filtering"
-        private List<Product> ApplyFilters(List<Product> products, ProductFilterDTO filter, decimal? minPrice, decimal? maxPrice)
-        {
-            if (!string.IsNullOrEmpty(filter.Status))
-            {
-                var normalizedStatus = filter.Status.ToUpper();
-                products = products.Where(p => p.Status.ToUpper() == normalizedStatus).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(filter.CategoryId))
-            {
-                products = products.Where(p => p.CategoryIds != null && p.CategoryIds.Contains(filter.CategoryId)).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(filter.MerchantId))
-            {
-                products = products.Where(p => p.MerchantId != null && p.MerchantId == filter.MerchantId).ToList();
-            }
-
-            if (minPrice.HasValue)
-            {
-                products = products.Where(p => (decimal)p.TruePrice >= minPrice.Value).ToList();
-            }
-
-            if (maxPrice.HasValue)
-            {
-                products = products.Where(p => (decimal)p.TruePrice <= maxPrice.Value).ToList();
-            }
-
-            if (filter.IsAvailability == true)
-            {
-                products = products.Where(p => p.Quantity > 0).ToList();
-            }
-            else if (filter.IsAvailability == false)
-            {
-                products = products.Where(p => p.Quantity == 0).ToList();
-            }
-
-            return products;
-        }
-        #endregion
-
-        #region "OrderBy/Sort"
-        private List<Product> ApplySorting(List<Product> products, OrderBy orderBy)
-        {
-            if (orderBy != null)
-            {
-                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
-                {
-                    var propertyInfo = typeof(Product).GetProperty(propertyName);
-                    if (propertyInfo != null)
-                    {
-                        products = orderBy.Ascending
-                            ? products.OrderBy(p => propertyInfo.GetValue(p, null)).ToList()
-                            : products.OrderByDescending(p => propertyInfo.GetValue(p, null)).ToList();
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Product'.");
-                }
-            }
-
-            return products;
-        }
-        #endregion
 
         public async Task<Product> GetProductByIdAsync(string id)
         {

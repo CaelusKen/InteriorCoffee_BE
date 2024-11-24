@@ -104,28 +104,5 @@ namespace InteriorCoffee.Application.Services.Implements
             await _saleCampaignRepository.DeleteSaleCampaign(id);
         }
         #endregion
-
-        //#region Campaign Products
-        //public async Task AddProductsToCampaign(string campaignId, List<string> productIds)
-        //{
-        //    SaleCampaign campaign = await _saleCampaignRepository.GetSaleCampaign(
-        //        predicate: sc => sc._id.Equals(campaignId));
-
-        //    if (campaign == null) throw new NotFoundException($"Campaign id {campaignId} cannot be found");
-        //    foreach(string id in productIds)
-        //    {
-        //        await _campaignProductsRepository.CreateCampaignProducts(new CampaignProducts { CampaignId = campaignId, ProductId = id });
-        //    }
-        //}
-
-        //public async Task RemoveAllProductsInCampaign(string campaignId)
-        //{
-        //    SaleCampaign campaign = await _saleCampaignRepository.GetSaleCampaign(
-        //        predicate: sc => sc._id.Equals(campaignId));
-        //    if (campaign == null) throw new NotFoundException($"Campaign id {campaignId} cannot be found");
-
-        //    await _campaignProductsRepository.DeleteAllProductsInCampaign(campaignId);
-        //}
-        //#endregion
     }
 }

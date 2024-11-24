@@ -32,8 +32,8 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> GetDesigns([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
                                                     [FromQuery] string status = null, [FromQuery] string type = null, [FromQuery] List<string> categories = null, [FromQuery] string keyword = null)
         {
-            try
-            {
+            //try
+            //{
                 OrderBy orderBy = null;
                 if (!string.IsNullOrEmpty(sortBy))
                 {
@@ -50,17 +50,17 @@ namespace InteriorCoffeeAPIs.Controllers
                 var response = await _designService.GetDesignsAsync(pageNo, pageSize, orderBy, filter, keyword);
 
                 return Ok(response);
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
 
 

@@ -34,8 +34,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _accountRepository = accountRepository;
         }
 
-        // NOTE: CREATE CONSULTANT FUNCTIONS TO CREATE CONSULTANT ROLE //
-
+        #region Utility Function
         #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
@@ -86,6 +85,7 @@ namespace InteriorCoffee.Application.Services.Implements
 
             return accounts;
         }
+        #endregion
         #endregion
 
         public async Task<AccountResponseDTO> GetAccountsAsync(int? pageNo, int? pageSize, OrderBy orderBy, AccountFilterDTO filter, string keyword)
@@ -207,10 +207,7 @@ namespace InteriorCoffee.Application.Services.Implements
         public async Task UpdateAccountAsync(string id, JsonElement updateAccount)
         {
             var existingAccount = await _accountRepository.GetAccountById(id);
-            if (existingAccount == null)
-            {
-                throw new NotFoundException($"Account with id {id} not found.");
-            }
+            if (existingAccount == null) throw new NotFoundException($"Account with id {id} not found.");
 
             // Log existing account details
             _logger.LogInformation("Existing account before update: {existingAccount}", existingAccount);

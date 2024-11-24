@@ -31,6 +31,7 @@ namespace InteriorCoffee.Application.Services.Implements
             _floorRepository = floorRepository;
         }
 
+        #region Utility Function
         #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
@@ -87,7 +88,7 @@ namespace InteriorCoffee.Application.Services.Implements
             return templates;
         }
         #endregion
-
+        #endregion
 
         public async Task<TemplateResponseDTO> GetTemplatesAsync(int? pageNo, int? pageSize, OrderBy orderBy, TemplateFilterDTO filter, string keyword)
         {
@@ -175,7 +176,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
             #endregion
         }
-
 
         public async Task<GetTemplateDTO> GetTemplateById(string id)
         {

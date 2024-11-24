@@ -18,6 +18,7 @@ using AutoMapper;
 using InteriorCoffee.Application.Utils;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Enums.Account;
+using InteriorCoffee.Application.DTOs;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -64,8 +65,8 @@ namespace InteriorCoffeeAPIs.Controllers
             [FromQuery] string status = null, [FromQuery] string categoryId = null, [FromQuery] string merchantId = null, [FromQuery] string keyword = null,
             [FromQuery] bool? isAvailability = null)
         {
-            try
-            {
+            //try
+            //{
                 OrderBy orderBy = null;
                 if (!string.IsNullOrEmpty(sortBy))
                 {
@@ -83,17 +84,17 @@ namespace InteriorCoffeeAPIs.Controllers
                 var response = await _productService.GetProductsAsync(pageNo, pageSize, minPrice, maxPrice, orderBy, filter, keyword);
 
                 return Ok(response);
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
 
 
@@ -120,7 +121,12 @@ namespace InteriorCoffeeAPIs.Controllers
             if (!isValid)
             {
                 _logger.LogError("Validation failed: {Errors}", errors);
-                return BadRequest(new { Errors = errors });
+                return BadRequest(new ErrorDTO
+                {
+                    Error = (List<string>)errors,
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    TimeStamp = DateTime.UtcNow
+                });
             }
 
             await _productService.CreateProductAsync(product);
@@ -133,67 +139,23 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Update a product's data")]
         public async Task<IActionResult> UpdateProduct(string id, [FromBody] JsonElement updateProduct)
         {
-            try
-            {
+            //try
+            //{
                 await _productService.UpdateProductAsync(id, updateProduct);
                 _logger.LogInformation("Product updated successfully with id {id}", id);
                 return Ok("Product updated successfully");
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
-
-
-        #region "Patch update" (Clean, use Util instead)
-        //public static JsonElement MergeJsonElements(JsonElement original, JsonElement update)
-        // {
-        //     using (var stream = new MemoryStream())
-        //     {
-        //         using (var writer = new Utf8JsonWriter(stream))
-        //         {
-        //             writer.WriteStartObject();
-
-        //             foreach (var property in original.EnumerateObject())
-        //             {
-        //                 if (update.TryGetProperty(property.Name, out var updatedProperty))
-        //                 {
-        //                     writer.WritePropertyName(property.Name);
-        //                     updatedProperty.WriteTo(writer);
-        //                 }
-        //                 else
-        //                 {
-        //                     property.WriteTo(writer);
-        //                 }
-        //             }
-
-        //             foreach (var property in update.EnumerateObject())
-        //             {
-        //                 if (!original.TryGetProperty(property.Name, out _))
-        //                 {
-        //                     writer.WritePropertyName(property.Name);
-        //                     property.Value.WriteTo(writer);
-        //                 }
-        //             }
-
-        //             writer.WriteEndObject();
-        //         }
-
-        //         stream.Position = 0;
-        //         using (var document = JsonDocument.Parse(stream))
-        //         {
-        //             return document.RootElement.Clone();
-        //         }
-        //     }
-        // }
-        #endregion
 
         [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Product.SoftDeleteProductEndpoint)]

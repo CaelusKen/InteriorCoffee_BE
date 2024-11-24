@@ -31,35 +31,35 @@ namespace InteriorCoffeeAPIs.Controllers
         public async Task<IActionResult> GetTemplates([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
                                                       [FromQuery] string status = null, [FromQuery] string type = null, [FromQuery] List<string> categories = null, [FromQuery] string keyword = null)
         {
-            try
+            //try
+            //{
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
             {
-                OrderBy orderBy = null;
-                if (!string.IsNullOrEmpty(sortBy))
-                {
-                    orderBy = new OrderBy(sortBy, ascending ?? true);
-                }
-
-                var filter = new TemplateFilterDTO
-                {
-                    Status = status,
-                    Type = type,
-                    Categories = categories
-                };
-
-                var response = await _templateService.GetTemplatesAsync(pageNo, pageSize, orderBy, filter, keyword);
-
-                return Ok(response);
+                orderBy = new OrderBy(sortBy, ascending ?? true);
             }
-            catch (ArgumentException ex)
+
+            var filter = new TemplateFilterDTO
             {
-                _logger.LogError(ex, "Invalid argument provided.");
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            }
+                Status = status,
+                Type = type,
+                Categories = categories
+            };
+
+            var response = await _templateService.GetTemplatesAsync(pageNo, pageSize, orderBy, filter, keyword);
+
+            return Ok(response);
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LogError(ex, "Invalid argument provided.");
+            //    return BadRequest(new { message = ex.Message });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while processing your request.");
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            //}
         }
 
         [HttpGet(ApiEndPointConstant.Template.TemplateEndpoint)]

@@ -201,6 +201,7 @@ namespace InteriorCoffee.Application.Services.Implements
             if(template.Floors != null)
             {
                 List<Floor> floors = _mapper.Map<List<Floor>>(template.Floors);
+                floors.ForEach(x => x.DesignTemplateId = newTemplate._id);
                 await _floorRepository.AddRange(floors);
             }
 

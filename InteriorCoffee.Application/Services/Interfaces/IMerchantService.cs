@@ -8,7 +8,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IMerchantService
     {
-        Task<(List<Merchant>, int, int, int, int)> GetMerchantsAsync(int? pageNo, int? pageSize, OrderBy orderBy);
+        Task<MerchantResponseDTO> GetMerchantsAsync(int? pageNo, int? pageSize, OrderBy orderBy, MerchantFilterDTO filter, string keyword);
         Task<Merchant> GetMerchantByIdAsync(string id);
         Task CreateMerchantAsync(CreateMerchantDTO merchant);
         Task UpdateMerchantAsync(string id, UpdateMerchantDTO merchant);

@@ -1,4 +1,5 @@
-﻿using InteriorCoffee.Application.DTOs.Template;
+﻿using InteriorCoffee.Application.DTOs.OrderBy;
+using InteriorCoffee.Application.DTOs.Template;
 using InteriorCoffee.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface ITemplateService
     {
-        public Task<(List<Template>, int, int, int, int)> GetTemplatesAsync(int? pageNo, int? pageSize);
+        Task<TemplateResponseDTO> GetTemplatesAsync(int? pageNo, int? pageSize, OrderBy orderBy, TemplateFilterDTO filter, string keyword);
         public Task<GetTemplateDTO> GetTemplateById(string id);
         public Task CreateTemplate(CreateTemplateDTO template);
         public Task UpdateTemplate(string id, UpdateTemplateDTO updateTemplate);

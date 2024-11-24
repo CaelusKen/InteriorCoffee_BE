@@ -1,4 +1,5 @@
 ﻿using InteriorCoffee.Application.Constants;
+using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Template;
 using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Implements;
@@ -23,24 +24,29 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Template.TemplatesEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<Template>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TemplateResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [SwaggerOperation(Summary = "Get all templates with pagination")]
-        public async Task<IActionResult> GetTemplates([FromQuery] int? pageNo, [FromQuery] int? pageSize)
+        [SwaggerOperation(Summary = "Get all templates with pagination, sorting, and filtering.")]
+        public async Task<IActionResult> GetTemplates([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
+                                                      [FromQuery] string status = null, [FromQuery] string type = null, [FromQuery] List<string> categories = null, [FromQuery] string keyword = null)
         {
             try
             {
-                var (templates, currentPage, currentPageSize, totalItems, totalPages) = await _templateService.GetTemplatesAsync(pageNo, pageSize);
-
-                var response = new Paginate<Template>
+                OrderBy orderBy = null;
+                if (!string.IsNullOrEmpty(sortBy))
                 {
-                    Items = templates,
-                    PageNo = currentPage,
-                    PageSize = currentPageSize,
-                    TotalPages = totalPages,
-                    TotalItems = totalItems,
+                    orderBy = new OrderBy(sortBy, ascending ?? true);
+                }
+
+                var filter = new TemplateFilterDTO
+                {
+                    Status = status,
+                    Type = type,
+                    Categories = categories
                 };
+
+                var response = await _templateService.GetTemplatesAsync(pageNo, pageSize, orderBy, filter, keyword);
 
                 return Ok(response);
             }

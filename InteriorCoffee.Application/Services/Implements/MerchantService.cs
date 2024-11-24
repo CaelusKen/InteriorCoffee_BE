@@ -30,50 +30,15 @@ namespace InteriorCoffee.Application.Services.Implements
             _accountRepository = accountRepository;
         }
 
+        #region "Dictionary"
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
         {
             { "name", "Name" },
             { "email", "Email" },
-            { "createddate", "CreatedDate" },
-            { "updatedate", "UpdatedDate" },
             { "status", "Status" }
         };
+        #endregion
 
-        public async Task<(List<Merchant>, int, int, int, int)> GetMerchantsAsync(int? pageNo, int? pageSize, OrderBy orderBy)
-        {
-            var pagination = new Pagination
-            {
-                PageNo = pageNo ?? PaginationConfig.DefaultPageNo,
-                PageSize = pageSize ?? PaginationConfig.DefaultPageSize
-            };
-
-            try
-            {
-                var (allMerchants, totalItems) = await _merchantRepository.GetMerchantsAsync();
-                var totalPages = (int)Math.Ceiling((double)totalItems / pagination.PageSize);
-
-                // Handle page boundaries
-                if (pagination.PageNo > totalPages) pagination.PageNo = totalPages;
-                if (pagination.PageNo < 1) pagination.PageNo = 1;
-
-                var merchants = allMerchants.Skip((pagination.PageNo - 1) * pagination.PageSize)
-                                            .Take(pagination.PageSize)
-                                            .ToList();
-
-                // Apply sorting logic only if orderBy is provided
-                if (orderBy != null)
-                {
-                    merchants = ApplySorting(merchants, orderBy);
-                }
-
-                return (merchants, pagination.PageNo, pagination.PageSize, totalItems, totalPages);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting paginated merchants.");
-                return (new List<Merchant>(), pagination.PageNo, pagination.PageSize, 0, 0);
-            }
-        }
 
         #region "Sorting"
         private List<Merchant> ApplySorting(List<Merchant> merchants, OrderBy orderBy)
@@ -98,6 +63,104 @@ namespace InteriorCoffee.Application.Services.Implements
             return merchants;
         }
         #endregion
+
+        #region "Filtering"
+        private List<Merchant> ApplyFilters(List<Merchant> merchants, string status)
+        {
+            if (!string.IsNullOrEmpty(status))
+            {
+                merchants = merchants.Where(m => m.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return merchants;
+        }
+        #endregion
+
+        public async Task<MerchantResponseDTO> GetMerchantsAsync(int? pageNo, int? pageSize, OrderBy orderBy, MerchantFilterDTO filter, string keyword)
+        {
+            try
+            {
+                var (allMerchants, totalItems) = await _merchantRepository.GetMerchantsAsync();
+
+                // Apply filters
+                allMerchants = ApplyFilters(allMerchants, filter.Status);
+
+                // Apply keyword search
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    allMerchants = allMerchants.Where(m => m.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                                                           m.Email.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                                               .ToList();
+                }
+
+                // Apply sorting logic only if orderBy is not null
+                allMerchants = ApplySorting(allMerchants, orderBy);
+
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? allMerchants.Count : PaginationConfig.DefaultPageSize);
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)allMerchants.Count / finalPageSize);
+
+                // Handle page boundaries
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
+
+                // Paginate the filtered merchants
+                var paginatedMerchants = allMerchants.Skip((paginationPageNo - 1) * finalPageSize)
+                                                     .Take(finalPageSize)
+                                                     .ToList();
+
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedMerchants.Count;
+
+                var merchantResponseItems = _mapper.Map<List<MerchantResponseItemDTO>>(paginatedMerchants);
+
+                #region "Mapping"
+                return new MerchantResponseDTO
+                {
+                    PageNo = paginationPageNo,
+                    PageSize = finalPageSize,
+                    ListSize = totalItems,
+                    CurrentPageSize = listAfter,
+                    ListSizeAfter = listAfter,
+                    TotalPage = totalPages,
+                    OrderBy = new MerchantOrderByDTO
+                    {
+                        SortBy = orderBy?.SortBy,
+                        IsAscending = orderBy?.Ascending ?? true
+                    },
+                    Filter = new MerchantFilterDTO
+                    {
+                        Status = filter.Status
+                    },
+                    Keyword = keyword,
+                    Merchants = merchantResponseItems
+                };
+                #endregion
+            }
+            #region "Catch error"
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting merchants.");
+                return new MerchantResponseDTO
+                {
+                    PageNo = 1,
+                    PageSize = 0,
+                    ListSize = 0,
+                    CurrentPageSize = 0,
+                    ListSizeAfter = 0,
+                    TotalPage = 0,
+                    OrderBy = new MerchantOrderByDTO(),
+                    Filter = new MerchantFilterDTO(),
+                    Keyword = keyword,
+                    Merchants = new List<MerchantResponseItemDTO>()
+                };
+            }
+            #endregion
+        }
+
 
         public async Task<Merchant> GetMerchantByIdAsync(string id)
         {

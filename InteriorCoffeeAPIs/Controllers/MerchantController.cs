@@ -25,30 +25,42 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<Merchant>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all merchants with pagination and sorting. " +
-            "Ex url: GET /api/merchants?pageNo=1&pageSize=10&sortBy=name&ascending=true\r\n")]
-        public async Task<IActionResult> GetMerchants([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
+        [ProducesResponseType(typeof(MerchantResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(Summary = "Get all merchants with pagination, sorting, and filtering.")]
+        public async Task<IActionResult> GetMerchants([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null,
+                                                      [FromQuery] string status = null, [FromQuery] string keyword = null)
         {
-            OrderBy orderBy = null;
-            if (!string.IsNullOrEmpty(sortBy))
+            try
             {
-                orderBy = new OrderBy(sortBy, ascending ?? true);
+                OrderBy orderBy = null;
+                if (!string.IsNullOrEmpty(sortBy))
+                {
+                    orderBy = new OrderBy(sortBy, ascending ?? true);
+                }
+
+                var filter = new MerchantFilterDTO
+                {
+                    Status = status
+                };
+
+                var response = await _merchantService.GetMerchantsAsync(pageNo, pageSize, orderBy, filter, keyword);
+
+                return Ok(response);
             }
-
-            var (merchants, currentPage, currentPageSize, totalItems, totalPages) = await _merchantService.GetMerchantsAsync(pageNo, pageSize, orderBy);
-
-            var response = new Paginate<Merchant>
+            catch (ArgumentException ex)
             {
-                Items = merchants,
-                PageNo = currentPage,
-                PageSize = currentPageSize,
-                TotalPages = totalPages,
-                TotalItems = merchants.Count
-            };
-
-            return Ok(response);
+                _logger.LogError(ex, "Invalid argument provided.");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
+            }
         }
+
 
         //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]

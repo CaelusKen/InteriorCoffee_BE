@@ -13,7 +13,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
         public Task<(List<Transaction>, int, int, int, int)> GetTransactionsAsync(int? pageNo, int? pageSize);
         public Task<Transaction> GetTransactionById(string id);
         public Task CreateTransaction(CreateTransactionDTO createTransaction);
-        public Task UpdateTransaction(string id, UpdateTransacrtionDTO updateTransacrtion);
+        public Task UpdateTransaction(string id, UpdateTransactionDTO updateTransacrtion);
         public Task DeleteTransaction(string id);
     }
 }

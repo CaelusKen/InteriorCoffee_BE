@@ -137,7 +137,7 @@ namespace InteriorCoffeeAPIs.Controllers
             {
                 await _productService.UpdateProductAsync(id, updateProduct);
                 _logger.LogInformation("Product updated successfully with id {id}", id);
-                return Ok(new { Message = "Product updated successfully" });
+                return Ok("Product updated successfully");
             }
             catch (ArgumentException ex)
             {

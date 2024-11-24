@@ -136,7 +136,6 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-
         [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER)]
         [HttpPatch(ApiEndPointConstant.Account.SoftDeleteAccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

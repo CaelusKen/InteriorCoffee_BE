@@ -62,7 +62,6 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-
         [HttpGet(ApiEndPointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get an order by id")]
@@ -72,7 +71,6 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-
         [HttpPost(ApiEndPointConstant.Order.OrdersEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create order")]
@@ -81,8 +79,6 @@ namespace InteriorCoffeeAPIs.Controllers
             var orderId = await _orderService.CreateOrderAsync(order);
             return Ok(orderId);
         }
-
-
 
         [HttpPatch(ApiEndPointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

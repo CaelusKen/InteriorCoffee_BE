@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.DTOs.Transaction
 {
-    public class UpdateTransacrtionDTO
+    public class UpdateTransactionDTO
     {
         public string PaymentMethod { get; set; }
         public DateTime TransactionDate { get; set; }

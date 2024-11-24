@@ -65,7 +65,7 @@ namespace InteriorCoffeeAPIs.Controllers
         [HttpPatch(ApiEndPointConstant.Transaction.TransactionEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a transaction's data (Maybe not use)")]
-        public async Task<IActionResult> UpdateTransactions(string id, [FromBody] UpdateTransacrtionDTO updateTransaction)
+        public async Task<IActionResult> UpdateTransactions(string id, [FromBody] UpdateTransactionDTO updateTransaction)
         {
             await _transactionService.UpdateTransaction(id, updateTransaction);
             return Ok("Action success");
@@ -84,7 +84,6 @@ namespace InteriorCoffeeAPIs.Controllers
         //VnPay Api Controllers
         #region VnPay
         [HttpGet(ApiEndPointConstant.Transaction.TransactionsVNPaymentReturnEndpoint)]
-        [ProducesResponseType(typeof(VnPaymentResponseModel), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "VnPay data return")]
         public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
         {

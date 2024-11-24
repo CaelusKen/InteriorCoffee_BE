@@ -56,7 +56,6 @@ namespace InteriorCoffeeAPIs.Controllers
             }
         }
 
-
         [HttpGet(ApiEndPointConstant.Template.TemplateEndpoint)]
         [ProducesResponseType(typeof(GetTemplateDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a template by id")]

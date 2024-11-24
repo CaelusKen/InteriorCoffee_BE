@@ -29,7 +29,7 @@ namespace InteriorCoffee.UnitTest.Controllers
 
         public ProductControllerTest()
         {
-            _validationServicesDict = A.Fake<IDictionary<string, JsonValidationService>>();
+            _validationServicesDict = new Dictionary<string, JsonValidationService>();
 
             logger = A.Fake<ILogger<ProductController>>();
             _productService = A.Fake<IProductService>();
@@ -63,7 +63,7 @@ namespace InteriorCoffee.UnitTest.Controllers
 
             //Assert
             result.StatusCode.Should().Be(200);
-            result.Value.Should().BeAssignableTo<Product>();
+            result.Value.Should().BeAssignableTo<Domain.Models.Product>();
         }
         #endregion
 
@@ -98,12 +98,6 @@ namespace InteriorCoffee.UnitTest.Controllers
             var jsonUpdatedProduct = JsonConvert.SerializeObject(updateProductDto);
             var jsonDocument = JsonDocument.Parse(jsonUpdatedProduct);
             JsonElement product = jsonDocument.RootElement;
-
-            //Set validation
-            var schemaFilePath = "ProductValidate"; // Ensure this key is correct
-            var validationService = _validationServicesDict[schemaFilePath];
-            var jsonString = System.Text.Json.JsonSerializer.Serialize(product, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.KebabCaseLower });
-            var (isValid, errors) = validationService.ValidateJson(jsonString, isUpdate: false);
 
             //Act
             var result = (OkObjectResult)await _productController.UpdateProduct("672d61c84e4eeed22aad9f8b", product);

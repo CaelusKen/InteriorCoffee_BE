@@ -54,7 +54,7 @@ namespace InteriorCoffee.Application.Services.Implements
             await _transactionRepository.CreateTransaction(transaction);
         }
 
-        public async Task UpdateTransaction(string id, UpdateTransacrtionDTO updateTransacrtion)
+        public async Task UpdateTransaction(string id, UpdateTransactionDTO updateTransacrtion)
         {
             Transaction transaction = await _transactionRepository.GetTransaction(
                 predicate: tr => tr._id.Equals(id));

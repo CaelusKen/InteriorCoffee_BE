@@ -36,7 +36,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpPost(ApiEndPointConstant.Authentication.MerchantRegisterEndpoint)]
-        [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Register for merchant")]
         public async Task<IActionResult> MerchantRegister([FromBody] MerchantRegisteredDTO merchantRegisteredDTO)
         {
@@ -45,7 +45,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpPost(ApiEndPointConstant.Authentication.ForgetPasswordEndpoint)]
-        [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Send forget password email")]
         public async Task<IActionResult> SendForgetPasswordEmail([FromQuery]string email)
         {

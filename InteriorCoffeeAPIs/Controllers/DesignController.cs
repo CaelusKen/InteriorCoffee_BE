@@ -63,7 +63,6 @@ namespace InteriorCoffeeAPIs.Controllers
             //}
         }
 
-
         [HttpGet(ApiEndPointConstant.Design.DesignEndpoint)]
         [ProducesResponseType(typeof(GetDesignDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a design by id")]

@@ -214,9 +214,16 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 throw new NotFoundException($"Design with id {id} not found.");
             }
-            _mapper.Map(updateDesignDTO, existingDesign);
 
+            //Update Design Information
+            _mapper.Map(updateDesignDTO, existingDesign);
             await _designRepository.UpdateDesign(existingDesign);
+
+            //Update Floors information
+            foreach(Floor floor in updateDesignDTO.Floors)
+            {
+                await _floorRepository.UpdateFloor(floor);
+            }
         }
 
         public async Task DeleteDesignAsync(string id)

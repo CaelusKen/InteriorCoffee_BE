@@ -233,8 +233,9 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 await _floorRepository.DeleteAllFloorsInDesign(id);
 
-                updateTemplate.Floors.ForEach(f => f.DesignTemplateId = id);
-                await _floorRepository.AddRange(updateTemplate.Floors);
+                var updatedFloors = _mapper.Map<List<Floor>>(updateTemplate.Floors);
+                updatedFloors.ForEach(f => f.DesignTemplateId = id);
+                await _floorRepository.AddRange(updatedFloors);
             }
         }
 

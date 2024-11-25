@@ -19,6 +19,9 @@ namespace InteriorCoffee.Application.Mappers.Floors
 
             CreateMap<FloorDTO, Floor>()
                 .ForMember(dest => dest._id, opt => opt.MapFrom(src => ObjectId.GenerateNewId().ToString()));
+
+            CreateMap<Floor, Floor>()
+                .ForMember(dest => dest._id, opt => opt.MapFrom(src => string.IsNullOrEmpty(src._id) ? ObjectId.GenerateNewId().ToString() : src._id));
         }
     }
 }

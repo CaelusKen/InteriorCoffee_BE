@@ -39,6 +39,7 @@ namespace InteriorCoffee.UnitTest.Controllers
             _accountController = new AccountController(logger, _accountService, _validationServicesDict);
         }
 
+        #region Setup Fake Data
         private void SetupJsonValidation()
         {
             var schemaFilePath = GetFilePath();
@@ -59,6 +60,7 @@ namespace InteriorCoffee.UnitTest.Controllers
 
         private static CreateAccountDTO CreateFakeCreateAccountDTO() => A.Fake<CreateAccountDTO>();
         private static UpdateAccountDTO CreateFakeUpdateAccountDTO() => A.Fake<UpdateAccountDTO>();
+        #endregion
 
         #region Get Function Test
         [Fact]

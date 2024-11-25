@@ -122,6 +122,7 @@ namespace InteriorCoffee.Application.Constants
         {
             public const string ChatSessionsEndpoint = ApiEndpoint + "/chat-sessions";
             public const string MerchantChatSessionsEndpoint = ChatSessionsEndpoint + "/merchant/{id}";
+            public const string ManagerChatSessionsEndpoint = ChatSessionsEndpoint + "/manager";
             public const string ChatSessionEndpoint = ChatSessionsEndpoint + "/{id}";
 
             public const string ChatMessageEndpoint = ChatSessionEndpoint + "/messages";

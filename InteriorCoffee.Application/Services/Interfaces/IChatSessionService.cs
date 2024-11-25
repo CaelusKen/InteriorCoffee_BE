@@ -11,6 +11,8 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task<List<ChatSession>> GetChatSessionListAsync();
         Task<ChatSession> GetChatSessionByIdAsync(string id);
         Task<List<Domain.Models.ChatSession>> GetMerhcnatChatSessionListAsync(string id);
+        Task<List<Domain.Models.ChatSession>> GetManagerChatSessionListAsync();
+
         Task CreateChatSessionAsync(CreateChatSessionDTO chatSession);
         Task UpdateChatSessionAsync(string id, UpdateChatSessionDTO chatSession);
         Task DeleteChatSessionAsync(string id);

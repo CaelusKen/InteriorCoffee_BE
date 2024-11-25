@@ -53,6 +53,16 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        //Get chat session of manager in the system
+        [HttpGet(ApiEndPointConstant.ChatSession.ManagerChatSessionsEndpoint)]
+        [ProducesResponseType(typeof(List<ChatSession>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a chat session by id")]
+        public async Task<IActionResult> GetManagerChatSessions()
+        {
+            var result = await _chatSessionService.GetManagerChatSessionListAsync();
+            return Ok(result);
+        }
+
         [HttpPost(ApiEndPointConstant.ChatSession.ChatSessionsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create chat session")]

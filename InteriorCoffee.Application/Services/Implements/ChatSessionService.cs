@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InteriorCoffee.Application.DTOs.ChatMessage;
 using InteriorCoffee.Application.DTOs.ChatSession;
+using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
@@ -40,6 +41,17 @@ namespace InteriorCoffee.Application.Services.Implements
         {
             var merchantAccountIds = await _accountRepository
                 .GetAccountList(predicate: a => a.MerchantId == id,
+                                selector: a => a._id);
+
+            var chatSessions = await _chatSessionRepository.GetChatSessionsByAdvisorIdList(merchantAccountIds);
+
+            return _mapper.Map<List<Domain.Models.ChatSession>>(chatSessions);
+        }
+
+        public async Task<List<Domain.Models.ChatSession>> GetManagerChatSessionListAsync()
+        {
+            var merchantAccountIds = await _accountRepository
+                .GetAccountList(predicate: a => a.Role.Equals(AccountRoleEnum.MANAGER.ToString()),
                                 selector: a => a._id);
 
             var chatSessions = await _chatSessionRepository.GetChatSessionsByAdvisorIdList(merchantAccountIds);

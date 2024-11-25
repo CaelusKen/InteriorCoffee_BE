@@ -16,7 +16,7 @@ namespace InteriorCoffee.Application.DTOs.Template
         public string Type { get; set; }
         public string Image { get; set; }
 
-        //public List<Floor>? Floors { get; set; }
+        public List<Domain.Models.Floor>? Floors { get; set; }
         public List<ProductList>? Products { get; set; }
 
         public string StyleId { get; set; }

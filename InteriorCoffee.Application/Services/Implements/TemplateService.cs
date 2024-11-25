@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Interior.Infrastructure.Repositories.Interfaces;
 using InteriorCoffee.Application.Configurations;
+using InteriorCoffee.Application.DTOs.Design;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Template;
@@ -226,6 +227,15 @@ namespace InteriorCoffee.Application.Services.Implements
             template.Products = updateTemplate.Products == null ? template.Products : updateTemplate.Products;
 
             await _templateRepository.UpdateTemplate(template);
+
+            //Update Floors information
+            if (updateTemplate.Floors != null)
+            {
+                await _floorRepository.DeleteAllFloorsInDesign(id);
+
+                updateTemplate.Floors.ForEach(f => f.DesignTemplateId = id);
+                await _floorRepository.AddRange(updateTemplate.Floors);
+            }
         }
 
         public async Task DeleteTemplate(string id)

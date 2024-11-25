@@ -222,10 +222,10 @@ namespace InteriorCoffee.Application.Services.Implements
             //Update Floors information
             if (updateDesignDTO.Floors != null)
             {
-                foreach (Floor floor in updateDesignDTO.Floors)
-                {
-                    await _floorRepository.UpdateFloor(floor);
-                }
+                await _floorRepository.DeleteAllFloorsInDesign(id);
+
+                updateDesignDTO.Floors.ForEach(f => f.DesignTemplateId = id);
+                await _floorRepository.AddRange(updateDesignDTO.Floors);
             }
         }
 

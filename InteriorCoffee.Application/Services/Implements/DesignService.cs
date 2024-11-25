@@ -197,7 +197,7 @@ namespace InteriorCoffee.Application.Services.Implements
         {
             var design = _mapper.Map<Design>(createDesignDTO);
             //Add floors if initial design have floors
-            if(createDesignDTO.Floors != null)
+            if (createDesignDTO.Floors != null)
             {
                 List<Floor> floors = _mapper.Map<List<Floor>>(createDesignDTO.Floors);
                 //floors.ForEach(x => x.DesignTemplateId = design._id);
@@ -220,9 +220,12 @@ namespace InteriorCoffee.Application.Services.Implements
             await _designRepository.UpdateDesign(existingDesign);
 
             //Update Floors information
-            foreach(Floor floor in updateDesignDTO.Floors)
+            if (updateDesignDTO.Floors != null)
             {
-                await _floorRepository.UpdateFloor(floor);
+                foreach (Floor floor in updateDesignDTO.Floors)
+                {
+                    await _floorRepository.UpdateFloor(floor);
+                }
             }
         }
 

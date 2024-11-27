@@ -4,6 +4,7 @@ using FakeItEasy;
 using FluentAssertions;
 using InteriorCoffee.Application.DTOs.Voucher;
 using InteriorCoffee.Application.Services.Interfaces;
+using InteriorCoffee.Domain.ErrorModel;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
 using InteriorCoffeeAPIs.Controllers;
@@ -74,6 +75,7 @@ namespace InteriorCoffee.UnitTest.Controllers
         private static UpdateVoucherDTO CreateFakeUpdateVoucherDto() => A.Fake<UpdateVoucherDTO>();
 
         #region Get Function Test
+        //=========Success Case==========
         [Fact]
         public async void VoucherController_GetVouchers_ReturnVoucherList()
         {
@@ -102,6 +104,22 @@ namespace InteriorCoffee.UnitTest.Controllers
 
             Assert.Equal(mockVouchers[0], result.Value);
         }
+
+        //==========Fail Case============
+        [Fact]
+        public async void VoucherController_GetVoucherById_ReturnError()
+        {
+            //Arrange
+            A.CallTo(() => _voucherService.GetVoucherById("999"))
+                .Throws(() => new NotFoundException("Voucher id 999 cannot be found"));
+
+            //Act
+            //Get not exist voucher
+            var exception = await Assert.ThrowsAsync<NotFoundException>(async () => await _voucherController.GetVoucherById("999"));
+
+            //Assert
+            Assert.Equal("Voucher id 999 cannot be found", exception.Message);
+        }
         #endregion
 
         #region Create Function Test
@@ -121,6 +139,7 @@ namespace InteriorCoffee.UnitTest.Controllers
         #endregion
 
         #region Update Function Test
+        //=========Success Cases
         [Fact]
         public async void VoucherController_Update_ReturnSuccess()
         {
@@ -134,9 +153,29 @@ namespace InteriorCoffee.UnitTest.Controllers
             result.StatusCode.Should().Be(200);
             result.Value.Should().BeOfType<string>();
         }
+
+        //===========Fail Cases=========
+        [Fact]
+        public async void VoucherController_Update_ExceptionWhenUpdateNotFoundVoucher()
+        {
+            //Arrange
+            UpdateVoucherDTO updateVoucherDTO = CreateFakeUpdateVoucherDto();
+
+            A.CallTo(() => _voucherService.UpdateVoucher("999", updateVoucherDTO))
+                .Throws(() => new NotFoundException("Voucher id 999 cannot be found"));
+
+            //Act
+            //Get not exist voucher
+            var exception = await Assert.ThrowsAsync<NotFoundException>(async () => await _voucherController.UpdateVouchers("999", updateVoucherDTO));
+
+            //Assert
+            Assert.Equal("Voucher id 999 cannot be found", exception.Message);
+        }
+
         #endregion
 
         #region Delete Function Test
+        
         [Fact]
         public async void VoucherController_Delete_ReturnSuccess()
         {

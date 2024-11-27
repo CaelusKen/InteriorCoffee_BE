@@ -123,6 +123,8 @@ namespace InteriorCoffee.Application.Services.Implements
             if (message == null) throw new NotFoundException($"Chat message with id {message._id} not found");
 
             oldMessage.Message = String.IsNullOrEmpty(message.Message) ? oldMessage.Message : message.Message;
+            oldMessage.TimeStamp = DateTime.Now;
+
             await _chatSessionRepository.UpdateChatSession(chatSession);
         }
 

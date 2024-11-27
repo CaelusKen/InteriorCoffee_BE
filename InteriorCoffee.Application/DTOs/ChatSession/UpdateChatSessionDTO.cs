@@ -8,6 +8,7 @@ namespace InteriorCoffee.Application.DTOs.ChatSession
     public class UpdateChatSessionDTO
     {
         public List<InteriorCoffee.Domain.Models.Documents.ChatMessage> Messages { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public string? AdvisorId { get; set; }
+        //public DateTime UpdatedDate { get; set; }
     }
 }

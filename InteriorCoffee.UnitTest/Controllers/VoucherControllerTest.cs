@@ -175,7 +175,6 @@ namespace InteriorCoffee.UnitTest.Controllers
         #endregion
 
         #region Delete Function Test
-        
         [Fact]
         public async void VoucherController_Delete_ReturnSuccess()
         {

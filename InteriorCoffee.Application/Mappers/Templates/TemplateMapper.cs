@@ -23,7 +23,13 @@ namespace InteriorCoffee.Application.Mappers.Templates
                 .ForMember(des => des.Status, src => src.MapFrom(src => TemplateStatusEnum.ACTIVE.ToString()))
                 .ForMember(des => des.Products, src => src.MapFrom(src => src.Products == null ? new List<ProductList>() : src.Products))
                 .ForMember(des => des.Categories, src => src.MapFrom(src => src.Categories == null ? new List<string>() : src.Categories))
-                .AfterMap((src, des) => src.Floors.ForEach(f => f.DesignTemplateId = des._id));
+                .AfterMap((src, des) =>
+                {
+                    if (src.Floors != null)
+                    {
+                        src.Floors.ForEach(f => f.DesignTemplateId = des._id);
+                    }
+                });
 
             CreateMap<Template, GetTemplateDTO>();
             CreateMap<Template, TemplateResponseItemDTO>();

@@ -17,7 +17,13 @@ namespace InteriorCoffee.Application.Mappers.Designs
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => DesignStatusEnum.ACTIVE.ToString()))
-                .AfterMap((src, des) => src.Floors.ForEach(f => f.DesignTemplateId = des._id) );
+                .AfterMap((src, des) =>
+                {
+                    if (src.Floors != null)
+                    {
+                        src.Floors.ForEach(f => f.DesignTemplateId = des._id);
+                    }
+                });
 
             // Mapping for UpdateDesignDTO to Design
             CreateMap<UpdateDesignDTO, Design>()

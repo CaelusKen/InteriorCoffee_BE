@@ -83,7 +83,6 @@ namespace InteriorCoffee.Application.Services.Implements
             newAccount.Role = AccountRoleEnum.MERCHANT.ToString();
             newAccount.MerchantId = merchant._id;
             newAccount.Password = HashUtil.ToSHA256Hash(newAccount.Password);
-            newAccount.Status = AccountStatusEnum.ACTIVE.ToString();
 
             //Create new account
             await _accountRepository.CreateAccount(newAccount);

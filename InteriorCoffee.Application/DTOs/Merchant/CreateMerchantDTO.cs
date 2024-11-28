@@ -8,14 +8,14 @@ namespace InteriorCoffee.Application.DTOs.Merchant
 {
     public class CreateMerchantDTO
     {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Address { get; set; }
-        public string PhoneNumber { get; set; }
+        public string Name { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Address { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
         public string LogoUrl { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
-        public string MerchantCode { get; set; }
+        public string MerchantCode { get; set; } = null!;
         public string PolicyDocument { get; set; }
         public string Website { get; set; }
     }

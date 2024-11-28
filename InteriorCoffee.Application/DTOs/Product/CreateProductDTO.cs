@@ -7,9 +7,9 @@ namespace InteriorCoffee.Application.DTOs.Product
     public class CreateProductDTO
     {
         public List<string> CategoryIds { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string Description { get; set; }
-        public ProductImages Images { get; set; }
+        public ProductImages Images { get; set; } = null!;
         //public double SellingPrice { get; set; } //Calculate in code
         public int Discount { get; set; }
         public double TruePrice { get; set; }
@@ -19,6 +19,6 @@ namespace InteriorCoffee.Application.DTOs.Product
         public List<string> Materials { get; set; }
         public string ModelTextureUrl { get; set; }
         public string CampaignId { get; set; }
-        public string MerchantId { get; set; }
+        public string MerchantId { get; set; } = null!;
     }
 }

@@ -8,7 +8,7 @@ namespace InteriorCoffee.Application.DTOs.Review
 {
     public class UpdateReviewDTO
     {
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
         public float Rating { get; set; }
     }
 }

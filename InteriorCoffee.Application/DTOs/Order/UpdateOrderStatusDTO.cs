@@ -8,7 +8,7 @@ namespace InteriorCoffee.Application.DTOs.Order
 {
     public class UpdateOrderStatusDTO
     {
-        public string Status { get; set; }
+        public string Status { get; set; } = null!;
         public DateTime UpdatedDate { get; set; }
         public double SystemIncome { get; set; } = 0;
     }

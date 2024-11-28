@@ -37,7 +37,7 @@ namespace InteriorCoffee.Application.DTOs.Authentication
         public string MerchantName { get; set; } = null!;
         public string LogoUrl { get; set; }
         public string Description { get; set; }
-        public string Status { get; set; } = null!;
+        public string? Status { get; set; }
         public string MerchantCode { get; set; } = null!;
         public string PolicyDocument { get; set; } = null!;
         public string Website { get; set; }

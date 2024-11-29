@@ -8,7 +8,7 @@ namespace InteriorCoffee.Application.DTOs.ChatSession
     {
         public List<InteriorCoffee.Domain.Models.Documents.ChatMessage> Messages { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string CustomerId { get; set; }
-        public string AdvisorId { get; set; }
+        public string CustomerId { get; set; } = null!;
+        public string AdvisorId { get; set; } = null!;
     }
 }

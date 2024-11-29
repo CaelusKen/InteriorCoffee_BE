@@ -8,7 +8,7 @@ namespace InteriorCoffee.Application.DTOs.ChatMessage
 {
     public class AddChatMessageDTO
     {
-        public string SenderId { get; set; }
+        public string Sender { get; set; } = null!;
         public string Message { get; set; }
     }
 }

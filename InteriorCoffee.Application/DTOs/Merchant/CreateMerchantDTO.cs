@@ -13,8 +13,8 @@ namespace InteriorCoffee.Application.DTOs.Merchant
         public string Address { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
         public string LogoUrl { get; set; }
-        public string Description { get; set; }
-        public string Status { get; set; }
+        public string? Description { get; set; }
+        //public string Status { get; set; }
         public string MerchantCode { get; set; } = null!;
         public string PolicyDocument { get; set; }
         public string Website { get; set; }

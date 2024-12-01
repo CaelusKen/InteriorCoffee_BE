@@ -9,7 +9,7 @@ namespace InteriorCoffee.Application.DTOs.SaleCampaign
     public class CreateSaleCampaignDTO
     {
         public string Name { get; set; } = null!;
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public double Value { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

@@ -20,7 +20,7 @@ namespace InteriorCoffee.Application.DTOs.Template
         public List<ProductList>? Products { get; set; }
 
         public string AccountId { get; set; } = null!;
-        public string MerchantId { get; set; }
+        public string? MerchantId { get; set; }
         public string StyleId { get; set; } = null!;
 
         public List<string> Categories { get; set; }

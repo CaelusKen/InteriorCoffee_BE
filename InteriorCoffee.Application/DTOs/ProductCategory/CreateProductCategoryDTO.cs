@@ -9,7 +9,7 @@ namespace InteriorCoffee.Application.DTOs.ProductCategory
     public class CreateProductCategoryDTO
     {
         public string Name { get; set; } = null!;
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }
 

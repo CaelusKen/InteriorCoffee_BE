@@ -12,11 +12,11 @@ namespace InteriorCoffee.Application.DTOs.Transaction
         public string OrderId { get; set; } = null!;
 
         public string FullName { get; set; } = null!;
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public double TotalAmount { get; set; }
 
         public string PaymentMethod { get; set; } = null!;
-        public string Currency { get; set; }
+        public string? Currency { get; set; }
     }
 }

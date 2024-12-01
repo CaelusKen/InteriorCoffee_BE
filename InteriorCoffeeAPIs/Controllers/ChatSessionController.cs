@@ -46,7 +46,7 @@ namespace InteriorCoffeeAPIs.Controllers
         //Get chat session of a merchant
         [HttpGet(ApiEndPointConstant.ChatSession.MerchantChatSessionsEndpoint)]
         [ProducesResponseType(typeof(List<ChatSession>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get a chat session by id")]
+        [SwaggerOperation(Summary = "Get merchant's chat sessions")]
         public async Task<IActionResult> GetMerchantChatSessions(string id)
         {
             var result = await _chatSessionService.GetMerhcnatChatSessionListAsync(id);
@@ -56,7 +56,7 @@ namespace InteriorCoffeeAPIs.Controllers
         //Get chat session of manager in the system
         [HttpGet(ApiEndPointConstant.ChatSession.ManagerChatSessionsEndpoint)]
         [ProducesResponseType(typeof(List<ChatSession>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get a chat session by id")]
+        [SwaggerOperation(Summary = "Get manager's chat sessions")]
         public async Task<IActionResult> GetManagerChatSessions()
         {
             var result = await _chatSessionService.GetManagerChatSessionListAsync();

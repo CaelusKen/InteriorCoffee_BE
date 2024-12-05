@@ -222,7 +222,7 @@ namespace InteriorCoffee.Application.Services.Implements
             //Update Floors information
             if (updateDesignDTO.Floors != null)
             {
-                await _floorRepository.DeleteAllFloorsInDesign(id);
+                await _floorRepository.DeleteAllFloorsInDesignTemplate(id);
 
                 var updatedFloors = _mapper.Map<List<Floor>>(updateDesignDTO.Floors);
                 updatedFloors.ForEach(f => f.DesignTemplateId = id);
@@ -239,7 +239,7 @@ namespace InteriorCoffee.Application.Services.Implements
             }
 
             //Delete all floors of design
-            await _floorRepository.DeleteAllFloorsInDesign(design._id);
+            await _floorRepository.DeleteAllFloorsInDesignTemplate(design._id);
             await _designRepository.DeleteDesign(id);
         }
     }

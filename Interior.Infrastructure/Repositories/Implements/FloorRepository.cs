@@ -205,7 +205,7 @@ namespace Interior.Infrastructure.Repositories.Implements
             await _floors.DeleteManyAsync(filter);
         }
 
-        public async Task DeleteAllFloorsInDesign(string designTemplateId)
+        public async Task DeleteAllFloorsInDesignTemplate(string designTemplateId)
         {
             var filter = Builders<Floor>.Filter.Eq("DesignTemplateId", designTemplateId);
             await _floors.DeleteManyAsync(filter);

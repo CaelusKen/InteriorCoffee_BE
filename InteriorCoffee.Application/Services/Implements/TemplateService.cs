@@ -231,7 +231,7 @@ namespace InteriorCoffee.Application.Services.Implements
             //Update Floors information
             if (updateTemplate.Floors != null)
             {
-                await _floorRepository.DeleteAllFloorsInDesign(id);
+                await _floorRepository.DeleteAllFloorsInDesignTemplate(id);
 
                 var updatedFloors = _mapper.Map<List<Floor>>(updateTemplate.Floors);
                 updatedFloors.ForEach(f => f.DesignTemplateId = id);
@@ -247,7 +247,7 @@ namespace InteriorCoffee.Application.Services.Implements
             if (template == null) throw new NotFoundException($"Template id {id} cannot be found");
 
             //Delete all floors of template
-            await _floorRepository.DeleteAllFloorsInDesign(template._id);
+            await _floorRepository.DeleteAllFloorsInDesignTemplate(template._id);
             await _templateRepository.DeleteTemplate(id);
         }
     }

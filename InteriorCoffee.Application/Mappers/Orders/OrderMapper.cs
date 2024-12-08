@@ -19,6 +19,11 @@ namespace InteriorCoffee.Application.Mappers.Orders
                 .ForMember(dest => dest.Status, opt => opt.MapFrom((src, dest, destMember, context) =>
                     context.Items.ContainsKey("Status") ? context.Items["Status"].ToString() : OrderStatusEnum.CREATED.ToString()));
 
+            // Mapping for Order to Order (for splitting)
+            CreateMap<Order, Order>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom((src, dest, destMember, context) =>
+                    context.Items.ContainsKey("Status") ? context.Items["Status"].ToString() : src.Status));
+
             // Mapping for UpdateOrderStatusDTO to Order
             CreateMap<UpdateOrderStatusDTO, Order>()
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));

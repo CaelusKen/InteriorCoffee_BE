@@ -3,6 +3,7 @@ using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Order;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
+using InteriorCoffee.Application.Enums.Order;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.ErrorModel;
@@ -111,9 +112,24 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task<string> CreateOrderAsync(CreateOrderDTO createOrderDTO)
         {
-            var order = _mapper.Map<Order>(createOrderDTO);
-            await _orderRepository.CreateOrder(order);
-            return order._id;
+            if (createOrderDTO == null)
+            {
+                throw new ArgumentNullException(nameof(createOrderDTO));
+            }
+
+            var options = new Action<IMappingOperationOptions<CreateOrderDTO, Order>>(opt => opt.Items["Status"] = OrderStatusEnum.CREATED.ToString());
+            var parentOrder = _mapper.Map<CreateOrderDTO, Order>(createOrderDTO, options);
+
+            try
+            {
+                await _orderRepository.CreateOrder(parentOrder);
+                return parentOrder._id;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating order.");
+                throw new Exception("Failed to create order.", ex);
+            }
         }
 
 
@@ -140,3 +156,4 @@ namespace InteriorCoffee.Application.Services.Implements
         }
     }
 }
+

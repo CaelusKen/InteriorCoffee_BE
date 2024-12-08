@@ -11,12 +11,13 @@ namespace InteriorCoffee.Application.Mappers.Orders
     {
         public OrderMapper()
         {
-            // Mapping for CreateOrderDTO to Order
+            // Mapping for CreateOrderDTO to Order with custom status mapping
             CreateMap<CreateOrderDTO, Order>()
                 .ForMember(dest => dest._id, opt => opt.MapFrom(src => ObjectId.GenerateNewId().ToString()))
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => OrderStatusEnum.CREATED.ToString()));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom((src, dest, destMember, context) =>
+                    context.Items.ContainsKey("Status") ? context.Items["Status"].ToString() : OrderStatusEnum.CREATED.ToString()));
 
             // Mapping for UpdateOrderStatusDTO to Order
             CreateMap<UpdateOrderStatusDTO, Order>()

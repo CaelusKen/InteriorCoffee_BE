@@ -110,6 +110,49 @@ namespace InteriorCoffee.Application.Services.Implements
             return order;
         }
 
+        public async Task<(List<Order>, int, int, int, int)> GetMerchantOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy, string id)
+        {
+            try
+            {
+                var orderList = await _orderRepository.GetOrderList(
+                predicate: ord => ord.OrderProducts.Where(op => op.MerchantId == id).Count() == ord.OrderProducts.Count() &&
+                                  ord.Status != OrderStatusEnum.CREATED.ToString());
+                var totalItems = orderList.Count();
+
+                // Apply sorting logic only if orderBy is provided
+                if (orderBy != null)
+                {
+                    orderList = ApplySorting(orderList, orderBy);
+                }
+
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? orderList.Count : PaginationConfig.DefaultPageSize);
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)orderList.Count / finalPageSize);
+
+                // Handle page boundaries
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
+
+                // Paginate the filtered orders
+                var paginatedOrders = orderList.Skip((paginationPageNo - 1) * finalPageSize)
+                                               .Take(finalPageSize)
+                                               .ToList();
+
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedOrders.Count;
+
+                return (paginatedOrders, paginationPageNo, finalPageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated orders.");
+                return (new List<Order>(), 1, 0, 0, 0);
+            }
+        }
+
         public async Task<string> CreateOrderAsync(CreateOrderDTO createOrderDTO)
         {
             if (createOrderDTO == null)

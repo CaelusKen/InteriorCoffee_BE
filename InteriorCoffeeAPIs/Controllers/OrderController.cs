@@ -71,6 +71,31 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [HttpGet(ApiEndPointConstant.Order.MerchantOrdersEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a merchant's orders")]
+        public async Task<IActionResult> GetOrderByMerchantId(string id, [FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
+        {
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                orderBy = new OrderBy(sortBy, ascending ?? true);
+            }
+
+            var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetMerchantOrdersAsync(pageNo, pageSize, orderBy, id);
+
+            var response = new Paginate<Order>
+            {
+                Items = orders,
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+            };
+
+            return Ok(response);
+        }
+
         [HttpPost(ApiEndPointConstant.Order.OrdersEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create order")]

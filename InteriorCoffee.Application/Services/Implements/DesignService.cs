@@ -216,7 +216,15 @@ namespace InteriorCoffee.Application.Services.Implements
             }
 
             //Update Design Information
-            _mapper.Map(updateDesignDTO, existingDesign);
+            existingDesign.Name = String.IsNullOrEmpty(updateDesignDTO.Name) ? existingDesign.Name : updateDesignDTO.Name;
+            existingDesign.Description = String.IsNullOrEmpty(updateDesignDTO.Description) ? existingDesign.Description : updateDesignDTO.Description;
+            existingDesign.Type = String.IsNullOrEmpty(updateDesignDTO.Type) ? existingDesign.Type : updateDesignDTO.Type;
+            existingDesign.Status = String.IsNullOrEmpty(updateDesignDTO.Status) ? existingDesign.Status : updateDesignDTO.Status;
+            existingDesign.StyleId = String.IsNullOrEmpty(updateDesignDTO.StyleId) ? existingDesign.StyleId : updateDesignDTO.StyleId;
+            existingDesign.Image = String.IsNullOrEmpty(updateDesignDTO.Image) ? existingDesign.Image : updateDesignDTO.Image;
+            existingDesign.Categories = updateDesignDTO.Categories == null ? existingDesign.Categories : updateDesignDTO.Categories;
+            existingDesign.Products = updateDesignDTO.Products == null ? existingDesign.Products : updateDesignDTO.Products;
+
             await _designRepository.UpdateDesign(existingDesign);
 
             //Update Floors information

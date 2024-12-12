@@ -2,7 +2,6 @@
 using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.Order;
 using InteriorCoffee.Application.DTOs.OrderBy;
-using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.Enums.Order;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.Services.Implements
@@ -34,6 +34,30 @@ namespace InteriorCoffee.Application.Services.Implements
             { "totalamount", "TotalAmount" },
             { "orderdate", "OrderDate" }
         };
+
+        #region "Sorting"
+        private List<Order> ApplySorting(List<Order> orders, OrderBy orderBy)
+        {
+            if (orderBy != null)
+            {
+                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
+                {
+                    var propertyInfo = typeof(Order).GetProperty(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        orders = orderBy.Ascending
+                            ? orders.OrderBy(o => propertyInfo.GetValue(o, null)).ToList()
+                            : orders.OrderByDescending(o => propertyInfo.GetValue(o, null)).ToList();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Order'.");
+                }
+            }
+            return orders;
+        }
+        #endregion
 
         public async Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy)
         {
@@ -75,31 +99,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
-        #region "Sorting"
-        private List<Order> ApplySorting(List<Order> orders, OrderBy orderBy)
-        {
-            if (orderBy != null)
-            {
-                if (SortableProperties.TryGetValue(orderBy.SortBy.ToLower(), out var propertyName))
-                {
-                    var propertyInfo = typeof(Order).GetProperty(propertyName);
-                    if (propertyInfo != null)
-                    {
-                        orders = orderBy.Ascending
-                            ? orders.OrderBy(o => propertyInfo.GetValue(o, null)).ToList()
-                            : orders.OrderByDescending(o => propertyInfo.GetValue(o, null)).ToList();
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Property '{orderBy.SortBy}' does not exist on type 'Order'.");
-                }
-            }
-            return orders;
-        }
-        #endregion
-
         public async Task<Order> GetOrderByIdAsync(string id)
         {
             var order = await _orderRepository.GetOrderById(id);
@@ -115,8 +114,50 @@ namespace InteriorCoffee.Application.Services.Implements
             try
             {
                 var orderList = await _orderRepository.GetOrderList(
-                predicate: ord => ord.OrderProducts.Where(op => op.MerchantId == id).Count() == ord.OrderProducts.Count() &&
-                                  ord.Status != OrderStatusEnum.CREATED.ToString());
+                    predicate: ord => ord.OrderProducts.Where(op => op.MerchantId == id).Count() == ord.OrderProducts.Count() &&
+                                      ord.Status != OrderStatusEnum.CREATED.ToString());
+                var totalItems = orderList.Count();
+
+                // Apply sorting logic only if orderBy is provided
+                if (orderBy != null)
+                {
+                    orderList = ApplySorting(orderList, orderBy);
+                }
+
+                // Determine the page size dynamically if not provided
+                var finalPageSize = pageSize ?? (PaginationConfig.UseDynamicPageSize ? orderList.Count : PaginationConfig.DefaultPageSize);
+
+                // Calculate pagination details based on finalPageSize
+                var totalPages = (int)Math.Ceiling((double)orderList.Count / finalPageSize);
+
+                // Handle page boundaries
+                var paginationPageNo = pageNo ?? 1;
+                if (paginationPageNo > totalPages) paginationPageNo = totalPages;
+                if (paginationPageNo < 1) paginationPageNo = 1;
+
+                // Paginate the filtered orders
+                var paginatedOrders = orderList.Skip((paginationPageNo - 1) * finalPageSize)
+                                               .Take(finalPageSize)
+                                               .ToList();
+
+                // Update the listAfter to reflect the current page size
+                var listAfter = paginatedOrders.Count;
+
+                return (paginatedOrders, paginationPageNo, finalPageSize, totalItems, totalPages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting paginated orders.");
+                return (new List<Order>(), 1, 0, 0, 0);
+            }
+        }
+
+        public async Task<(List<Order>, int, int, int, int)> GetCustomerOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy, string customerId)
+        {
+            try
+            {
+                var orderList = await _orderRepository.GetOrderList(
+                    predicate: ord => ord.AccountId == customerId && ord.Status != OrderStatusEnum.CREATED.ToString());
                 var totalItems = orderList.Count();
 
                 // Apply sorting logic only if orderBy is provided
@@ -175,7 +216,6 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-
         public async Task UpdateOrderAsync(string id, UpdateOrderStatusDTO updateOrderStatusDTO)
         {
             var existingOrder = await _orderRepository.GetOrderById(id);
@@ -199,4 +239,3 @@ namespace InteriorCoffee.Application.Services.Implements
         }
     }
 }
-

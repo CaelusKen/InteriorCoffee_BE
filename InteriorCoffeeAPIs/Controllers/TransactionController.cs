@@ -87,18 +87,10 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "VnPay data return")]
         public async Task<IActionResult> PaymentReturn([FromQuery]VnPayReturnResponseModel model)
         {
-            string successRedirectUrl = "https://interi-coffee.vercel.app/order-confirmation/success";
-            string failureRedirectUrl = "https://interi-coffee.vercel.app/order-confirmation/fail";
+            string resultRedirectUrl = $"https://interi-coffee.vercel.app/customer/{model.vnp_TxnRef}/confirmation";
 
             var result = await _paymentService.PaymentExecute(model);
-            if(result.VnPayResponseCode == "00")
-            {
-                return Redirect(successRedirectUrl);
-            }
-            else
-            {
-                return Redirect(failureRedirectUrl);
-            }   
+            return Redirect(resultRedirectUrl);
         }
 
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsVNPaymentEndpoint)]

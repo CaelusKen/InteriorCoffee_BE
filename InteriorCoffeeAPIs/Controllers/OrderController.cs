@@ -29,37 +29,24 @@ namespace InteriorCoffeeAPIs.Controllers
         [SwaggerOperation(Summary = "Get all orders with pagination and sorting")]
         public async Task<IActionResult> GetOrders([FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
         {
-            //try
-            //{
-                OrderBy orderBy = null;
-                if (!string.IsNullOrEmpty(sortBy))
-                {
-                    orderBy = new OrderBy(sortBy, ascending ?? true);
-                }
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                orderBy = new OrderBy(sortBy, ascending ?? true);
+            }
 
-                var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetOrdersAsync(pageNo, pageSize, orderBy);
+            var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetOrdersAsync(pageNo, pageSize, orderBy);
 
-                var response = new Paginate<Order>
-                {
-                    Items = orders,
-                    PageNo = currentPage,
-                    PageSize = currentPageSize,
-                    TotalPages = totalPages,
-                    TotalItems = totalItems,
-                };
+            var response = new Paginate<Order>
+            {
+                Items = orders,
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+            };
 
-                return Ok(response);
-            //}
-            //catch (ArgumentException ex)
-            //{
-            //    _logger.LogError(ex, "Invalid argument provided.");
-            //    return BadRequest(new { message = ex.Message });
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, "An error occurred while processing your request.");
-            //    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred. Please try again later." });
-            //}
+            return Ok(response);
         }
 
         [HttpGet(ApiEndPointConstant.Order.OrderEndpoint)]
@@ -83,6 +70,31 @@ namespace InteriorCoffeeAPIs.Controllers
             }
 
             var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetMerchantOrdersAsync(pageNo, pageSize, orderBy, id);
+
+            var response = new Paginate<Order>
+            {
+                Items = orders,
+                PageNo = currentPage,
+                PageSize = currentPageSize,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet("api/orders/customer/{customerId}")]
+        [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a customer's orders excluding CREATED status")]
+        public async Task<IActionResult> GetOrdersByCustomerId(string customerId, [FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)
+        {
+            OrderBy orderBy = null;
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                orderBy = new OrderBy(sortBy, ascending ?? true);
+            }
+
+            var (orders, currentPage, currentPageSize, totalItems, totalPages) = await _orderService.GetCustomerOrdersAsync(pageNo, pageSize, orderBy, customerId);
 
             var response = new Paginate<Order>
             {

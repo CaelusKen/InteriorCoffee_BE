@@ -72,6 +72,16 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER)]
+        [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]
+        [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get unverified merchants")]
+        public async Task<IActionResult> GetUnverifiedMerchants()
+        {
+            var result = await _merchantService.GetUnverifiedMerchants();
+            return Ok(result);
+        }
+
         [HttpPost(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create merchant")]

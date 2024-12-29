@@ -15,5 +15,6 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task DeleteMerchantAsync(string id);
 
         Task VerifyMerchantAsync(string id);
+        Task<List<Merchant>> GetUnverifiedMerchants();
     }
 }

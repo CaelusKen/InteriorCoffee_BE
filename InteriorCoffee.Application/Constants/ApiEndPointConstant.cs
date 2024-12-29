@@ -109,6 +109,7 @@ namespace InteriorCoffee.Application.Constants
         public static class Merchant
         {
             public const string MerchantsEndpoint = ApiEndpoint + "/merchants";
+            public const string UnverifiedMerchantsEndpoint = MerchantsEndpoint + "/unverified";
             public const string MerchantEndpoint = MerchantsEndpoint + "/{id}";
             public const string MerchantVerificationEndpoint = MerchantEndpoint + "/verification";
         }

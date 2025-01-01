@@ -22,11 +22,19 @@ namespace InteriorCoffee.Application.Services.Implements
 
         private void InitializeFirebase()
         {
+            var serviceAccountPath = Environment.GetEnvironmentVariable("FIREBASE_SERVICE_ACCOUNT_KEY");
+
+            if (string.IsNullOrEmpty(serviceAccountPath))
+            {
+                throw new Exception("Firebase service account key path is not configured.");
+            }
+
+            // Initialize Firebase with the service account file
             if (FirebaseApp.DefaultInstance == null)
             {
                 FirebaseApp.Create(new AppOptions
                 {
-                    Credential = GoogleCredential.FromFile(_configuration["Firebase:ServiceAccountKey"])
+                    Credential = GoogleCredential.FromFile(serviceAccountPath)
                 });
             }
         }

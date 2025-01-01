@@ -28,7 +28,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [HttpPost(ApiEndPointConstant.Authentication.GoogleLoginEndpoint)]
         [ProducesResponseType(typeof(GoogleAuthenticationResponseDTO), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Google Login")]
+        [SwaggerOperation(Summary = "Google Login validation")]
         public async Task<IActionResult> GoogleLogin(string email)
         {
             var result = await _authenticationService.GoogleLogin(email);

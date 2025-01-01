@@ -11,7 +11,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
     {
         Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO);
         Task<GoogleAuthenticationResponseDTO> GoogleLogin(string email);
-        public Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO);
+        Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO);
         Task MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO);
 
         Task SendForgetPasswordEmail(string customerEmail);

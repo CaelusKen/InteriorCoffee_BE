@@ -8,6 +8,6 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IRecaptchaService
     {
-        public Task<bool> VerifyRecaptchaAsync(string recaptchaToken);
+        Task<bool> VerifyRecaptchaAsync(string recaptchaToken);
     }
 }

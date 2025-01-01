@@ -72,7 +72,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpGet(ApiEndPointConstant.Merchant.UnverifiedMerchantsEndpoint)]
         [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get unverified merchants")]

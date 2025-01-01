@@ -21,4 +21,16 @@ namespace InteriorCoffee.Application.DTOs.Authentication
             Status = status;
         }
     }
+
+    public class GoogleAuthenticationResponseDTO
+    {
+        public string AccessToken { get; set; }
+        public string Email { get; set; }
+
+        public GoogleAuthenticationResponseDTO(string accessToken, string email)
+        {
+            AccessToken = accessToken;
+            Email = email;
+        }
+    }
 }

@@ -9,13 +9,10 @@ using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
+using static InteriorCoffee.Application.Constants.ApiEndPointConstant;
+using Account = InteriorCoffee.Domain.Models.Account;
 
 namespace InteriorCoffee.Application.Services.Implements
 {
@@ -23,13 +20,15 @@ namespace InteriorCoffee.Application.Services.Implements
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IMerchantRepository _merchantRepository;
+        private readonly FirebaseService _firebaseService;
 
         public AuthenticationService(ILogger<AuthenticationService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IAccountRepository accountRepository,
-            IMerchantRepository merchantRepository)
+            IMerchantRepository merchantRepository, FirebaseService firebaseService)
             : base(logger, mapper, httpContextAccessor)
         {
             _accountRepository = accountRepository;
             _merchantRepository = merchantRepository;
+            _firebaseService = firebaseService;
         }
 
         public async Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO)
@@ -48,6 +47,15 @@ namespace InteriorCoffee.Application.Services.Implements
             return authenticationResponse;
         }
 
+        public async Task<GoogleAuthenticationResponseDTO> GoogleLogin(string email)
+        {
+            var user = await _firebaseService.GetUserByEmailAsync(email);
+            if (user == null) throw new NotFoundException("Requested email not found");
+
+            var token = JwtUtil.GenerateJwtToken(user, AccountRoleEnum.CUSTOMER.ToString());
+            GoogleAuthenticationResponseDTO authenticationResponse = new GoogleAuthenticationResponseDTO(token, user.Email);
+            return authenticationResponse;
+        }
         public async Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO)
         {
             Account account = await _accountRepository.GetAccount(
@@ -71,7 +79,7 @@ namespace InteriorCoffee.Application.Services.Implements
         {
             //Create Merchant
 
-            Merchant merchant = _mapper.Map<Merchant>(merchantRegisteredDTO);
+            Domain.Models.Merchant merchant = _mapper.Map<Domain.Models.Merchant>(merchantRegisteredDTO);
             await _merchantRepository.CreateMerchant(merchant);
 
             Account account = await _accountRepository.GetAccount(

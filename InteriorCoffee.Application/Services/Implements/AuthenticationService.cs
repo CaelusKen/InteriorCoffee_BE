@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Principal;
 using static InteriorCoffee.Application.Constants.ApiEndPointConstant;
 using Account = InteriorCoffee.Domain.Models.Account;
 
@@ -47,13 +48,32 @@ namespace InteriorCoffee.Application.Services.Implements
             return authenticationResponse;
         }
 
-        public async Task<GoogleAuthenticationResponseDTO> GoogleLogin(string email)
+        public async Task<AuthenticationResponseDTO> GoogleLogin(string email)
         {
             var user = await _firebaseService.GetUserByEmailAsync(email);
             if (user == null) throw new NotFoundException("Requested email not found");
 
-            var token = JwtUtil.GenerateJwtToken(user, AccountRoleEnum.CUSTOMER.ToString());
-            GoogleAuthenticationResponseDTO authenticationResponse = new GoogleAuthenticationResponseDTO(token, user.Email);
+            Account account = await _accountRepository.GetAccount(predicate: a => a.Email.Equals(email));
+            if(account == null)
+            {
+                //Create new account
+                RegisteredDTO registeredDTO = new RegisteredDTO()
+                {
+                    Email = email,
+                    UserName = email.Substring(0, email.IndexOf('@')),
+                    Address = string.Empty,
+                    Avatar = string.Empty,
+                    Password = HashUtil.ToSHA256Hash(email),
+                    PhoneNumber = string.Empty
+                };  
+
+                account = _mapper.Map<Account>(registeredDTO);
+
+                await _accountRepository.CreateAccount(account);
+            }
+
+            var token = JwtUtil.GenerateJwtToken(account, account.Role);
+            AuthenticationResponseDTO authenticationResponse = new AuthenticationResponseDTO(token, account.UserName, account.Email, account.Status);
             return authenticationResponse;
         }
         public async Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO)

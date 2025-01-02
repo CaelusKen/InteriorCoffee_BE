@@ -225,6 +225,12 @@ namespace InteriorCoffee.Application.Services.Implements
             // Preserve the existing _id before mapping
             var existingId = existingAccount._id;
 
+            //Check if user update password
+            if(existingAccount.Password != updateAccountDto.Password)
+            {
+                updateAccountDto.Password = HashUtil.ToSHA256Hash(updateAccountDto.Password);
+            }
+
             // Map the updated fields to the existing account, excluding _id
             _mapper.Map(updateAccountDto, existingAccount);
 

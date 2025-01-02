@@ -68,6 +68,7 @@ namespace InteriorCoffee.Application.Services.Implements
                 };  
 
                 account = _mapper.Map<Account>(registeredDTO);
+                account.Role = AccountRoleEnum.CUSTOMER.ToString();
 
                 await _accountRepository.CreateAccount(account);
             }

@@ -34,6 +34,7 @@ namespace InteriorCoffee.Application.Services.Implements
             {
                 var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
                 var merchantRepository = scope.ServiceProvider.GetRequiredService<IMerchantRepository>();
+                var productRepository = scope.ServiceProvider.GetRequiredService<IProductRepository>(); // Assuming a product repository
                 var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
                 var client = scope.ServiceProvider.GetRequiredService<IMongoClient>();
@@ -101,6 +102,13 @@ namespace InteriorCoffee.Application.Services.Implements
                         }
                     }
 
+                    // Subtract product quantities
+                    foreach (var product in parentOrder.OrderProducts)
+                    {
+                        await DecreaseProductQuantity(product._id, product.Quantity);
+                        _logger.LogInformation($"Decreased quantity for product {product._id} by {product.Quantity}.");
+                    }
+
                     await session.CommitTransactionAsync();
 
                     // Verify final status of Parent Order
@@ -119,6 +127,17 @@ namespace InteriorCoffee.Application.Services.Implements
                     await session.AbortTransactionAsync();
                     _logger.LogError(ex, "Error occurred while processing Parent Order.");
                 }
+            }
+        }
+
+        private async Task DecreaseProductQuantity(string productId, int quantity)
+        {
+            var productRepository = _serviceProvider.GetRequiredService<IProductRepository>();
+            var product = await productRepository.GetProductByIdAsync(productId);
+            if (product != null)
+            {
+                product.Quantity -= quantity;
+                await productRepository.UpdateProductAsync(productId, product);
             }
         }
     }

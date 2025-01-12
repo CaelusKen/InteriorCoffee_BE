@@ -64,6 +64,7 @@ namespace InteriorCoffeeAPIs.Extensions
                 config["PaypalOptions:Mode"]
             ));
 
+            services.AddSingleton<FirebaseService>();
             #endregion
 
             #region Service Scope

@@ -15,7 +15,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task UpdateTransaction(Transaction transaction);
         Task DeleteTransaction(string id);
 
-        public Task<(List<Transaction>, int, int, int)> GetTransactionsAsync(int pageNumber, int pageSize);
+        Task<(List<Transaction>, int, int, int)> GetTransactionsAsync(int pageNumber, int pageSize);
 
         #region Get Function
         Task<Transaction> GetTransaction(Expression<Func<Transaction, bool>> predicate = null,

@@ -162,6 +162,14 @@ namespace InteriorCoffee.Application.Services.Implements
             #endregion
         }
 
+        public async Task<List<Merchant>> GetUnverifiedMerchants()
+        {
+            var result = await _merchantRepository.GetMerchantList(
+                predicate: m => m.Status == MerchantStatusEnum.UNVERIFIED.ToString()
+                );
+
+            return result;
+        }
 
         public async Task<Merchant> GetMerchantByIdAsync(string id)
         {

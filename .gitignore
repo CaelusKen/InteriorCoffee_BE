@@ -407,3 +407,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+#Firebase service account
+Secrets/firebase-service-account.json

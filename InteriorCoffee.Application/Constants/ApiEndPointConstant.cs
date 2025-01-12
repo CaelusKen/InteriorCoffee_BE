@@ -17,6 +17,7 @@ namespace InteriorCoffee.Application.Constants
             public const string AuthenticationEndpoint = ApiEndpoint + "/auth";
             public const string ForgetPasswordEndpoint = AuthenticationEndpoint + "/forget-password";
             public const string LoginEndpoint = AuthenticationEndpoint + "/login";
+            public const string GoogleLoginEndpoint = AuthenticationEndpoint + "/login-google";
             public const string RegisterEndpoint = AuthenticationEndpoint + "/register";
             public const string MerchantRegisterEndpoint = AuthenticationEndpoint + "/merchant/register";
         }
@@ -90,6 +91,7 @@ namespace InteriorCoffee.Application.Constants
         {
             public const string ProductsEndpoint = ApiEndpoint + "/products";
             public const string ProductEndpoint = ProductsEndpoint + "/{id}";
+            public const string ProductReviewsEndpoint = ProductEndpoint + "/reviews";
             public const string SoftDeleteProductEndpoint = ProductsEndpoint + "/soft-delete/{id}";
         }
 
@@ -109,6 +111,7 @@ namespace InteriorCoffee.Application.Constants
         public static class Merchant
         {
             public const string MerchantsEndpoint = ApiEndpoint + "/merchants";
+            public const string UnverifiedMerchantsEndpoint = MerchantsEndpoint + "/unverified";
             public const string MerchantEndpoint = MerchantsEndpoint + "/{id}";
             public const string MerchantVerificationEndpoint = MerchantEndpoint + "/verification";
         }

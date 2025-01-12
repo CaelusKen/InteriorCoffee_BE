@@ -69,8 +69,21 @@ namespace InteriorCoffee.Application.Services.Implements
 
         public async Task CreateReview(CreateReviewDTO createReviewDTO)
         {
-            Review newReview = _mapper.Map<Review>(createReviewDTO);
-            await _reviewRepository.CreateReview(newReview);
+            List<CreateReviewListDTO> reviews = new List<CreateReviewListDTO>();
+
+            createReviewDTO.ProductIds.ForEach(p =>
+            {
+                reviews.Add(new CreateReviewListDTO()
+                {
+                    AccountId = createReviewDTO.AccountId,
+                    Comment = createReviewDTO.Comment,
+                    Rating = createReviewDTO.Rating,
+                    ProductId = p
+                });
+            });
+
+            List<Review> newReviews = _mapper.Map<List<Review>>(reviews);
+            await _reviewRepository.CreateManyReviews(newReviews);
         }
 
         public async Task UpdateReview(string id, UpdateReviewDTO updateReviewDTO)

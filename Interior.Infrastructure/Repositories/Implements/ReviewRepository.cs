@@ -181,7 +181,10 @@ namespace InteriorCoffee.Infrastructure.Repositories.Implements
         {
             await _reviews.InsertOneAsync(review);
         }
-
+        public async Task CreateManyReviews(List<Review> reviews)
+        {
+            await _reviews.InsertManyAsync(reviews);
+        }
         public async Task DeleteReview(string id)
         {
             FilterDefinition<Review> filterDefinition = Builders<Review>.Filter.Eq("_id", id);

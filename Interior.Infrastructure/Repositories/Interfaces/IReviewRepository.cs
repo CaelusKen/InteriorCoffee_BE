@@ -14,6 +14,7 @@ namespace InteriorCoffee.Infrastructure.Repositories.Interfaces
         Task<(List<Review>, int)> GetReviewsAsync();
         Task<Review> GetReviewById(string id);
         Task CreateReview(Review review);
+        Task CreateManyReviews(List<Review> reviews);
         Task UpdateReview(Review review);
         Task DeleteReview(string id);
 

@@ -2,6 +2,7 @@
 using InteriorCoffee.Application.DTOs.Order;
 using InteriorCoffee.Application.Enums.Order;
 using InteriorCoffee.Domain.Models;
+using InteriorCoffee.Domain.Models.Documents;
 using MongoDB.Bson;
 using System;
 
@@ -27,6 +28,8 @@ namespace InteriorCoffee.Application.Mappers.Orders
             // Mapping for UpdateOrderStatusDTO to Order
             CreateMap<UpdateOrderStatusDTO, Order>()
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.Now));
+
+            CreateMap<OrderProducts, GetOrderProductsDTO>();
         }
     }
 }

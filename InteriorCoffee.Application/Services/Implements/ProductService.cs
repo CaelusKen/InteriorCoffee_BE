@@ -25,13 +25,15 @@ namespace InteriorCoffee.Application.Services.Implements
     {
         private readonly IProductRepository _productRepository;
         private readonly IProductCategoryRepository _productCategoryRepository;
+        private readonly IReviewRepository _reviewRepository;
 
         public ProductService(ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, 
-            IProductRepository productRepository, IProductCategoryRepository productCategoryRepository)
+            IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, IReviewRepository reviewRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _productRepository = productRepository;
             _productCategoryRepository = productCategoryRepository;
+            _reviewRepository = reviewRepository;
         }
 
         #region Utility Function
@@ -230,6 +232,13 @@ namespace InteriorCoffee.Application.Services.Implements
                 throw new NotFoundException($"Product with id {id} not found.");
             }
             return product;
+        }
+
+        public async Task<List<Review>> GetProductReview(string id)
+        {
+            var productReviews = await _reviewRepository.GetReviewList(
+                predicate: r => r.ProductId == id);
+            return productReviews;
         }
 
         public async Task CreateProductAsync(CreateProductDTO createProductDTO)

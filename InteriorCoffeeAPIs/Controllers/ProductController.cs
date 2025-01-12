@@ -107,6 +107,15 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [HttpGet(ApiEndPointConstant.Product.ProductReviewsEndpoint)]
+        [ProducesResponseType(typeof(List<InteriorCoffee.Domain.Models.Review>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a product by id")]
+        public async Task<IActionResult> GetProductReview(string id)
+        {
+            var result = await _productService.GetProductReview(id);
+            return Ok(result);
+        }
+
         //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPost(ApiEndPointConstant.Product.ProductsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

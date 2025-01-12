@@ -20,11 +20,13 @@ namespace InteriorCoffee.Application.Services.Implements
     public class OrderService : BaseService<OrderService>, IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IProductRepository _productRepository;
 
-        public OrderService(ILogger<OrderService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IOrderRepository orderRepository)
-            : base(logger, mapper, httpContextAccessor)
+        public OrderService(ILogger<OrderService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor,
+            IOrderRepository orderRepository, IProductRepository productRepository) : base(logger, mapper, httpContextAccessor)
         {
             _orderRepository = orderRepository;
+            _productRepository = productRepository;
         }
 
         private static readonly Dictionary<string, string> SortableProperties = new Dictionary<string, string>
@@ -99,14 +101,41 @@ namespace InteriorCoffee.Application.Services.Implements
             }
         }
 
-        public async Task<Order> GetOrderByIdAsync(string id)
+        public async Task<GetOrderDTO> GetOrderByIdAsync(string id)
         {
             var order = await _orderRepository.GetOrderById(id);
             if (order == null)
             {
                 throw new NotFoundException($"Order with id {id} not found.");
             }
-            return order;
+
+            GetOrderDTO orderDto = new GetOrderDTO()
+            {
+                _id = order._id,
+                AccountId = order.AccountId,
+                FeeAmount = order.FeeAmount,
+                OrderDate = order.OrderDate,
+                ShippingAddress = order.ShippingAddress,
+                Status = order.Status,
+                SystemIncome = order.SystemIncome,
+                TotalAmount = order.TotalAmount,
+                UpdatedDate = order.UpdatedDate,
+                VAT = order.VAT,
+                VoucherId = order.VoucherId,
+            };
+
+            List<GetOrderProductsDTO> getOrderProductsDTOs = _mapper.Map<List<GetOrderProductsDTO>>(order.OrderProducts);
+
+            List<Product> products = await _productRepository.GetProductList();
+
+            getOrderProductsDTOs.ForEach(async dto =>
+            {
+                dto.Image = products.Where(p => p._id == dto._id).FirstOrDefault().Images.Thumbnail;
+            });
+
+            orderDto.OrderProducts = getOrderProductsDTOs;
+
+            return orderDto;
         }
 
         public async Task<(List<Order>, int, int, int, int)> GetMerchantOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy, string id)

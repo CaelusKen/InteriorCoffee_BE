@@ -13,10 +13,10 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IPaymentService
     {
-        public Task<string> CreatePaymentUrl(HttpContext context, CreateTransactionDTO model);
-        public Task<VnPaymentResponseModel> PaymentExecute(VnPayReturnResponseModel collections);
+        Task<string> CreatePaymentUrl(HttpContext context, CreateTransactionDTO model);
+        Task<VnPaymentResponseModel> PaymentExecute(VnPayReturnResponseModel collections);
 
-        public Task<CreateOrderResponse> CreatePaypalOrder(CreateTransactionDTO model);
-        public Task<CaptureOrderResponse> CapturePaypalOrder(string orderId);
+        Task<CreateOrderResponse> CreatePaypalOrder(CreateTransactionDTO model);
+        Task<CaptureOrderResponse> CapturePaypalOrder(string orderId);
     }
 }

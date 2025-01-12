@@ -10,10 +10,10 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IStyleService
     {
-        public Task<(List<Style>, int, int, int, int)> GetStylesAsync(int? pageNo, int? pageSize);
-        public Task<Style> GetStyleById(string id);
-        public Task CreateStyle(StyleDTO styleDTO);
-        public Task UpdateStyle(string id, StyleDTO styleDTO);
-        public Task DeleteStyle(string id);
+        Task<(List<Style>, int, int, int, int)> GetStylesAsync(int? pageNo, int? pageSize);
+        Task<Style> GetStyleById(string id);
+        Task CreateStyle(StyleDTO styleDTO);
+        Task UpdateStyle(string id, StyleDTO styleDTO);
+        Task DeleteStyle(string id);
     }
 }

@@ -26,6 +26,15 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [HttpPost(ApiEndPointConstant.Authentication.GoogleLoginEndpoint)]
+        [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Google Login")]
+        public async Task<IActionResult> GoogleLogin(string email)
+        {
+            var result = await _authenticationService.GoogleLogin(email);
+            return Ok(result);
+        }
+
         [HttpPost(ApiEndPointConstant.Authentication.RegisterEndpoint)]
         [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Register for new customer")]

@@ -11,7 +11,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
         Task<(List<Order>, int, int, int, int)> GetOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy);
         Task<(List<Order>, int, int, int, int)> GetMerchantOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy, string id);
         Task<(List<Order>, int, int, int, int)> GetCustomerOrdersAsync(int? pageNo, int? pageSize, OrderBy orderBy, string customerId);
-        Task<Order> GetOrderByIdAsync(string id);
+        Task<GetOrderDTO> GetOrderByIdAsync(string id);
         Task<string> CreateOrderAsync(CreateOrderDTO createOrderDTO);
         Task UpdateOrderAsync(string id, UpdateOrderStatusDTO order);
         Task DeleteOrderAsync(string id);

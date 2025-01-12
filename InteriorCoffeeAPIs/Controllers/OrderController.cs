@@ -54,7 +54,7 @@ namespace InteriorCoffeeAPIs.Controllers
 
         [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Order.OrderEndpoint)]
-        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetOrderDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get an order by id")]
         public async Task<IActionResult> GetOrderById(string id)
         {

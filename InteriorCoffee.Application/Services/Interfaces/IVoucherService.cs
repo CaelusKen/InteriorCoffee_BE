@@ -10,10 +10,10 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IVoucherService
     {
-        public Task<(List<Voucher>, int, int, int, int)> GetVouchersAsync(int? pageNo, int? pageSize);
-        public Task<Voucher> GetVoucherById(string id);
-        public Task CreateVoucher(CreateVoucherDTO createVoucherDTO);
-        public Task UpdateVoucher(string id, UpdateVoucherDTO updatedVoucher);
-        public Task DeleteVoucher(string id);
+        Task<(List<Voucher>, int, int, int, int)> GetVouchersAsync(int? pageNo, int? pageSize);
+        Task<Voucher> GetVoucherById(string id);
+        Task CreateVoucher(CreateVoucherDTO createVoucherDTO);
+        Task UpdateVoucher(string id, UpdateVoucherDTO updatedVoucher);
+        Task DeleteVoucher(string id);
     }
 }

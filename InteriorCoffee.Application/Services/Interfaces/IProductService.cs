@@ -14,6 +14,7 @@ namespace InteriorCoffee.Application.Services.Interfaces
                    int? pageNo, int? pageSize, decimal? minPrice, decimal? maxPrice, 
                    OrderBy orderBy, ProductFilterDTO filter, string keyword = null);
         Task<Product> GetProductByIdAsync(string id);
+        Task<List<Review>> GetProductReview(string id);
         Task CreateProductAsync(CreateProductDTO product);
         Task UpdateProductAsync(string id, JsonElement updateProduct);
         Task SoftDeleteProductAsync(string id);

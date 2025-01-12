@@ -108,7 +108,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Product.ProductReviewsEndpoint)]
-        [ProducesResponseType(typeof(InteriorCoffee.Domain.Models.Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<InteriorCoffee.Domain.Models.Review>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a product by id")]
         public async Task<IActionResult> GetProductReview(string id)
         {

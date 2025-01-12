@@ -14,7 +14,7 @@ namespace InteriorCoffee.Application.Mappers.Reviews
     {
         public ReviewMapper()
         {
-            CreateMap<CreateReviewDTO, Review>()
+            CreateMap<CreateReviewListDTO, Review>()
                 .ForMember(des => des._id, src => src.MapFrom(src => ObjectId.GenerateNewId().ToString()));
         }
     }

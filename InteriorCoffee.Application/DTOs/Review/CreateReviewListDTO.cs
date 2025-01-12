@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace InteriorCoffee.Application.DTOs.Review
 {
-    public class CreateReviewDTO
+    public class CreateReviewListDTO
     {
         public string Comment { get; set; }
         public float Rating { get; set; }
 
-        public List<string> ProductIds { get; set; } = null!;
+        public string ProductId { get; set; } = null!;
         public string AccountId { get; set; } = null!;
     }
 }

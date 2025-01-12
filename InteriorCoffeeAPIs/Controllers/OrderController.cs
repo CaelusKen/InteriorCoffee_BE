@@ -1,9 +1,11 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Order;
 using InteriorCoffee.Application.DTOs.OrderBy;
+using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Services.Interfaces;
 using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
+using InteriorCoffeeAPIs.Validate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,6 +24,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _orderService = orderService;
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Order.OrdersEndpoint)]
         [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,6 +52,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get an order by id")]
@@ -58,6 +62,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Order.MerchantOrdersEndpoint)]
         [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a merchant's orders")]
@@ -83,6 +88,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet("api/orders/customer/{customerId}")]
         [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a customer's orders excluding CREATED status")]
@@ -108,6 +114,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(response);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPost(ApiEndPointConstant.Order.OrdersEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create order")]
@@ -117,6 +124,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(orderId);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPatch(ApiEndPointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update an order's status")]
@@ -128,6 +136,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpDelete(ApiEndPointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete an order")]

@@ -1,5 +1,6 @@
 ﻿using InteriorCoffee.Application.Constants;
 using InteriorCoffee.Application.DTOs.Transaction;
+using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.Helpers;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -7,6 +8,8 @@ using InteriorCoffee.Domain.Models;
 using InteriorCoffee.Domain.Paginate;
 using InteriorCoffee.Domain.PaymentModel.PayPal;
 using InteriorCoffee.Domain.PaymentModel.VNPay;
+using InteriorCoffeeAPIs.Validate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -53,6 +56,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create transaction (Maybe not use)")]
@@ -62,6 +66,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        [Authorize]
         [HttpPatch(ApiEndPointConstant.Transaction.TransactionEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a transaction's data (Maybe not use)")]
@@ -71,6 +76,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        [Authorize]
         [HttpDelete(ApiEndPointConstant.Transaction.TransactionEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a transaction (Maybe not use)")]
@@ -101,6 +107,7 @@ namespace InteriorCoffeeAPIs.Controllers
             }   
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsVNPaymentEndpoint)]
         [ProducesResponseType(typeof(VnPaymentUrlReponseModel), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create VnPay Url")]
@@ -126,6 +133,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPost(ApiEndPointConstant.Transaction.TransactionsPaypalEndpoint)]
         [ProducesResponseType(typeof(CreateOrderResponse), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create Paypal Order")]

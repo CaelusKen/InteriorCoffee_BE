@@ -91,6 +91,7 @@ namespace InteriorCoffee.Application.Constants
         {
             public const string ProductsEndpoint = ApiEndpoint + "/products";
             public const string ProductEndpoint = ProductsEndpoint + "/{id}";
+            public const string ProductReviewsEndpoint = ProductEndpoint + "/reviews";
             public const string SoftDeleteProductEndpoint = ProductsEndpoint + "/soft-delete/{id}";
         }
 

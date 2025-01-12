@@ -50,7 +50,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CONSULTANT)]
         [HttpPost(ApiEndPointConstant.Style.StylesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create style")]
@@ -60,7 +60,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CONSULTANT)]
         [HttpPatch(ApiEndPointConstant.Style.StyleEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a style's data")]
@@ -70,7 +70,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CONSULTANT)]
         [HttpDelete(ApiEndPointConstant.Style.StyleEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a style")]

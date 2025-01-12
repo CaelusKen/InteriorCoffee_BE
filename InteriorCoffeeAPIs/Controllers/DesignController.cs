@@ -24,6 +24,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _designService = designService;
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Design.DesignsEndpoint)]
         [ProducesResponseType(typeof(DesignResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,6 +64,7 @@ namespace InteriorCoffeeAPIs.Controllers
             //}
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Design.DesignEndpoint)]
         [ProducesResponseType(typeof(GetDesignDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a design by id")]
@@ -72,6 +74,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPost(ApiEndPointConstant.Design.DesignsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create design")]
@@ -81,6 +84,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPatch(ApiEndPointConstant.Design.DesignEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a design's data")]
@@ -92,6 +96,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpDelete(ApiEndPointConstant.Design.DesignEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a design")]

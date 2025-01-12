@@ -24,6 +24,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _merchantService = merchantService;
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER)]
         [HttpGet(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
         [ProducesResponseType(typeof(MerchantResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,7 +63,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a merchant by id")]
@@ -72,6 +73,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPost(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create merchant")]
@@ -81,7 +83,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a merchant's data")]
@@ -93,7 +95,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpDelete(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a merchant")]
@@ -105,7 +107,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
         [HttpPatch(ApiEndPointConstant.Merchant.MerchantVerificationEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a merchant's data")]

@@ -71,7 +71,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPost(ApiEndPointConstant.Template.TemplatesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create template")]
@@ -81,7 +81,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpPatch(ApiEndPointConstant.Template.TemplateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update a template's data")]
@@ -91,7 +91,7 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok("Action success");
         }
 
-        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpDelete(ApiEndPointConstant.Template.TemplateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a template")]

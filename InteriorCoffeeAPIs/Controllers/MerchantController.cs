@@ -24,7 +24,7 @@ namespace InteriorCoffeeAPIs.Controllers
             _merchantService = merchantService;
         }
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER)]
+        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Merchant.MerchantsEndpoint)]
         [ProducesResponseType(typeof(MerchantResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

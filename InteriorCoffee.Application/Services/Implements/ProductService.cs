@@ -3,6 +3,7 @@ using InteriorCoffee.Application.Configurations;
 using InteriorCoffee.Application.DTOs.OrderBy;
 using InteriorCoffee.Application.DTOs.Pagination;
 using InteriorCoffee.Application.DTOs.Product;
+using InteriorCoffee.Application.DTOs.Review;
 using InteriorCoffee.Application.Enums.Product;
 using InteriorCoffee.Application.Services.Base;
 using InteriorCoffee.Application.Services.Interfaces;
@@ -26,14 +27,17 @@ namespace InteriorCoffee.Application.Services.Implements
         private readonly IProductRepository _productRepository;
         private readonly IProductCategoryRepository _productCategoryRepository;
         private readonly IReviewRepository _reviewRepository;
+        private readonly IAccountRepository _accountRepository;
 
         public ProductService(ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, 
-            IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, IReviewRepository reviewRepository)
+            IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, IReviewRepository reviewRepository,
+            IAccountRepository accountRepository)
             : base(logger, mapper, httpContextAccessor)
         {
             _productRepository = productRepository;
             _productCategoryRepository = productCategoryRepository;
             _reviewRepository = reviewRepository;
+            _accountRepository = accountRepository;
         }
 
         #region Utility Function
@@ -234,11 +238,29 @@ namespace InteriorCoffee.Application.Services.Implements
             return product;
         }
 
-        public async Task<List<Review>> GetProductReview(string id)
+        public async Task<List<GetProductReviewDTO>> GetProductReview(string id)
         {
             var productReviews = await _reviewRepository.GetReviewList(
                 predicate: r => r.ProductId == id);
-            return productReviews;
+
+            var accounts = await _accountRepository.GetAccountList();
+
+            List<GetProductReviewDTO> reviewList = new List<GetProductReviewDTO>();
+
+            productReviews.ForEach(review =>
+            {
+                reviewList.Add(new GetProductReviewDTO()
+                {
+                    AccountId = review.AccountId,
+                    Comment = review.Comment,
+                    ProductId = review.ProductId,
+                    Rating = review.Rating,
+                    _id = review.ProductId,
+                    AccountName = accounts.Where(a => a._id == review.AccountId).FirstOrDefault().UserName
+                });
+            });
+
+            return reviewList;
         }
 
         public async Task CreateProductAsync(CreateProductDTO createProductDTO)

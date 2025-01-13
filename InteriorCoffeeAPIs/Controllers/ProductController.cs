@@ -19,6 +19,7 @@ using InteriorCoffee.Application.Utils;
 using InteriorCoffee.Application.Services.Implements;
 using InteriorCoffee.Application.Enums.Account;
 using InteriorCoffee.Application.DTOs;
+using InteriorCoffee.Application.DTOs.Review;
 
 namespace InteriorCoffeeAPIs.Controllers
 {
@@ -108,7 +109,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpGet(ApiEndPointConstant.Product.ProductReviewsEndpoint)]
-        [ProducesResponseType(typeof(List<InteriorCoffee.Domain.Models.Review>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GetProductReviewDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a product by id")]
         public async Task<IActionResult> GetProductReview(string id)
         {

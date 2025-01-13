@@ -63,7 +63,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
 
-        [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CONSULTANT)]
+        //[CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CONSULTANT)]
         [HttpGet(ApiEndPointConstant.Merchant.MerchantEndpoint)]
         [ProducesResponseType(typeof(Merchant), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a merchant by id")]

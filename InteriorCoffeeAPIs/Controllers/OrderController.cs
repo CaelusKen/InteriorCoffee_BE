@@ -89,7 +89,7 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [CustomAuthorize(AccountRoleEnum.MANAGER, AccountRoleEnum.MERCHANT, AccountRoleEnum.CUSTOMER, AccountRoleEnum.CONSULTANT)]
-        [HttpGet("api/orders/customer/{customerId}")]
+        [HttpGet(ApiEndPointConstant.Order.CustomerOrderEndpoint)]
         [ProducesResponseType(typeof(IPaginate<Order>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get a customer's orders excluding CREATED status")]
         public async Task<IActionResult> GetOrdersByCustomerId(string customerId, [FromQuery] int? pageNo, [FromQuery] int? pageSize, [FromQuery] string sortBy = null, [FromQuery] bool? ascending = null)

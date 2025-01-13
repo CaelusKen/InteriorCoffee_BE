@@ -105,6 +105,7 @@ namespace InteriorCoffee.Application.Constants
         {
             public const string OrdersEndpoint = ApiEndpoint + "/orders";
             public const string OrderEndpoint = OrdersEndpoint + "/{id}";
+            public const string CustomerOrderEndpoint = OrderEndpoint + "/customer/{customerId}";
             public const string MerchantOrdersEndpoint = OrdersEndpoint + "/merchant/{id}";
         }
 

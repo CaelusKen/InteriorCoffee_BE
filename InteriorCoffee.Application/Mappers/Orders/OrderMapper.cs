@@ -23,7 +23,7 @@ namespace InteriorCoffee.Application.Mappers.Orders
             // Mapping for Order to Order (for splitting)
             CreateMap<Order, Order>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom((src, dest, destMember, context) =>
-                    context.Items.ContainsKey("Status") ? context.Items["Status"].ToString() : src.Status));
+                    context.Items.ContainsKey("Status") ? context.Items["Status"].ToString().ToUpper() : src.Status));
 
             // Mapping for UpdateOrderStatusDTO to Order
             CreateMap<UpdateOrderStatusDTO, Order>()

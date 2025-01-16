@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Product",
+  "description": "A product in the inventory",
+  "type": "object",
+  "properties": {
+    "category-ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "images": {
+      "type": "object",
+      "properties": {
+        "thumbnail": {
+          "type": "string",
+          "format": "uri"
+        },
+        "normal-images": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "selling-price": {
+      "type": "number",
+      "minimum": 0
+    },
+    "discount": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "true-price": {
+      "type": "number",
+      "minimum": 0
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [ "ACTIVE", "INACTIVE", "IN_STOCK", "OUT_OF_STOCK", "DISCONTINUED" ]
+    },
+    "dimensions": {
+      "type": "string"
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "model-texture-url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "campaign-id": {
+      "type": "string"
+    },
+    "merchant-id": {
+      "type": "string"
+    }
+  },
+  "required": [ "category-ids", "name", "true-price", "discount"],
+  "additionalProperties": true,
+  "if": {
+    "properties": {
+      "category-id": { "type": "array" },
+      "name": { "type": "string" },
+      "selling-price": { "type": "number" },
+      "true-price": { "type": "number" },
+      "discount": { "type": "number" },
+      "status": { "type": "string" }
+    },
+    "required": [ "category-ids", "name", "true-price", "discount" ]
+  },
+  "then": {
+    "required": [ "category-ids", "name", "true-price", "discount" ]
+  },
+  "else": {
+    "required": []
+  }
+}

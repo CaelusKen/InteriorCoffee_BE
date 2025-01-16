@@ -5,6 +5,8 @@
 
 # User-specific files
 *.rsuser
+
+# User-specific files
 *.suo
 *.user
 *.userosscache
@@ -15,6 +17,7 @@
 
 # Mono auto generated files
 mono_crash.*
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -33,12 +36,19 @@ bld/
 [Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio 2015 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
@@ -47,6 +57,9 @@ Generated\ Files/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+# NUNIT
+*.VisualState.xml
+TestResult.xml
 
 # Build Results of an ATL Project
 [Dd]ebugPS/
@@ -78,6 +91,18 @@ StyleCopReport.xml
 *.pch
 *.pdb
 *.ipdb
+# DNX
+project.lock.json
+artifacts/
+
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
 *.pgc
 *.pgd
 *.rsp
@@ -118,6 +143,7 @@ ipch/
 
 # Visual Studio Trace Files
 *.e2e
+
 # TFS 2012 Local Workspace
 $tf/
 
@@ -129,8 +155,7 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
-=======
-# JustCode is a .NET coding add-in
+
 .JustCode
 
 # TeamCity is a build add-in
@@ -184,6 +209,7 @@ publish/
 *.[Pp]ublish.xml
 *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
+# TODO: Comment the next line if you want to checkin your web deploy settings 
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
@@ -204,6 +230,15 @@ PublishScripts/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/[Pp]ackages/repositories.config
 # NuGet v3's project.json files produces more ignorable files
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+# Uncomment if necessary however generally it will be regenerated when needed
+#!**/packages/repositories.config
+# NuGet v3's project.json files produces more ignoreable files
 *.nuget.props
 *.nuget.targets
 
@@ -229,6 +264,7 @@ _pkginfo.txt
 *.[Cc]ache
 # but keep track of directories ending in .cache
 !?*.[Cc]ache/
+!*.[Cc]ache/
 
 # Others
 ClientBin/
@@ -246,6 +282,12 @@ orleans.codegen.cs
 #*.snk
 
 # Since there are multiple workflows, uncomment next line to ignore bower_components
+*.pfx
+*.publishsettings
+node_modules/
+orleans.codegen.cs
+
+# Since there are multiple workflows, uncomment next line to ignore bower_components 
 # (https://github.com/github/gitignore/pull/1529#issuecomment-104372622)
 #bower_components/
 
@@ -294,6 +336,7 @@ node_modules/
 
 # Visual Studio 6 auto-generated workspace file (contains which files were open etc.)
 *.vbw
+
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
@@ -361,3 +404,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# JetBrains Rider
+.idea/
+*.sln.iml
+#Firebase service account
+Secrets/firebase-service-account.json

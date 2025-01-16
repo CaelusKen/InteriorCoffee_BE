@@ -8,7 +8,9 @@ namespace InteriorCoffee.Application.Enums.Account
 {
     public enum AccountStatusEnum
     {
-        ACTIVE,
-        INACTIVE
+        ACTIVE = 0,
+        INACTIVE = 1,
+        SUSPENDED = 2,
+        UNVERIFIED = 3
     }
 }

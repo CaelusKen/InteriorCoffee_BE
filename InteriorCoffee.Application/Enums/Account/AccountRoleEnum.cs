@@ -8,7 +8,10 @@ namespace InteriorCoffee.Application.Enums.Account
 {
     public enum AccountRoleEnum
     {
-        ADMIN,
-        CUSTOMER
+        MANAGER = 0,
+        MERCHANT = 1,
+        CONSULTANT = 2,
+        CUSTOMER = 3
     }
 }
+

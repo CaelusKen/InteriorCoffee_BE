@@ -5,11 +5,13 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteriorCoffeeAPIs", "InteriorCoffeeAPIs\InteriorCoffeeAPIs.csproj", "{56CA4B54-D304-4B06-9A1A-50137B9A1F49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interior.Infrastructure", "Interior.Infrastructure\Interior.Infrastructure.csproj", "{913B56DF-D2EC-49B5-AAAE-D40F2EE3C63A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interior.Infrastructure", "Interior.Infrastructure\Interior.Infrastructure.csproj", "{913B56DF-D2EC-49B5-AAAE-D40F2EE3C63A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteriorCoffee.Application", "InteriorCoffee.Application\InteriorCoffee.Application.csproj", "{D18086FB-AE07-4007-9335-77B2907E8408}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteriorCoffee.Application", "InteriorCoffee.Application\InteriorCoffee.Application.csproj", "{D18086FB-AE07-4007-9335-77B2907E8408}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteriorCoffee.Domain", "InteriorCoffee.Domain\InteriorCoffee.Domain.csproj", "{70215874-796D-4543-9E13-F3635703BC02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteriorCoffee.Domain", "InteriorCoffee.Domain\InteriorCoffee.Domain.csproj", "{70215874-796D-4543-9E13-F3635703BC02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteriorCoffee.UnitTest", "InteriorCoffee.UnitTest\InteriorCoffee.UnitTest.csproj", "{67AF93FA-FC7F-4178-8054-3CCC51B1C4CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{70215874-796D-4543-9E13-F3635703BC02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70215874-796D-4543-9E13-F3635703BC02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70215874-796D-4543-9E13-F3635703BC02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67AF93FA-FC7F-4178-8054-3CCC51B1C4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67AF93FA-FC7F-4178-8054-3CCC51B1C4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67AF93FA-FC7F-4178-8054-3CCC51B1C4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67AF93FA-FC7F-4178-8054-3CCC51B1C4CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,12 +8,11 @@ namespace InteriorCoffee.Domain.Models.Documents
 {
     public class OrderProducts
     {
-        public string _id { get; set; }
-        public string Name { get; set; }
+        public string _id { get; set; } = null!;
+        public string Name { get; set; } = null!;
         public string Description { get; set; }
         public double Price { get; set; }
-        public List<string> Category { get; set; }
-        public string Dimensions { get; set; }
-        public List<string> Materials { get; set; }
+        public int Quantity { get; set; }
+        public string MerchantId { get; set; } = null!;
     }
 }

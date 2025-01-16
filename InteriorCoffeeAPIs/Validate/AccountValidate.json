@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/account-patch.schema.json",
+  "title": "AccountPatch",
+  "description": "Partial update for an account",
+  "type": "object",
+  "properties": {
+    "user-name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "description": "The user's name"
+    },
+    "password": {
+      "type": "string",
+      "minLength": 8,
+      "pattern": "^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$",
+      "description": "The user's password"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "minLength": 1,
+      "description": "The user's email address"
+    },
+    "phone-number": {
+      "type": "string",
+      "pattern": "^[0-9]{10,12}$",
+      "description": "The user's phone number"
+    },
+    "address": {
+      "type": "string",
+      "description": "The user's address"
+    },
+    "avatar": {
+      "type": "string",
+      "format": "uri",
+      "description": "The user's avatar URL"
+    },
+    "merchant-id": {
+      "type": "string",
+      "description": "The merchant ID associated with the account"
+    },
+    "role-id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [ "MANAGER", "MERCHANT", "CUSTOMER", "CONSULTANT" ]
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The role ID associated with the account"
+        }
+      ],
+      "description": "The role ID or role name associated with the account"
+    }
+  },
+  "additionalProperties": true,
+  "if": {
+    "properties": {
+      "user-name": { "type": "string" },
+      "password": { "type": "string" },
+      "email": { "type": "string" },
+      "phone-number": { "type": "string" }
+    },
+    "required": [ "user-name", "password", "email", "phone-number" ]
+  },
+  "then": {
+    "required": [ "user-name", "password", "email", "phone-number" ]
+  },
+  "else": {
+    "required": []
+  }
+}

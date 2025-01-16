@@ -10,29 +10,22 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
+using InteriorCoffee.Application.Helpers;
+using Newtonsoft.Json.Schema.Generation;
+using Newtonsoft.Json.Schema;
+using InteriorCoffeeAPIs.Validate;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies.Backup;
+using Hangfire.Mongo.Migration.Strategies;
+using System.Text.Json;
+using Interior.Infrastructure.Repositories.Interfaces;
+using Interior.Infrastructure.Repositories.Implements;
 
 namespace InteriorCoffeeAPIs.Extensions
 {
     public static class DependencyServices
     {
-        /*        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration config)
-                {
-                    services.Configure<MongoDBContext>(config.GetSection("MongoDbSection"));
-                    return services;
-                }
-
-                public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
-                {
-                    #region Other
-                    services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-                    services.AddScoped<IMongoClient>(sp =>
-                    {
-                        var getContext = sp.GetRequiredService<IOptions<MongoDBContext>>();
-                        IMongoClient client = new MongoClient(getContext.Value.ConnectionURI);
-                        return client;
-                    });
-                    #endregion*/
-
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration config)
         {
             services.AddSingleton<IMongoClient, MongoClient>(sp =>
@@ -63,45 +56,50 @@ namespace InteriorCoffeeAPIs.Extensions
         {
             #region Other
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddSingleton(x => new PaypalClient(
+                config["PaypalOptions:AppId"],
+                config["PaypalOptions:AppSecret"],
+                config["PaypalOptions:Mode"]
+            ));
+
+            services.AddSingleton<FirebaseService>();
             #endregion
 
             #region Service Scope
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<ICampaignProductsService, CampaignProductsService>();
             services.AddScoped<IChatSessionService, ChatSessionService>();
             services.AddScoped<IDesignService, DesignService>();
+            services.AddScoped<IFloorService, FloorService>();
             services.AddScoped<IMerchantService, MerchantService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IReviewService, ReviewService>();
-            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ISaleCampaignService, SaleCampaignService>();
             services.AddScoped<IStyleService, StyleService>();
             services.AddScoped<ITemplateService, TemplateService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IVoucherService, VoucherService>();
-            services.AddScoped<IVoucherTypeService, VoucherTypeService>();
             #endregion
 
             #region Repository Scope
             services.AddScoped<IAccountRepository, AccountRepository>();
-            services.AddScoped<ICampaignProductsRepository, CampaignProductsRepository>();
             services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
             services.AddScoped<IDesignRepository, DesignRepository>();
+            services.AddScoped<IFloorRepository, FloorRepository>();
             services.AddScoped<IMerchantRepository, MerchantRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ISaleCampaignRepository, SaleCampaignRepository>();
             services.AddScoped<IStyleRepository, StyleRepository>();
             services.AddScoped<ITemplateRepository, TemplateRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IVoucherRepository, VoucherRepository>();
-            services.AddScoped<IVoucherTypeRepository, VoucherTypeRepository>();
             #endregion
 
             return services;
@@ -163,7 +161,68 @@ namespace InteriorCoffeeAPIs.Extensions
                     Example = OpenApiAnyFactory.CreateFromJson("\"13:45:42.0000000\"")
                 });
                 options.EnableAnnotations();
+
+                options.MapType<JsonElement>(() => new OpenApiSchema { Type = "object" });
             });
+            return services;
+        }
+
+        public static IServiceCollection AddJsonSchemaValidation(this IServiceCollection services, string schemaDirectoryPath)
+        {
+            var schemaFiles = Directory.GetFiles(schemaDirectoryPath, "*.json");
+            var validationServices = new Dictionary<string, JsonValidationService>();
+
+            using (var serviceProvider = services.BuildServiceProvider())
+            {
+                var logger = serviceProvider.GetRequiredService<ILogger<JsonValidationService>>();
+
+                foreach (var schemaFile in schemaFiles)
+                {
+                    try
+                    {
+                        var validationService = new JsonValidationService(schemaFile, logger);
+                        var schemaName = Path.GetFileNameWithoutExtension(schemaFile);
+                        validationServices[schemaName] = validationService;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, $"Failed to load schema from file: {schemaFile}");
+                    }
+                }
+            }
+
+            services.AddSingleton<IDictionary<string, JsonValidationService>>(validationServices);
+
+            return services;
+        }
+
+        public static IServiceCollection AddHangfire(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseMongoStorage(config.GetSection("MongoDbSection:ConnectionURI").Value, config.GetSection("MongoDbSection:DatabaseName").Value)
+            );
+
+            return services;
+        }
+
+        public static IServiceCollection AddHangfireServices(this IServiceCollection services, IConfiguration config)
+        {
+            var mongoConnectionString = config.GetSection("MongoDbSection:ConnectionURI").Value;
+            var mongoDatabaseName = config.GetSection("MongoDbSection:DatabaseName").Value;
+            services.AddHangfire(config => config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer().UseRecommendedSerializerSettings()
+            .UseMongoStorage(mongoConnectionString, mongoDatabaseName, new MongoStorageOptions
+            {
+                MigrationOptions = new MongoMigrationOptions
+                {
+                    MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                    BackupStrategy = new CollectionMongoBackupStrategy()
+                }
+            }));
+            services.AddHangfireServer();
             return services;
         }
     }

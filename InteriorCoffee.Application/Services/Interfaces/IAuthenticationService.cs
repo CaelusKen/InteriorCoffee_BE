@@ -9,8 +9,11 @@ namespace InteriorCoffee.Application.Services.Interfaces
 {
     public interface IAuthenticationService
     {
-        public Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO);
-        public Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO);
-        public Task<AuthenticationResponseDTO> MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO);
+        Task<AuthenticationResponseDTO> Login(LoginDTO loginDTO);
+        Task<AuthenticationResponseDTO> GoogleLogin(string email);
+        Task<AuthenticationResponseDTO> Register(RegisteredDTO registeredDTO);
+        Task MerchantRegister(MerchantRegisteredDTO merchantRegisteredDTO);
+
+        Task SendForgetPasswordEmail(string customerEmail);
     }
 }

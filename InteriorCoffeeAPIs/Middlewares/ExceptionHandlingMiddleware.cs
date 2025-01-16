@@ -31,12 +31,12 @@ namespace InteriorCoffeeAPIs.Middlewares
             context.Response.ContentType = "application/json";
             var response = context.Response;
 
-            var errorResponse = new ErrorDTO() { TimeStamp = DateTime.UtcNow, Error = exception.Message };
+            var errorResponse = new ErrorDTO() { TimeStamp = DateTime.Now, Error = new List<string> { exception.Message } };
             switch (exception)
             {
                 //add more custom exception
                 //For example case AppException: do something
-                case BadHttpRequestException:
+                case BadHttpRequestException: case ArgumentException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     errorResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                     _logger.LogInformation(exception.Message);
@@ -49,6 +49,11 @@ namespace InteriorCoffeeAPIs.Middlewares
                 case ConflictException:
                     response.StatusCode= (int)HttpStatusCode.Conflict;
                     errorResponse.StatusCode= (int)HttpStatusCode.Conflict;
+                    _logger.LogInformation(exception.Message);
+                    break;
+                case NotFoundException:
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    errorResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     _logger.LogInformation(exception.Message);
                     break;
                 default:

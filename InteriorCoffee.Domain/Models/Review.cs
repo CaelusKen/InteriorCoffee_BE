@@ -16,7 +16,7 @@ namespace InteriorCoffee.Domain.Models
         public string Comment { get; set; }
         public float Rating { get; set; }
 
-        public string ProductId { get; set; }
-        public string AccountId { get; set; }
+        public string ProductId { get; set; } = null!;
+        public string AccountId { get; set; } = null!;
     }
 }

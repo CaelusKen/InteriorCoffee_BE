@@ -1,0 +1,41 @@
+# github action to deploy interior-coffee api to azure
+
+name: Deploy Test API
+
+on:
+  push: 
+    branches:
+      - testing-area
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: "interior-coffee-api"
+
+# define jobs
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install dependencies
+        run: dotnet restore ./InteriorCoffeeAPIs/InteriorCoffeeAPIs.csproj
+
+      - name: Build
+        run: dotnet build ./InteriorCoffeeAPIs/InteriorCoffeeAPIs.csproj --configuration Release --no-restore
+
+      # publish code
+      - name: Publish
+        run: dotnet publish ./InteriorCoffeeAPIs/InteriorCoffeeAPIs.csproj --configuration Release --output ./publish
+
+      # deploy to Azure
+      - name: Deploy API to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEPAPP_NAME }}
+          publish-profile: ${{secrets.INTERICOFFEE_API_SECRET}}
+          package: ./publish

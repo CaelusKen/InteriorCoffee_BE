@@ -26,6 +26,15 @@ namespace InteriorCoffeeAPIs.Controllers
             return Ok(result);
         }
 
+        [HttpPost(ApiEndPointConstant.Authentication.GoogleLoginEndpoint)]
+        [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Google Login")]
+        public async Task<IActionResult> GoogleLogin(string email)
+        {
+            var result = await _authenticationService.GoogleLogin(email);
+            return Ok(result);
+        }
+
         [HttpPost(ApiEndPointConstant.Authentication.RegisterEndpoint)]
         [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Register for new customer")]
@@ -36,12 +45,21 @@ namespace InteriorCoffeeAPIs.Controllers
         }
 
         [HttpPost(ApiEndPointConstant.Authentication.MerchantRegisterEndpoint)]
-        [ProducesResponseType(typeof(AuthenticationResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Register for merchant")]
         public async Task<IActionResult> MerchantRegister([FromBody] MerchantRegisteredDTO merchantRegisteredDTO)
         {
-            var result = await _authenticationService.MerchantRegister(merchantRegisteredDTO);
-            return Ok(result);
+            await _authenticationService.MerchantRegister(merchantRegisteredDTO);
+            return Ok("Registered successfully");
+        }
+
+        [HttpPost(ApiEndPointConstant.Authentication.ForgetPasswordEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Send forget password email")]
+        public async Task<IActionResult> SendForgetPasswordEmail([FromQuery]string email)
+        {
+            await _authenticationService.SendForgetPasswordEmail(email);
+            return Ok("Action Success, please check your assigned email.");
         }
     }
 }
